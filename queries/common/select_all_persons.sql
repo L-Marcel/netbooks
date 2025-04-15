@@ -1,0 +1,1 @@
+SELECT name, email, access FROM Persons
