@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres
-    container_name: postgres-container
+    container_name: netbooks-postgres-container
     restart: always
     environment:
       POSTGRES_USER: admin
