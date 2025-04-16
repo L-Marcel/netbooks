@@ -8,18 +8,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.netbooks.backend.models.Person;
-import app.netbooks.backend.services.PersonsService;
+import app.netbooks.backend.models.User;
+import app.netbooks.backend.services.UsersService;
 
 @RestController
-@RequestMapping("/persons")
-public class PersonsController {
+@RequestMapping("/users")
+public class UsersController {
     @Autowired
-    private PersonsService service;
+    private UsersService service;
 
     @GetMapping
-    public ResponseEntity<List<Person>> get() {
-        List<Person> persons = this.service.findAll();
-        return ResponseEntity.ok().body(persons);
+    public ResponseEntity<List<User>> get() {
+        List<User> users = this.service.findAll();
+        return ResponseEntity.ok().body(users);
     };
 };

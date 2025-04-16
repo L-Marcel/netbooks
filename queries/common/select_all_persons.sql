@@ -1,1 +1,1 @@
-SELECT name, email, access FROM Persons
+SELECT uuid, name, email, access FROM Users;
