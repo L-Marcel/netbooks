@@ -5,15 +5,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import app.netbooks.backend.models.Person;
-import app.netbooks.backend.repositories.PersonsRepository;
+import app.netbooks.backend.models.User;
+import app.netbooks.backend.repositories.UsersRepository;
 
 @Service
-public class PersonsService {
+public class UsersService {
     @Autowired
-    private PersonsRepository repository;
+    private UsersRepository repository;
 
-    public List<Person> findAll() {
+    public List<User> findAll() {
         return this.repository.findAll();
     }; 
 };
