@@ -1,5 +1,6 @@
 package app.netbooks.backend.models;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -9,10 +10,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class User {
+public class PlanEdition {
     private UUID uuid;
-    private String email;
-    private String password;
-    private String name;
-    private Access access;
+    private double price;
+    private Plan plan;
+    private LocalDate startedAt;
+    private LocalDate closedAt;
 };

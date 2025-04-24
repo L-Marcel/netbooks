@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Repository;
 
 import app.netbooks.backend.connections.Database;
+import app.netbooks.backend.models.Access;
 import app.netbooks.backend.models.User;
 
 @Repository
@@ -59,7 +60,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 UUID uuid = UUID.fromString(result.getString("uuid"));
                 String email = result.getString("email");
                 String name = result.getString("name");
-                int access = result.getInt("access");
+                Access access = Access.fromValue(result.getInt("access"));
                 User person = new User(uuid, email, null, name, access);
                 persons.add(person);
             };
