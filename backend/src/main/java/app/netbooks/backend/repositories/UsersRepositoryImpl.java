@@ -40,6 +40,9 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 "VALUES ('admin@gmail.com', 'admin', 'Admin', 1)\n" +
                 "ON CONFLICT DO NOTHING;"
             );
+
+            statement.close();
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         };
@@ -64,6 +67,10 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 User person = new User(uuid, email, null, name, access);
                 persons.add(person);
             };
+
+            result.close();
+            statement.close();
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         };

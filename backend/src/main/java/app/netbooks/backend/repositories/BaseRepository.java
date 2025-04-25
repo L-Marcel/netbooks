@@ -1,10 +1,7 @@
 package app.netbooks.backend.repositories;
 
-import org.springframework.stereotype.Repository;
-
 import app.netbooks.backend.connections.Database;
 
-@Repository
 public abstract class BaseRepository {
     protected Database database;
 
