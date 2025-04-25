@@ -11,5 +11,17 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - '5433:5432'
+  postgres_tests:
+    image: postgres
+    container_name: netbooks-postgres-tests-container
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: netbooks
+    tmpfs:
+      - /var/lib/postgresql/data
+    ports:
+      - '5434:5432'
 volumes:
   pgdata:
