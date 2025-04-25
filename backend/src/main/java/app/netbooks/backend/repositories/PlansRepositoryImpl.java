@@ -124,7 +124,22 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
 
     @Override
     public void update(Plan plan) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+        try {
+            Connection connection = this.database.getConnection();
+            PreparedStatement statement = connection.prepareStatement(
+                "UPDATE Plans SET (name, description, duration) = (?, ?, ?) WHERE uuid = ?;"
+            );
+
+            statement.setString(1, plan.getName());
+            statement.setString(2, plan.getDescription());
+            statement.setLong(3, plan.getDuration().toSeconds());
+            statement.setObject(4, plan.getUuid());
+            statement.executeUpdate();
+            
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     };
 };
