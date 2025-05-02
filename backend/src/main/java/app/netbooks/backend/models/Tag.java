@@ -8,5 +8,5 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class Tag {
-    private String nome;
+    private String name;
 };
