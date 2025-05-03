@@ -1,6 +1,7 @@
 package app.netbooks.backend.repositories;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -66,5 +67,21 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
 
         return tags;
     }
+
+    @Override
+    public void create(Tag tag) {
+        try {
+            Connection connection = this.database.getConnection();
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO Tags (name) values (?);");
+
+            statement.setString(1, tag.getName());
+            statement.executeUpdate();
+
+            statement.close();
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    };
     
 }
