@@ -11,9 +11,12 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -111,9 +114,16 @@ public class RepositoriesTestSuite extends BaseTest {
     @Nested
     @Order(5)
     @DisplayName("Tags")
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class TagsRepositoryTests {
         @Autowired
         private TagsRepository repository;
+
+        @BeforeAll
+        public static void clear(@Autowired Database database) {
+            BaseTest.clear(database, "Tags");
+        };
 
         @Test
         @Order(1)
@@ -137,7 +147,7 @@ public class RepositoriesTestSuite extends BaseTest {
                 List<Tag> tags = repository.findAll();
                 assertEquals(2, tags.size());
             });
-        }
+        };
 
 
         @Test

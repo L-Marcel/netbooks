@@ -46,7 +46,7 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
             Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
             
-            ResultSet result = statement.executeQuery("SELECT * FROM Tags;");
+            ResultSet result = statement.executeQuery("SELECT name FROM Tags;");
             
             while (result.next()) {
                 String name = result.getString("name");
