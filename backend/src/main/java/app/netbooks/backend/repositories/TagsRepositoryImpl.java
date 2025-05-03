@@ -18,7 +18,7 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
 
     public TagsRepositoryImpl(Database database) {
         super(database);
-    }
+    };
 
     @Override
     public void initialize() {
@@ -37,23 +37,19 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
+    };
 
     @Override
     public List<Tag> findAll() {
         List<Tag> tags = new ArrayList<Tag>();
-
         try {
             Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
-
-            ResultSet result = statement.executeQuery(
-                "SELECT name FROM Tags;"
-            );
-
+            
+            ResultSet result = statement.executeQuery("SELECT * FROM Tags;");
+            
             while (result.next()) {
                 String name = result.getString("name");
-
                 Tag tag = new Tag(name);
                 tags.add(tag);
             }
@@ -61,12 +57,13 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
             result.close();
             statement.close();
             connection.close();
-        } catch (Exception e) {
+            
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return tags;
-    }
+    };
+
 
     @Override
     public void create(Tag tag) {
@@ -83,5 +80,44 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
             e.printStackTrace();
         }
     };
+
+    @Override
+    public void delete(Tag tag) {
+        try {
+            Connection connection = this.database.getConnection();
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM Tags WHERE name = ?");
+
+            statement.setString(1, tag.getName());
+            statement.executeUpdate();
+
+            statement.close();
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    };
+
+    @Override
+    public Tag findById(String name) {
+        Tag tag = null;
+        try {
+            Connection connection = this.database.getConnection();
+            PreparedStatement statement = connection.prepareStatement("SELECT name FROM Tags WHERE name = ?");
+            statement.setString(1, name);
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                tag = new Tag(result.getString("name"));
+            }
+
+            result.close();
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return tag;
+    };
+
     
 }
