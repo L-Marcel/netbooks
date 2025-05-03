@@ -7,9 +7,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
+
 import app.netbooks.backend.connections.Database;
 import app.netbooks.backend.models.Tag;
 
+@Repository
 public class TagsRepositoryImpl extends BaseRepository implements TagsRepository{
 
     public TagsRepositoryImpl(Database database) {
