@@ -21,6 +21,5 @@ public class TagsController {
     public ResponseEntity<List<Tag>> get() {
         List<Tag> tags = service.findAll();
         return ResponseEntity.ok().body(tags);
-    }
-
-}
+    };
+};

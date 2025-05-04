@@ -1,13 +1,17 @@
 package app.netbooks.backend.repositories;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import app.netbooks.backend.connections.Database;
@@ -16,6 +20,9 @@ import app.netbooks.backend.models.User;
 
 @Repository
 public class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
+    @Autowired
+    private BCryptPasswordEncoder encoder;
+
     public UsersRepositoryImpl(Database database) {
         super(database);
     };
@@ -30,17 +37,24 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 "    uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n" +
                 "    name VARCHAR(120) NOT NULL,\n" +
                 "    email VARCHAR(320) NOT NULL UNIQUE,\n" +
-                "    password VARCHAR(24) NOT NULL,\n" +
+                "    password VARCHAR(60) NOT NULL,\n" +
                 "    access INTEGER DEFAULT 0\n" +
                 ");"
             );
 
             statement.execute(
-                "INSERT INTO Users(email, password, name, access) \n" +
-                "VALUES ('admin@gmail.com', 'admin', 'Admin', 1)\n" +
-                "ON CONFLICT DO NOTHING;"
+                "DELETE FROM Users WHERE email = 'admin@gmail.com';"
             );
 
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                "INSERT INTO Users(email, password, name, access) \n" +
+                "VALUES ('admin@gmail.com', ?, 'Admin', 1)\n" +
+                "ON CONFLICT DO NOTHING;"
+            );
+            preparedStatement.setString(1, encoder.encode("admin"));
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
             statement.close();
             connection.close();
         } catch (SQLException e) {
@@ -56,15 +70,16 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
             Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(
-                "SELECT uuid, name, email, access FROM Users;"
+                "SELECT * FROM Users;"
             );
 
             while(result.next()) {
                 UUID uuid = UUID.fromString(result.getString("uuid"));
                 String email = result.getString("email");
                 String name = result.getString("name");
+                String password = result.getString("password");
                 Access access = Access.fromValue(result.getInt("access"));
-                User person = new User(uuid, email, null, name, access);
+                User person = new User(uuid, name, email, password, access);
                 persons.add(person);
             };
 
@@ -76,5 +91,89 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         };
 
         return persons;
+    };
+
+    @Override
+    public Optional<User> findById(UUID uuid) {
+        try {
+            Connection connection = this.database.getConnection();
+            PreparedStatement statement = connection.prepareStatement(
+                "SELECT * FROM Users WHERE uuid = ?;"
+            );
+
+            statement.setObject(1, uuid);
+            ResultSet result = statement.executeQuery();
+
+            Optional<User> userFound = Optional.empty();
+            if(result.next()) {
+                String name = result.getString("name");
+                String email = result.getString("email");
+                String password = result.getString("password");
+                Access access = Access.fromValue(result.getInt("access"));
+                User user = new User(uuid, name, email, password, access);
+                userFound = Optional.of(user);
+            };
+            
+            result.close();
+            statement.close();
+            connection.close();
+            return userFound;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    };
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        try {
+            Connection connection = this.database.getConnection();
+            PreparedStatement statement = connection.prepareStatement(
+                "SELECT * FROM Users WHERE email = ?;"
+            );
+
+            statement.setString(1, email);
+            ResultSet result = statement.executeQuery();
+
+            Optional<User> userFound = Optional.empty();
+            if(result.next()) {
+                UUID uuid = UUID.fromString(result.getString("uuid"));
+                String name = result.getString("name");
+                String password = result.getString("password");
+                Access access = Access.fromValue(result.getInt("access"));
+                User user = new User(uuid, name, email, password, access);
+                userFound = Optional.of(user);
+            };
+            
+            result.close();
+            statement.close();
+            connection.close();
+            return userFound;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    };
+
+    @Override
+    public void create(User user) {
+        try {
+            Connection connection = this.database.getConnection();
+            PreparedStatement statement = connection.prepareStatement(
+                "INSERT INTO Users(name, email, password, access) \n" +
+                "VALUES (?, ?, ?, ?);"
+            );
+
+            statement.setString(1, user.getName());
+            statement.setString(2, user.getEmail());
+            statement.setString(3, user.getPassword());
+            statement.setInt(4, user.getAccess().toValue());
+            statement.executeUpdate();
+            
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     };
 };

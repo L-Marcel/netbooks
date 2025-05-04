@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +16,6 @@ import app.netbooks.backend.models.Tag;
 
 @Repository
 public class TagsRepositoryImpl extends BaseRepository implements TagsRepository{
-
     public TagsRepositoryImpl(Database database) {
         super(database);
     };
@@ -98,26 +98,29 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
     };
 
     @Override
-    public Tag findById(String name) {
-        Tag tag = null;
+    public Optional<Tag> findByName(String name) {
         try {
             Connection connection = this.database.getConnection();
-            PreparedStatement statement = connection.prepareStatement("SELECT name FROM Tags WHERE name = ?");
+            PreparedStatement statement = connection.prepareStatement(
+                "SELECT name FROM Tags WHERE name = ?"
+            );
+            
             statement.setString(1, name);
             ResultSet result = statement.executeQuery();
 
+            Optional<Tag> tagFound = Optional.empty();
             if (result.next()) {
-                tag = new Tag(result.getString("name"));
-            }
+                Tag tag = new Tag(name);
+                tagFound = Optional.of(tag);
+            };
 
             result.close();
             statement.close();
             connection.close();
+            return tagFound;
         } catch (SQLException e) {
             e.printStackTrace();
+            return Optional.empty();
         }
-        return tag;
     };
-
-    
-}
+};
