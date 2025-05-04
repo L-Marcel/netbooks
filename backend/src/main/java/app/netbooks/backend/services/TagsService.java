@@ -15,6 +15,5 @@ public class TagsService {
 
     public List<Tag> findAll() {
         return this.repository.findAll();
-    }
-
+    };
 };
