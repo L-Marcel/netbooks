@@ -12,7 +12,7 @@ import app.netbooks.backend.models.Tag;
 import app.netbooks.backend.services.TagsService;
 
 @RestController
-@RequestMapping("/api/tags")
+@RequestMapping("/tags")
 public class TagsController {
     @Autowired
     private TagsService service;
