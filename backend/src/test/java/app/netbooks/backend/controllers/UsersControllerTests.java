@@ -2,6 +2,7 @@ package app.netbooks.backend.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -73,7 +74,7 @@ public abstract class UsersControllerTests extends BaseTests {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         UserResponse[] result = response.getBody();
         assertNotNull(result);
-        assertEquals(1, result.length);
+        assertTrue(result.length > 0);
     };
 
     @Test

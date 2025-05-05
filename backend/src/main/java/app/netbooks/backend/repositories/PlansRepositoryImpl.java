@@ -24,9 +24,10 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
 
     @Override
     public void initialize() {
-        try {
+        try (
             Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
+        ) {
             statement.execute(
                 "CREATE TABLE IF NOT EXISTS Plans(\n" +
                 "    uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n" +
@@ -35,9 +36,6 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
                 "    duration BIGINT DEFAULT 0\n" +
                 ");"
             );
-            
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         };
@@ -47,12 +45,11 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
     public List<Plan> findAll() {
         List<Plan> plans = new ArrayList<Plan>();
 
-        try {
+        try (
             Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
-
             ResultSet result = statement.executeQuery("SELECT * FROM Plans;");
-
+        ) {
             while(result.next()) {
                 UUID uuid = UUID.fromString(result.getString("uuid"));
                 String name = result.getString("name");
@@ -61,10 +58,6 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
                 Plan plan = new Plan(uuid, name, description, duration);
                 plans.add(plan);
             };
-            
-            result.close();
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         };
@@ -74,28 +67,26 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
 
     @Override
     public Optional<Plan> findById(UUID uuid) {
-        try {
+        try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
                 "SELECT * FROM Plans WHERE uuid = ?;"
             );
-
+        ){
             statement.setObject(1, uuid);
-            ResultSet result = statement.executeQuery();
+            try(ResultSet result = statement.executeQuery()) {
+                Optional<Plan> planFound = Optional.empty();
 
-            Optional<Plan> planFound = Optional.empty();
-            if(result.next()) {
-                String name = result.getString("name");
-                String description = result.getString("description");
-                Duration duration = Duration.ofSeconds(result.getLong("duration"));
-                Plan plan = new Plan(uuid, name, description, duration);
-                planFound = Optional.of(plan);
-            };
-            
-            result.close();
-            statement.close();
-            connection.close();
-            return planFound;
+                if(result.next()) {
+                    String name = result.getString("name");
+                    String description = result.getString("description");
+                    Duration duration = Duration.ofSeconds(result.getLong("duration"));
+                    Plan plan = new Plan(uuid, name, description, duration);
+                    planFound = Optional.of(plan);
+                };
+                
+                return planFound;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return Optional.empty();
@@ -104,19 +95,16 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
 
     @Override
     public void create(Plan plan) {
-        try {
+        try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
                 "INSERT INTO Plans (name, description, duration) VALUES (?, ?, ?);"
             );
-
+        ) {
             statement.setString(1, plan.getName());
             statement.setString(2, plan.getDescription());
             statement.setLong(3, plan.getDuration().toSeconds());
             statement.executeUpdate();
-            
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -124,20 +112,17 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
 
     @Override
     public void update(Plan plan) {
-        try {
+        try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
                 "UPDATE Plans SET (name, description, duration) = (?, ?, ?) WHERE uuid = ?;"
             );
-
+        ) {
             statement.setString(1, plan.getName());
             statement.setString(2, plan.getDescription());
             statement.setLong(3, plan.getDuration().toSeconds());
             statement.setObject(4, plan.getUuid());
             statement.executeUpdate();
-            
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

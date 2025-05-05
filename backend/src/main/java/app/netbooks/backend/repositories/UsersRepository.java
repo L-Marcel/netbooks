@@ -11,4 +11,6 @@ public interface UsersRepository {
     public Optional<User> findByEmail(String email);
     public Optional<User> findById(UUID uuid);
     public void create(User user);
+    public void update(User user);
+    public void deleteById(UUID uuid);
 };
