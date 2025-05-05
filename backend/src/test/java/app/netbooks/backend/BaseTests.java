@@ -22,12 +22,11 @@ import app.netbooks.backend.connections.Database;
 @ActiveProfiles("test")
 public abstract class BaseTests  {
     public static void clear(Database database, String table) {
-        try {
+        try (
             Connection connection = database.getConnection();
             Statement statement = connection.createStatement();
+        ) {
             statement.execute("DELETE FROM " + table + ";");
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         };
