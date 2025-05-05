@@ -11,7 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import app.netbooks.backend.errors.Unauthorized;
 import app.netbooks.backend.models.User;
 import app.netbooks.backend.services.TokensService;
 import app.netbooks.backend.services.UsersService;
