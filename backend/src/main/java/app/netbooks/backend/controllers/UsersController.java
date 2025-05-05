@@ -30,9 +30,6 @@ public class UsersController {
     @Autowired
     private TokensService tokensService;
 
-    @Autowired
-    private BCryptPasswordEncoder encoder;
-
     @AdministratorOnly
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAll() {
@@ -75,7 +72,7 @@ public class UsersController {
         usersService.register(
             body.getName(),
             body.getEmail(),
-            encoder.encode(body.getPassword())
+            body.getPassword()
         );
         
         return ResponseEntity
