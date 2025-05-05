@@ -47,8 +47,8 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
             );
 
             PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT INTO Users(email, password, name, access) \n" +
-                "VALUES ('admin@gmail.com', ?, 'Admin', 1)\n" +
+                "INSERT INTO Users(name, email, password, access) \n" +
+                "VALUES ('Admin', 'admin@gmail.com', ?, 1)\n" +
                 "ON CONFLICT DO NOTHING;"
             );
             preparedStatement.setString(1, encoder.encode("admin"));
@@ -173,6 +173,46 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
             statement.close();
             connection.close();
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    };
+
+    @Override
+    public void update(User user) {
+        try {
+            Connection connection = this.database.getConnection();
+            PreparedStatement statement = connection.prepareStatement(
+                "UPDATE Users SET (name, email, password, access) = (?, ?, ?, ?) WHERE uuid = ?;"
+            );
+
+            statement.setString(1, user.getName());
+            statement.setString(2, user.getEmail());
+            statement.setString(3, user.getPassword());
+            statement.setInt(4, user.getAccess().toValue());
+            statement.setObject(5, user.getUuid());
+            statement.executeUpdate();
+            
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    };
+
+    @Override
+    public void deleteById(UUID uuid) {
+        try {
+            Connection connection = this.database.getConnection();
+            PreparedStatement statement = connection.prepareStatement(
+                "DELETE FROM Users WHERE uuid = ?;"
+            );
+
+            statement.setObject(1, uuid);
+            statement.executeUpdate();
+
+            statement.close();
+            connection.close();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     };
