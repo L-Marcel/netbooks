@@ -63,11 +63,15 @@ public abstract class PlansRepositoryTests extends BaseTests {
     public void mustUpdate() {
         assertDoesNotThrow(() -> {
             List<Plan> plans = repository.findAll();
+            assertEquals(1, plans.size());
+
             Plan plan = plans.get(0);
             plan.setName("Plano");
             repository.update(plan);
+
             Optional<Plan> planFound = repository.findById(plan.getUuid());
             assertEquals("Plano", planFound.get().getName());
+            
             plan.setDuration(Duration.ofSeconds(30));
             repository.update(plan);
             planFound = repository.findById(plan.getUuid());

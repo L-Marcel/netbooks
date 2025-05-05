@@ -63,8 +63,8 @@ public abstract class TagsRepositoryTests extends BaseTests {
             assertTrue(tag.isPresent());
             repository.deleteByName(tag.get().getName());
 
-            List<Tag> tagsList = repository.findAll();
-            assertEquals(1, tagsList.size());
+            tag = repository.findByName("Romance");
+            assertTrue(tag.isEmpty());
         });
     };
 };
