@@ -21,7 +21,6 @@ import app.netbooks.backend.BaseTests;
 import app.netbooks.backend.connections.Database;
 import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.models.Tag;
-import app.netbooks.backend.models.User;
 
 public abstract class TagsRepositoryTests extends BaseTests {
     @Autowired

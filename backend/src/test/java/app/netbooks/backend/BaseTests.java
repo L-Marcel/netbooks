@@ -15,7 +15,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import app.netbooks.backend.connections.Database;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, 
+    useMainMethod = SpringBootTest.UseMainMethod.ALWAYS
+)
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

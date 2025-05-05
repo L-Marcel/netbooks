@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestClassOrder;
 
+import app.netbooks.backend.advices.ExceptionAdviceTests;
+import app.netbooks.backend.controllers.TagsControllerTests;
 import app.netbooks.backend.controllers.UsersControllerTests;
 import app.netbooks.backend.models.AccessTests;
 import app.netbooks.backend.repositories.PlansRepositoryTests;
@@ -38,4 +40,12 @@ public class Tests {
     @Nested
     @Order(10000)
     class UsersController extends UsersControllerTests {};
+
+    @Nested
+    @Order(10001)
+    class TagsController extends TagsControllerTests {};
+
+    @Nested
+    @Order(100000)
+    class ExceptionAdvice extends ExceptionAdviceTests {};
 };
