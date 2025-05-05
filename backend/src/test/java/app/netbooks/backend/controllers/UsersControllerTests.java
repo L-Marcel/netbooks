@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -20,10 +22,15 @@ import app.netbooks.backend.BaseTests;
 import app.netbooks.backend.dtos.LoginRequestBody;
 import app.netbooks.backend.dtos.UserResponse;
 import app.netbooks.backend.models.Access;
+import app.netbooks.backend.services.TokensService;
 
 public abstract class UsersControllerTests extends BaseTests {
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @Autowired
+    private TokensService tokensService;
+
     private String token;
 
     @Test
@@ -95,6 +102,27 @@ public abstract class UsersControllerTests extends BaseTests {
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         
         headers.setBearerAuth("fake");
+        response = restTemplate.exchange(
+            "/users",
+            HttpMethod.GET,
+            request,
+            String.class
+        );
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+
+        headers.set("Authorization", this.token);
+        response = restTemplate.exchange(
+            "/users",
+            HttpMethod.GET,
+            request,
+            String.class
+        );
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+
+        String fakeToken = tokensService.generate(UUID.randomUUID());
+        headers.setBearerAuth(fakeToken);
         response = restTemplate.exchange(
             "/users",
             HttpMethod.GET,
