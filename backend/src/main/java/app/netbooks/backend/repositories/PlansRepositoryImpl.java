@@ -14,6 +14,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Repository;
 
 import app.netbooks.backend.connections.Database;
+import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.models.Plan;
 
 @Repository
@@ -88,7 +89,6 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
                 return planFound;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             return Optional.empty();
         }
     };
@@ -106,7 +106,7 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
             statement.setLong(3, plan.getDuration().toSeconds());
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new InternalServerError();
         }
     };
 
@@ -124,7 +124,7 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
             statement.setObject(4, plan.getUuid());
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new InternalServerError();
         }
     };
 };

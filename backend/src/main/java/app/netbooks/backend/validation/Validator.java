@@ -111,7 +111,7 @@ public class Validator {
 
         public Field<T> email(String message) {
             this.steps.add(() -> {
-                if(!(this.value instanceof String) || this.value == null)
+                if(!(this.value instanceof String))
                     throw new ValidationError(this.field, message);
                 else {
                     String email = (String) this.value;
@@ -129,7 +129,7 @@ public class Validator {
                 try {
                     Pattern pattern = Pattern.compile(regex);
 
-                    if (!(this.value instanceof CharSequence) || this.value == null) {
+                    if (!(this.value instanceof CharSequence)) {
                         throw new ValidationError(this.field, message);
                     };
                 
@@ -147,7 +147,7 @@ public class Validator {
 
         public Field<T> verify(boolean condition, String message) {
             this.steps.add(() -> {
-                if(!condition)
+                if(!condition || this.value == null)
                     throw new ValidationError(this.field, message);
             });
 

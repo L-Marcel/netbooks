@@ -2,8 +2,12 @@ package app.netbooks.backend.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.sql.SQLException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import app.netbooks.backend.BaseTests;
 import app.netbooks.backend.connections.Database;
+import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.models.Plan;
 
 public abstract class PlansRepositoryTests extends BaseTests {
@@ -54,6 +59,9 @@ public abstract class PlansRepositoryTests extends BaseTests {
             Plan plan = plans.get(0);
             Optional<Plan> planFound = repository.findById(plan.getUuid());
             assertTrue(planFound.isPresent());
+
+            planFound = repository.findById(null);
+            assertTrue(planFound.isEmpty());
         });
     };
 
@@ -76,6 +84,71 @@ public abstract class PlansRepositoryTests extends BaseTests {
             repository.update(plan);
             planFound = repository.findById(plan.getUuid());
             assertEquals(30, planFound.get().getDuration().toSeconds());
+        });
+    };
+
+    @Test
+    @Order(4)
+    @DisplayName("Exceptions")
+    public void mustThrowExpections() throws SQLException {
+        assertThrows(InternalServerError.class, () -> {
+            repository.create(
+                new Plan(
+                    "Plano", 
+                    "Apenas para testes...",
+                    Duration.ofDays(30)
+                )
+            );
+        });
+
+        assertThrows(InternalServerError.class, () -> {
+            repository.create(
+                new Plan(
+                    null, 
+                    "Apenas para testes...",
+                    Duration.ofDays(30)
+                )
+            );
+        });
+
+        assertThrows(InternalServerError.class, () -> {
+            repository.create(
+                new Plan(
+                    "Plano Teste", 
+                    null,
+                    Duration.ofDays(30)
+                )
+            );
+        });
+
+        assertThrows(InternalServerError.class, () -> {
+            List<Plan> plans = repository.findAll();
+            assertEquals(1, plans.size());
+
+            Plan plan = plans.get(0);
+            plan.setName(null);
+            repository.update(plan);
+        });
+
+        assertThrows(InternalServerError.class, () -> {
+            List<Plan> plans = repository.findAll();
+            assertEquals(1, plans.size());
+
+            Plan plan = plans.get(0);
+            plan.setDescription(null);
+            repository.update(plan);
+        });
+
+        Database database = mock(Database.class);
+        when(database.getConnection()).thenThrow(
+            new SQLException("Erro simulado de conexão!")
+        );
+
+        assertDoesNotThrow(() -> {
+            PlansRepositoryImpl plansRepository = new PlansRepositoryImpl(database);
+            plansRepository.initialize();
+            plansRepository.findAll();
+            plansRepository.findById(null);
         });
     };
 };

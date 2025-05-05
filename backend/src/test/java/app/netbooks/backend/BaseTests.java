@@ -15,19 +15,21 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import app.netbooks.backend.connections.Database;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, 
+    useMainMethod = SpringBootTest.UseMainMethod.ALWAYS
+)
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
 public abstract class BaseTests  {
     public static void clear(Database database, String table) {
-        try {
+        try (
             Connection connection = database.getConnection();
             Statement statement = connection.createStatement();
+        ) {
             statement.execute("DELETE FROM " + table + ";");
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         };

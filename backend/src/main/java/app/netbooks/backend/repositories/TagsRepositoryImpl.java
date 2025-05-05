@@ -12,6 +12,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 import app.netbooks.backend.connections.Database;
+import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.models.Tag;
 
 @Repository
@@ -50,9 +51,7 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
                 Tag tag = new Tag(name);
                 tags.add(tag);
             };
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (SQLException e) {};
 
         return tags;
     };
@@ -79,7 +78,6 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
                 return tagFound;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             return Optional.empty();
         }
     };
@@ -95,7 +93,7 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
             statement.setString(1, tag.getName());
             statement.executeUpdate();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new InternalServerError();
         }
     };
 
@@ -110,7 +108,7 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
             statement.setString(1, name);
             statement.executeUpdate();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new InternalServerError();
         }
     };
 };

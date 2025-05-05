@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import app.netbooks.backend.connections.Database;
+import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.models.Access;
 import app.netbooks.backend.models.User;
 
@@ -82,9 +83,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 User person = new User(uuid, name, email, password, access);
                 persons.add(person);
             };
-        } catch (SQLException e) {
-            e.printStackTrace();
-        };
+        } catch (SQLException e) {};
 
         return persons;
     };
@@ -113,7 +112,6 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 return userFound;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             return Optional.empty();
         }
     };
@@ -142,7 +140,6 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 return userFound;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             return Optional.empty();
         }
     };
@@ -162,7 +159,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
             statement.setInt(4, user.getAccess().toValue());
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new InternalServerError();
         }
     };
 
@@ -181,7 +178,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
             statement.setObject(5, user.getUuid());
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new InternalServerError();
         }
     };
 
@@ -196,7 +193,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
             statement.setObject(1, uuid);
             statement.executeUpdate();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new InternalServerError();
         }
     };
 };
