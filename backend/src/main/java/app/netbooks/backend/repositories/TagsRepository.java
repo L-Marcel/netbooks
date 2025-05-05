@@ -9,5 +9,5 @@ public interface TagsRepository {
     public List<Tag> findAll();
     public Optional<Tag> findByName(String name);
     public void create(Tag tag);
-    public void delete(Tag tag);
+    public void deleteByName(String name);
 };
