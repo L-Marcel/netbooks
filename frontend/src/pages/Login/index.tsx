@@ -1,5 +1,5 @@
 import styles from "./index.module.scss";
-import useUser from "../../../stores/useUser";
+import useUser from "../../stores/useUser";
 import { useState } from "react";
 
 export default function Login(){
@@ -58,7 +58,7 @@ export default function Login(){
                             id="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="*******"
+                            placeholder="*****"
                             required
                         />
                     </div>
