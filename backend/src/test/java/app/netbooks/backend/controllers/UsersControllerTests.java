@@ -22,7 +22,6 @@ import app.netbooks.backend.BaseTests;
 import app.netbooks.backend.dtos.LoginRequestBody;
 import app.netbooks.backend.dtos.RegisterRequestBody;
 import app.netbooks.backend.dtos.UserResponse;
-import app.netbooks.backend.models.Access;
 import app.netbooks.backend.services.TokensService;
 
 public abstract class UsersControllerTests extends BaseTests {
