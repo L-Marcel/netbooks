@@ -1,5 +1,10 @@
 @import "@styles/global.scss";
 
+.body {
+  //margin: 6px 30px;
+  color: rgb(199, 199, 199);
+}
+
 .main {
   @apply 
     flex
