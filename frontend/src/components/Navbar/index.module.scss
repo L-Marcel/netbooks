@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+.menu {
+  @apply
+    bg-black
+    w-full
+    sticky
+    top-0
+  ;
+}
+
+.container {
+  @apply
+    flex
+    items-center
+    justify-between
+    py-[6px]
+    pr-[30px]
+    pl-[10px]
+    w-full
+  ;
+}
+
+.left {
+  @apply flex items-center;
+}
+.center {
+  @apply absolute left-1/2 transform -translate-x-1/2;
+}
+.right {
+  @apply flex items-center gap-[10px];
+}
+
+
+.links {
+  @apply
+    list-none
+    text-lg
+    flex
+    gap-[50px]
+  ;
+
+  a {
+    @apply
+      text-gray-400
+      no-underline
+      font-bold
+      transition
+    ;
+    
+    &:hover {
+      color: whitesmoke;
+    }
+  }
+}
+
+.buttons{
+  @apply
+    flex
+    gap-[10px]
+  ;
+
+  button {
+    @apply
+      py-[10px]
+      px-[15px]
+      font-bold
+    ;
+  }
+}
+
+.user_name{
+  @apply
+    flex
+    items-center
+    text-white
+  ;
+}
