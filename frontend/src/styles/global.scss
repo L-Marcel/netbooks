@@ -1,12 +1,11 @@
-@import "@styles/variables.scss";
+@import "tailwindcss";
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light;
-  color: $gray-600;
-  background-color: $gray-200;
+  @apply bg-red-200 text-red-600;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
