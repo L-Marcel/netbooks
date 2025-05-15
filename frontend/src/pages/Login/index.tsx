@@ -1,6 +1,8 @@
 import styles from "./index.module.scss";
 import useUser from "../../stores/useUser";
 import { useState } from "react";
+import Button from "@components/Button";
+import Input from "@components/Input";
 
 export default function Login(){
     //const login = useUser();
@@ -39,38 +41,33 @@ export default function Login(){
                 <form onSubmit={handleSubmit}>
                     <div className={styles.form_group}>
                         <label htmlFor="email">Email</label>
-                        <input 
+                        <Input 
                             type="email" 
-                            name="email" 
-                            id="email" 
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            id="email"
+                            value={email} 
+                            setFunction={setEmail}
                             placeholder="seu@email.com"
-                            required
                         />
                     </div>
                     
                     <div className={styles.form_group}>
                         <label htmlFor="password">Senha</label>
-                        <input
-                            type="password"
-                            name="password"
+                        <Input 
+                            type="password" 
                             id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            value={password} 
+                            setFunction={setPassword}
                             placeholder="*****"
-                            required
                         />
                     </div>
                     
                     <div className={styles.form_group}>
-                        <button 
-                            type="submit" 
-                            className={styles.submit}
+                        <Button 
+                            type="submit"
+                            theme="dark"
+                            text={isLoading ? "Entrando..." : "Entrar"}
                             disabled={isLoading}
-                        >
-                            {isLoading ? "Entrando..." : "Entrar"}
-                        </button>
+                        />
                     </div>
                     
                 </form>
