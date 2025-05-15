@@ -9,7 +9,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
@@ -24,39 +23,20 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
     };
 
     @Override
-    public void initialize() {
-        try (
-            Connection connection = this.database.getConnection();
-            Statement statement = connection.createStatement();
-        ) {
-            statement.execute(
-                "CREATE TABLE IF NOT EXISTS Plans(\n" +
-                "    uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n" +
-                "    name VARCHAR(80) NOT NULL UNIQUE,\n" +
-                "    description VARCHAR(400) NOT NULL,\n" +
-                "    duration BIGINT DEFAULT 0\n" +
-                ");"
-            );
-        } catch (SQLException e) {
-            e.printStackTrace();
-        };
-    };
-
-    @Override
     public List<Plan> findAll() {
         List<Plan> plans = new ArrayList<Plan>();
 
         try (
             Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery("SELECT * FROM Plans;");
+            ResultSet result = statement.executeQuery("SELECT * FROM plan;");
         ) {
             while(result.next()) {
-                UUID uuid = UUID.fromString(result.getString("uuid"));
+                Integer id = result.getInt("id");
                 String name = result.getString("name");
                 String description = result.getString("description");
                 Duration duration = Duration.ofSeconds(result.getLong("duration"));
-                Plan plan = new Plan(uuid, name, description, duration);
+                Plan plan = new Plan(id, name, description, duration);
                 plans.add(plan);
             };
         } catch (SQLException e) {
@@ -67,14 +47,14 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
     };
 
     @Override
-    public Optional<Plan> findById(UUID uuid) {
+    public Optional<Plan> findById(Integer id) {
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "SELECT * FROM Plans WHERE uuid = ?;"
+                "SELECT * FROM plan WHERE id = ?;"
             );
         ){
-            statement.setObject(1, uuid);
+            statement.setObject(1, id);
             try(ResultSet result = statement.executeQuery()) {
                 Optional<Plan> planFound = Optional.empty();
 
@@ -82,7 +62,7 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
                     String name = result.getString("name");
                     String description = result.getString("description");
                     Duration duration = Duration.ofSeconds(result.getLong("duration"));
-                    Plan plan = new Plan(uuid, name, description, duration);
+                    Plan plan = new Plan(id, name, description, duration);
                     planFound = Optional.of(plan);
                 };
                 
@@ -98,7 +78,7 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO Plans (name, description, duration) VALUES (?, ?, ?);"
+                "INSERT INTO plan (name, description, duration) VALUES (?, ?, ?);"
             );
         ) {
             statement.setString(1, plan.getName());
@@ -115,13 +95,17 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "UPDATE Plans SET (name, description, duration) = (?, ?, ?) WHERE uuid = ?;"
+                "UPDATE plan\n" +
+                "SET name = ?,\n" +
+                "    description = ?,\n" +
+                "    duration = ?\n" +
+                "WHERE id = ?;"
             );
         ) {
             statement.setString(1, plan.getName());
             statement.setString(2, plan.getDescription());
             statement.setLong(3, plan.getDuration().toSeconds());
-            statement.setObject(4, plan.getUuid());
+            statement.setInt(4, plan.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new InternalServerError();

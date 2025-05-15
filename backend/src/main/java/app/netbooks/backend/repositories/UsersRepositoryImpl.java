@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,8 +17,9 @@ import org.springframework.stereotype.Repository;
 
 import app.netbooks.backend.connections.Database;
 import app.netbooks.backend.errors.InternalServerError;
-import app.netbooks.backend.models.Access;
+import app.netbooks.backend.models.Role;
 import app.netbooks.backend.models.User;
+import app.netbooks.backend.utils.UUIDUtils;
 
 @Repository
 public class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
@@ -32,31 +34,41 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
     public void initialize() {
         try (
             Connection connection = this.database.getConnection();
-            Statement statement = connection.createStatement();
         ) {
-            statement.execute(
-                "CREATE TABLE IF NOT EXISTS Users(\n" +
-                "    uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n" +
-                "    name VARCHAR(120) NOT NULL,\n" +
-                "    email VARCHAR(320) NOT NULL UNIQUE,\n" +
-                "    password VARCHAR(60) NOT NULL,\n" +
-                "    access INTEGER DEFAULT 0\n" +
-                ");"
-            );
-
-            statement.execute(
-                "DELETE FROM Users WHERE email = 'admin@gmail.com';"
-            );
+            connection.setAutoCommit(false);
 
             try (
-                PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO Users(name, email, password, access) \n" +
-                    "VALUES ('Admin', 'admin@gmail.com', ?, 1)\n" +
-                    "ON CONFLICT DO NOTHING;"
+                Statement statement = connection.createStatement();
+                PreparedStatement preparedCreateStatement = connection.prepareStatement(
+                    "INSERT IGNORE INTO user (name, email, password) \n" +
+                    "VALUES ('Admin', 'admin@gmail.com', ?);"
+                );
+                PreparedStatement preparedSetAdminStatement = connection.prepareStatement(
+                    "INSERT IGNORE INTO admin (uuid) \n" +
+                    "VALUES (?);"
                 );
             ) {
-                preparedStatement.setString(1, encoder.encode("admin"));
-                preparedStatement.executeUpdate();
+                statement.execute(
+                    "DELETE FROM user WHERE email = 'admin@gmail.com';"
+                );
+
+                preparedCreateStatement.setString(1, encoder.encode("admin"));
+                preparedCreateStatement.executeUpdate();
+
+                byte[] bytes = {};
+                
+                try (
+                    ResultSet result = statement.executeQuery(
+                        "SELECT * FROM user WHERE email = 'admin@gmail.com';"
+                    );
+                ) {
+                    if(result.next()) {
+                        bytes = result.getBytes("uuid");
+                    };
+                }
+                
+                preparedSetAdminStatement.setBytes(1, bytes);
+                connection.commit();
             };
         } catch (SQLException e) {
             e.printStackTrace();
@@ -71,19 +83,22 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
             Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(
-                "SELECT * FROM Users;"
+                "SELECT * FROM user;"
             );
         ) {
             while(result.next()) {
-                UUID uuid = UUID.fromString(result.getString("uuid"));
+                byte[] bytes = result.getBytes("uuid");
+                UUID uuid = UUIDUtils.fromBytes(bytes);
                 String email = result.getString("email");
                 String name = result.getString("name");
                 String password = result.getString("password");
-                Access access = Access.fromValue(result.getInt("access"));
-                User person = new User(uuid, name, email, password, access);
+                // Access access = Access.fromValue(result.getInt("access"));
+                User person = new User(uuid, name, email, password, new LinkedList<Role>());
                 persons.add(person);
             };
-        } catch (SQLException e) {};
+        } catch (SQLException e) {
+            e.printStackTrace();
+        };
 
         return persons;
     };
@@ -93,10 +108,10 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "SELECT * FROM Users WHERE uuid = ?;"
+                "SELECT * FROM user WHERE uuid = ?;"
             );
         ) {
-            statement.setObject(1, uuid);
+            statement.setBytes(1, UUIDUtils.toBytes(uuid));
             try (ResultSet result = statement.executeQuery();) {
                 Optional<User> userFound = Optional.empty();
 
@@ -104,8 +119,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                     String name = result.getString("name");
                     String email = result.getString("email");
                     String password = result.getString("password");
-                    Access access = Access.fromValue(result.getInt("access"));
-                    User user = new User(uuid, name, email, password, access);
+                    User user = new User(uuid, name, email, password, new LinkedList<Role>());
                     userFound = Optional.of(user);
                 };
 
@@ -121,7 +135,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "SELECT * FROM Users WHERE email = ?;"
+                "SELECT * FROM user WHERE email = ?;"
             );
         ) {
             statement.setString(1, email);
@@ -129,11 +143,11 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 Optional<User> userFound = Optional.empty();
 
                 if(result.next()) {
-                    UUID uuid = UUID.fromString(result.getString("uuid"));
+                    byte[] bytes = result.getBytes("uuid");
+                    UUID uuid = UUIDUtils.fromBytes(bytes);
                     String name = result.getString("name");
                     String password = result.getString("password");
-                    Access access = Access.fromValue(result.getInt("access"));
-                    User user = new User(uuid, name, email, password, access);
+                    User user = new User(uuid, name, email, password, new LinkedList<Role>());
                     userFound = Optional.of(user);
                 };
 
@@ -149,14 +163,13 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO Users(name, email, password, access) \n" +
-                "VALUES (?, ?, ?, ?);"
+                "INSERT INTO user (name, email, password) \n" +
+                "VALUES (?, ?, ?);"
             );
         ) {
             statement.setString(1, user.getName());
             statement.setString(2, user.getEmail());
             statement.setString(3, user.getPassword());
-            statement.setInt(4, user.getAccess().toValue());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new InternalServerError();
@@ -168,14 +181,17 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "UPDATE Users SET (name, email, password, access) = (?, ?, ?, ?) WHERE uuid = ?;"
+                "UPDATE user\n" +
+                "SET name = ?,\n" +
+                "    email = ?,\n" +
+                "    password = ?\n" +
+                "WHERE uuid = ?;"
             );
         ) {
             statement.setString(1, user.getName());
             statement.setString(2, user.getEmail());
             statement.setString(3, user.getPassword());
-            statement.setInt(4, user.getAccess().toValue());
-            statement.setObject(5, user.getUuid());
+            statement.setBytes(4, UUIDUtils.toBytes(user.getUuid()));
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new InternalServerError();
@@ -187,10 +203,10 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "DELETE FROM Users WHERE uuid = ?;"
+                "DELETE FROM user WHERE uuid = ?;"
             );
         ) {
-            statement.setObject(1, uuid);
+            statement.setBytes(1, UUIDUtils.toBytes(uuid));
             statement.executeUpdate();
         } catch (Exception e) {
             throw new InternalServerError();

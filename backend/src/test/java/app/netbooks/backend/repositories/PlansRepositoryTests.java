@@ -30,7 +30,7 @@ public abstract class PlansRepositoryTests extends BaseTests {
 
     @BeforeAll
     public static void clear(@Autowired Database database) {
-        BaseTests.clear(database, "Plans");
+        BaseTests.clear(database, "plan");
     };
 
     @Test
@@ -57,7 +57,7 @@ public abstract class PlansRepositoryTests extends BaseTests {
             assertEquals(1, plans.size());
 
             Plan plan = plans.get(0);
-            Optional<Plan> planFound = repository.findById(plan.getUuid());
+            Optional<Plan> planFound = repository.findById(plan.getId());
             assertTrue(planFound.isPresent());
 
             planFound = repository.findById(null);
@@ -77,12 +77,12 @@ public abstract class PlansRepositoryTests extends BaseTests {
             plan.setName("Plano");
             repository.update(plan);
 
-            Optional<Plan> planFound = repository.findById(plan.getUuid());
+            Optional<Plan> planFound = repository.findById(plan.getId());
             assertEquals("Plano", planFound.get().getName());
             
             plan.setDuration(Duration.ofSeconds(30));
             repository.update(plan);
-            planFound = repository.findById(plan.getUuid());
+            planFound = repository.findById(plan.getId());
             assertEquals(30, planFound.get().getDuration().toSeconds());
         });
     };
