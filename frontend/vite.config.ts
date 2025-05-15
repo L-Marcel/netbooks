@@ -12,14 +12,5 @@ export default defineConfig({
       "@assets": path.join(__dirname, "src", "assets"),
       "@icons": path.join(__dirname, "src", "components", "icons"),
     },
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: "legacy",
-        silenceDeprecations: ["legacy-js-api", "import"],
-        additionalData: '@import "@styles/variables.scss";\n',
-      },
-    },
-  },
+  }
 });
