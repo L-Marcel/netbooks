@@ -1,5 +1,5 @@
-import { Route, Routes } from "react-router-dom";
 import "@styles/global.scss";
+import { Route, Routes } from "react-router-dom";
 import Home from "@pages/Home";
 
 function App() {
