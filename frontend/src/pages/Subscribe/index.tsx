@@ -1,6 +1,9 @@
 import styles from "./index.module.scss";
 import useUser from "../../stores/useUser";
 import { useState } from "react";
+import Input from "@components/Input";
+import "@components/Input/index.module.scss";
+import Button from "@components/Button";
 
 export default function Subscribe(){
     //const login = useUser();
@@ -46,64 +49,55 @@ export default function Subscribe(){
                 <form onSubmit={handleSubmit}>
                     <div className={styles.form_group}>
                         <label htmlFor="name">Nome</label>
-                        <input 
-                            type="text" 
-                            name="name" 
-                            id="name" 
+                        <Input
+                            type="text"
+                            id="name"
                             value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            setFunction={setName}
                             placeholder="Seu nome"
-                            required
                         />
                     </div>
 
                     <div className={styles.form_group}>
                         <label htmlFor="email">Email</label>
-                        <input 
-                            type="email" 
-                            name="email" 
-                            id="email" 
+                        <Input
+                            type="text"
+                            id="email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            setFunction={setEmail}
                             placeholder="seu@email.com"
-                            required
                         />
                     </div>
                     
                     <div className={styles.form_group}>
                         <label htmlFor="password">Senha</label>
-                        <input
+                        <Input
                             type="password"
-                            name="password"
                             id="password"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            setFunction={setPassword}
                             placeholder="*****"
-                            required
                         />
                     </div>
                     
                     <div className={styles.form_group}>
                         <label htmlFor="confirm">Confirmar senha</label>
-                        <input
+                        <Input
                             type="password"
-                            name="confirm"
                             id="confirm"
                             value={confirm}
-                            onChange={(e) => setConfirm(e.target.value)}
+                            setFunction={setConfirm}
                             placeholder="*****"
-                            required
                         />
                     </div>
                     
                     <div className={styles.form_group}>
-                        <button 
+                        <Button
                             type="submit" 
-                            className={styles.submit}
+                            theme="dark"
+                            text={isLoading ? "Criando..." : "Criar conta"}
                             disabled={isLoading}
-                        >
-                            {isLoading ? "Criando..." : "Criar conta"}
-                        </button>
+                        />
                     </div>
                     
                 </form>

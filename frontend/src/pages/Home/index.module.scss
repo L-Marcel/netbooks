@@ -1,15 +1,6 @@
 @import "@styles/global.scss";
 
-.body {
-  //margin: 6px 30px;
-  color: rgb(199, 199, 199);
-}
-
-.main {
-  @apply 
-    flex
-    bg-gray-500;
-  
+.main {  
   flex-direction: column;
   justify-content: center;
   align-items: center;

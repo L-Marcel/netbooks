@@ -3,7 +3,7 @@ import Menu from "@components/Menu";
 
 export default function Home() {
   return (
-    <div className={styles.body}>
+    <div className={styles.main}>
       <Menu />
       <section>
         <h1>Bem-vindo(a)</h1>

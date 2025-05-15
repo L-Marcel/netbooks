@@ -40,21 +40,6 @@ input {
     }
 }
 
-.submit {
-    color: white;
-    border-radius: 5px;
-    border-color: #8b5cf6;
-    background-color: #8b5cf6;
-    transition: color 0.3s ease;
-    height: 35px;
-    margin-top: 10px;
-    
-    &:hover{
-        background-color: #7d45ff;
-        border-color: #7d45ff;
-    }
-}
-
 .hasSubscription{
     text-align: center;
 }
