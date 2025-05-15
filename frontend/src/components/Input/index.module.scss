@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+input {
+    @apply
+        bg-transparent
+        rounded-lg
+        border-[1px]
+        border-gray-500
+        h-[40px]
+        px-[10px]
+        py-[5px]
+    ;
+
+    &::selection{
+        background-color: transparent;
+    }
+}
