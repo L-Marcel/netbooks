@@ -32,6 +32,7 @@ public class User implements UserDetails {
     @Override
     public List<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()
+            .filter((Role role) -> role != Role.UNKNOWN)
             .map((Role role) -> new SimpleGrantedAuthority("ROLE_" + role.toString()))
             .collect(Collectors.toList());
     }

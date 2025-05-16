@@ -6,8 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,7 +21,6 @@ import app.netbooks.backend.connections.Database;
 import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.models.Role;
 import app.netbooks.backend.models.User;
-import app.netbooks.backend.utils.UUIDUtils;
 
 @Repository
 public class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
@@ -40,39 +41,65 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
             try (
                 Statement statement = connection.createStatement();
                 PreparedStatement preparedCreateStatement = connection.prepareStatement(
-                    "INSERT IGNORE INTO user (name, email, password) \n" +
-                    "VALUES ('Admin', 'admin@gmail.com', ?);"
+                    "INSERT INTO user (uuid, name, email, password)\n" +
+                    "VALUES (UUID(), 'Admin', 'admin@gmail.com', ?)\n" +
+                    "ON DUPLICATE KEY UPDATE\n" +
+                    "    name = VALUES(name),\n" +
+                    "    password = VALUES(password);"
                 );
                 PreparedStatement preparedSetAdminStatement = connection.prepareStatement(
-                    "INSERT IGNORE INTO admin (uuid) \n" +
-                    "VALUES (?);"
+                    "INSERT INTO admin (uuid)\n" +
+                    "SELECT * FROM (SELECT ?) AS tmp\n" +
+                    "WHERE NOT EXISTS (\n" +
+                    "    SELECT 1 FROM admin WHERE uuid = ?\n" +
+                    ") LIMIT 1;"
                 );
             ) {
-                statement.execute(
-                    "DELETE FROM user WHERE email = 'admin@gmail.com';"
-                );
-
                 preparedCreateStatement.setString(1, encoder.encode("admin"));
                 preparedCreateStatement.executeUpdate();
 
-                byte[] bytes = {};
-                
                 try (
                     ResultSet result = statement.executeQuery(
                         "SELECT * FROM user WHERE email = 'admin@gmail.com';"
                     );
                 ) {
                     if(result.next()) {
-                        bytes = result.getBytes("uuid");
+                        UUID uuid = UUID.fromString(result.getString("uuid"));
+                        preparedSetAdminStatement.setString(1, uuid.toString());
+                        preparedSetAdminStatement.setString(2, uuid.toString());
+                        preparedSetAdminStatement.executeUpdate();
                     };
                 }
-                
-                preparedSetAdminStatement.setBytes(1, bytes);
+              
                 connection.commit();
             };
         } catch (SQLException e) {
             e.printStackTrace();
         };
+    };
+
+    private Map<UUID, List<Role>> findAllRoles(Connection connection) {
+        Map<UUID, List<Role>> rolesMap = new LinkedHashMap<>();
+
+        try (
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(
+                "SELECT * FROM user_roles;"
+            );
+        ) {
+            while(result.next()) {
+                UUID uuid = UUID.fromString(result.getString("uuid"));
+                Role role = Role.fromString(result.getString("role"));
+                rolesMap.computeIfAbsent(
+                    uuid,
+                    v -> new ArrayList<Role>()
+                ).add(role);
+            };
+        } catch (SQLException e) {
+            e.printStackTrace();
+        };
+
+        return rolesMap;
     };
 
     @Override
@@ -86,14 +113,14 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 "SELECT * FROM user;"
             );
         ) {
+            Map<UUID, List<Role>> allRoles = this.findAllRoles(connection);
             while(result.next()) {
-                byte[] bytes = result.getBytes("uuid");
-                UUID uuid = UUIDUtils.fromBytes(bytes);
+                UUID uuid = UUID.fromString(result.getString("uuid"));
                 String email = result.getString("email");
                 String name = result.getString("name");
                 String password = result.getString("password");
-                // Access access = Access.fromValue(result.getInt("access"));
-                User person = new User(uuid, name, email, password, new LinkedList<Role>());
+                List<Role> roles = allRoles.getOrDefault(uuid, new LinkedList<>());
+                User person = new User(uuid, name, email, password, roles);
                 persons.add(person);
             };
         } catch (SQLException e) {
@@ -111,7 +138,9 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 "SELECT * FROM user WHERE uuid = ?;"
             );
         ) {
-            statement.setBytes(1, UUIDUtils.toBytes(uuid));
+            statement.setString(1, uuid.toString());
+
+            Map<UUID, List<Role>> allRoles = this.findAllRoles(connection);
             try (ResultSet result = statement.executeQuery();) {
                 Optional<User> userFound = Optional.empty();
 
@@ -119,7 +148,8 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                     String name = result.getString("name");
                     String email = result.getString("email");
                     String password = result.getString("password");
-                    User user = new User(uuid, name, email, password, new LinkedList<Role>());
+                    List<Role> roles = allRoles.getOrDefault(uuid, new LinkedList<>());
+                    User user = new User(uuid, name, email, password, roles);
                     userFound = Optional.of(user);
                 };
 
@@ -139,15 +169,17 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
             );
         ) {
             statement.setString(1, email);
+
+            Map<UUID, List<Role>> allRoles = this.findAllRoles(connection);
             try (ResultSet result = statement.executeQuery()) {
                 Optional<User> userFound = Optional.empty();
 
                 if(result.next()) {
-                    byte[] bytes = result.getBytes("uuid");
-                    UUID uuid = UUIDUtils.fromBytes(bytes);
+                    UUID uuid = UUID.fromString(result.getString("uuid"));
                     String name = result.getString("name");
                     String password = result.getString("password");
-                    User user = new User(uuid, name, email, password, new LinkedList<Role>());
+                    List<Role> roles = allRoles.getOrDefault(uuid, new LinkedList<>());
+                    User user = new User(uuid, name, email, password, roles);
                     userFound = Optional.of(user);
                 };
 
@@ -163,8 +195,8 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO user (name, email, password) \n" +
-                "VALUES (?, ?, ?);"
+                "INSERT INTO user (uuid, name, email, password) \n" +
+                "VALUES (UUID(), ?, ?, ?);"
             );
         ) {
             statement.setString(1, user.getName());
@@ -191,7 +223,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
             statement.setString(1, user.getName());
             statement.setString(2, user.getEmail());
             statement.setString(3, user.getPassword());
-            statement.setBytes(4, UUIDUtils.toBytes(user.getUuid()));
+            statement.setString(4, user.getUuid().toString());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new InternalServerError();
@@ -206,7 +238,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 "DELETE FROM user WHERE uuid = ?;"
             );
         ) {
-            statement.setBytes(1, UUIDUtils.toBytes(uuid));
+            statement.setString(1, uuid.toString());
             statement.executeUpdate();
         } catch (Exception e) {
             throw new InternalServerError();

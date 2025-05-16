@@ -29,7 +29,7 @@ public abstract class BaseTests  {
             Connection connection = database.getConnection();
             Statement statement = connection.createStatement();
         ) {
-            statement.execute("DELETE FROM " + table + ";");
+            statement.executeUpdate("DELETE FROM " + table + ";");
         } catch (SQLException e) {
             e.printStackTrace();
         };
