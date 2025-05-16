@@ -1,34 +1,26 @@
-import styles from "./index.module.scss";
-
-interface InputProps {
-    type: string;
-    id: string;
-    value: string;
-    setFunction: (value: string) => void;
-    placeholder?: string;
+interface InputProps
+  extends React.DetailedHTMLProps<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    HTMLInputElement
+  > {
+  label?: string;
 }
 
 export default function Input({
-    type,
-    id,
-    value,
-    setFunction,
-    placeholder,
-    ...props
+  id,
+  label,
+  className = "",
+  ...props
 }: InputProps) {
-    return (
-        <>
-            <input 
-                type={type}
-                name={id}
-                id={id}
-                value={value}
-                onChange={(e) => setFunction(e.target.value)}
-                placeholder={placeholder}
-                required
-                className={styles.input}
-                {...props}
-            />
-        </>
-    );
+  return (
+    <label className="flex flex-col gap-2 w-full text-base-content">
+      <span>{label}</span>
+      <input
+        className={`input w-full ${className}`}
+        id={id}
+        name={id}
+        {...props}
+      />
+    </label>
+  );
 }

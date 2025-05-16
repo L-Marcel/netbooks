@@ -1,9 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "node:path";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       "@styles": path.join(__dirname, "src", "styles"),
@@ -12,5 +13,5 @@ export default defineConfig({
       "@assets": path.join(__dirname, "src", "assets"),
       "@icons": path.join(__dirname, "src", "components", "icons"),
     },
-  }
+  },
 });

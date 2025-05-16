@@ -1,0 +1,7 @@
+{
+  "extends": "stylelint-config-tailwindcss",
+  "rules": {
+    "at-rule-no-unknown": null,
+    "no-duplicate-selectors": true
+  }
+}

@@ -1,70 +1,75 @@
-import styles from "./index.module.scss";
 import NetBooksSvg from "@components/NetBooksSvg";
 import { FaSearch } from "react-icons/fa";
 import Button from "@components/Button/index";
+import { Link, NavLink } from "react-router-dom";
 
-export default function Navbar(){
-    const isAuthenticaded = false; //useUser
+export default function Navbar() {
+  const isAuthenticaded = false; //useUser
 
-    return(
-        <nav className={styles.menu}>
-            <div className={styles.container}>
-                <div className={styles.left}>
-                    <NetBooksSvg color="#8b5cf6" />
-                </div>
-
-                <div className={styles.center}>
-                    <ul className={styles.links}>
-                        <li>
-                            <a href=""><FaSearch /></a>
-                        </li>
-                        <li>
-                            <a href="inicio">Início</a>
-                        </li>
-                        {isAuthenticaded ? 
-                        <li>
-                            <a href="estante">Estante</a>
-                        </li> :
-                        ""
-                        }
-                        
-                        <li>
-                            <a href="sortear">Sortear</a>
-                        </li>
-                    </ul>
-                </div>
-                
-                <div className={styles.right}>
-                {isAuthenticaded ?
-                    <div className={styles.buttons}>
-                        <span className={styles.user_name}>
-                            Nome Usuário
-                        </span>
-                        <Button 
-                            text="Sair"
-                            theme="light"
-                            /*onClick={}*/
-                        />
-                    </div>
-                :
-                    <div className={styles.buttons}>
-                        <Button 
-                            text="Entrar"
-                            theme="light"
-                            /*onClick={}*/
-                        />
-                        <Button 
-                            text="Cadastrar"
-                            theme="dark"
-                            /*onClick={}*/
-                        />
-                    </div>
+  return (
+    <nav className="bg-base-100 w-full sticky top-0">
+      <div className="flex items-center justify-between py-1.5 pr-12 pl-2.5 w-full">
+        <div className="flex items-center">
+          <NetBooksSvg color="#8b5cf6" />
+        </div>
+        <ul className="list-none text-lg flex gap-8">
+          <li className="mt-1">
+            <FaSearch />
+          </li>
+          <li>
+            <NavLink
+              className={({ isActive }) =>
+                "text-base-content no-underline hover:underline font-bold transition" +
+                (isActive? " text-primary":"")
+              }
+              to="/home"
+            >
+              Início
+            </NavLink>
+          </li>
+          {isAuthenticaded && (
+            <li>
+              <NavLink
+                className={({ isActive }) =>
+                  "text-base-content no-underline hover:underline font-bold transition" +
+                  (isActive? " text-primary":"")
                 }
-                </div>
-                
-            </div>
-        
-        
-        </nav>
-    );
+                to="/books"
+              >
+                Estante
+              </NavLink>
+            </li>
+          )}
+          <li>
+            <NavLink
+              className={({ isActive }) =>
+                "text-base-content no-underline hover:underline font-bold transition" +
+                (isActive? " text-primary":"")
+              }
+              to="/sort"
+            >
+              Sortear
+            </NavLink>
+          </li>
+        </ul>
+        <div className="flex gap-2.5">
+          {isAuthenticaded ? (
+            <>
+              <p className="flex items-center text-base-content">Usuário</p>
+              <Button>Sair</Button>
+            </>
+          ) : (
+            <>
+              <Link className="btn btn-primary" to="/login">
+                Entrar
+              </Link>
+              <Link className="btn btn-soft btn-primary" to="/register">
+                Cadastrar-se
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
 }

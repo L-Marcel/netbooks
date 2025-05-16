@@ -1,14 +1,9 @@
-import styles from "./index.module.scss";
-import Menu from "@components/Menu";
+import Navbar from "@components/Navbar";
 
 export default function Home() {
   return (
-    <div className={styles.main}>
-      <Menu />
-      <section>
-        <h1>Bem-vindo(a)</h1>
-        <p>Aqui começa nossa aventura...</p>
-      </section>
-    </div>
+    <main className="flex flex-col w-full h-screen items-center">
+      <Navbar />
+    </main>
   );
 }
