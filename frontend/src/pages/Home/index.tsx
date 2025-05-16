@@ -5,10 +5,6 @@ export default function Home() {
   return (
     <div className={styles.main}>
       <Menu />
-      <section>
-        <h1>Bem-vindo(a)</h1>
-        <p>Aqui começa nossa aventura...</p>
-      </section>
     </div>
   );
 }

@@ -12,5 +12,5 @@ export default defineConfig({
       "@assets": path.join(__dirname, "src", "assets"),
       "@icons": path.join(__dirname, "src", "components", "icons"),
     },
-  }
+  },
 });
