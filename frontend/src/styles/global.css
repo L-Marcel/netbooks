@@ -1,16 +1,16 @@
-@use "tailwindcss";
+@import "tailwindcss";
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color-scheme: dark;
-  color: gray-300;
   background-color: #141218;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  color: gray-300;
+  color-scheme: dark;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-synthesis: none;
+  font-weight: 400;
+  line-height: 1.5;
+  text-rendering: optimizelegibility;
 }
 
 * {
@@ -19,17 +19,17 @@
 }
 
 body {
-  margin: 0;
   display: flex;
-  min-width: 320px;
+  margin: 0;
   min-height: 100vh;
+  min-width: 320px;
 
   > div {
-    margin: 0;
     display: flex;
     flex-direction: row;
-    width: 100%;
     height: 100vh;
+    margin: 0;
+    width: 100%;
   }
 }
 

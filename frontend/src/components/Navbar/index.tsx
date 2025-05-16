@@ -1,4 +1,4 @@
-import styles from "./index.module.scss";
+import "./index.css";
 import NetBooksSvg from "@components/NetBooksSvg";
 import { FaSearch } from "react-icons/fa";
 import Button from "@components/Button/index";
@@ -7,14 +7,14 @@ export default function Navbar() {
   const isAuthenticaded = false; //useUser
 
   return (
-    <nav className={styles.menu}>
-      <div className={styles.container}>
-        <div className={styles.left}>
+    <nav className="menu">
+      <div className="container">
+        <div className="left">
           <NetBooksSvg color="#8b5cf6" />
         </div>
 
-        <div className={styles.center}>
-          <ul className={styles.links}>
+        <div className="center">
+          <ul className="links">
             <li>
               <a href="">
                 <FaSearch />
@@ -37,10 +37,10 @@ export default function Navbar() {
           </ul>
         </div>
 
-        <div className={styles.right}>
+        <div className="right">
           {isAuthenticaded ? (
-            <div className={styles.buttons}>
-              <span className={styles.user_name}>Nome Usuário</span>
+            <div className="buttons">
+              <span className="user_name">Nome Usuário</span>
               <Button
                 text="Sair"
                 theme="light"
@@ -48,7 +48,7 @@ export default function Navbar() {
               />
             </div>
           ) : (
-            <div className={styles.buttons}>
+            <div className="buttons">
               <Button
                 text="Entrar"
                 theme="light"

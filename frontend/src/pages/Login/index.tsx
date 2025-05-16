@@ -1,5 +1,4 @@
-import styles from "./index.module.scss";
-import useUser from "../../stores/useUser";
+import "./index.css";
 import { useState } from "react";
 import Button from "@components/Button";
 import Input from "@components/Input";
@@ -20,25 +19,25 @@ export default function Login() {
     }
 
     setIsLoading(true);
-    try {
-      alert("ok");
-      // Alert de sucesso e redirecionamento de página
-    } catch (error) {
-      // Alert de erro
-    } finally {
-      setIsLoading(false);
-    }
+    // try {
+    //   alert("ok");
+    //   // Alert de sucesso e redirecionamento de página
+    // } catch (err) {
+    //   // Alert de erro
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.box}>
-        <div className={styles.text}>
+    <div className="container">
+      <div className="box">
+        <div className="text">
           <h1>Entrar</h1>
           <p>Entre para acessar sua conta</p>
         </div>
         <form onSubmit={handleSubmit}>
-          <div className={styles.form_group}>
+          <div className="form_group">
             <label htmlFor="email">Email</label>
             <Input
               type="email"
@@ -49,7 +48,7 @@ export default function Login() {
             />
           </div>
 
-          <div className={styles.form_group}>
+          <div className="form_group">
             <label htmlFor="password">Senha</label>
             <Input
               type="password"
@@ -60,7 +59,7 @@ export default function Login() {
             />
           </div>
 
-          <div className={styles.form_group}>
+          <div className="form_group">
             <Button
               type="submit"
               theme="dark"
@@ -69,10 +68,10 @@ export default function Login() {
             />
           </div>
         </form>
-        <div className={styles.hasSubscription}>
+        <div className="hasSubscription">
           <p>
             Não tem uma conta?{" "}
-            <a href="#cadastro" className={styles.subscription}>
+            <a href="#cadastro" className="subscription">
               Cadastre-se
             </a>
           </p>

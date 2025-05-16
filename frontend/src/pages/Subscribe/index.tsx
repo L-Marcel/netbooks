@@ -1,8 +1,7 @@
-import styles from "./index.module.scss";
-import useUser from "../../stores/useUser";
+import "./index.css";
 import { useState } from "react";
 import Input from "@components/Input";
-import "@components/Input/index.module.scss";
+import "@components/Input/index.css";
 import Button from "@components/Button";
 
 export default function Subscribe() {
@@ -28,25 +27,25 @@ export default function Subscribe() {
     }
 
     setIsLoading(true);
-    try {
-      alert("ok");
-      // Alert de sucesso e redirecionamento de página
-    } catch (error) {
-      // Alert de erro
-    } finally {
-      setIsLoading(false);
-    }
+    // try {
+    //   alert("ok");
+    //   // Alert de sucesso e redirecionamento de página
+    // } catch (error) {
+    //   // Alert de erro
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.box}>
-        <div className={styles.text}>
+    <div className="container">
+      <div className="box">
+        <div className="text">
           <h1>Criar Conta</h1>
           <p>Cadastre-se para acessar todos os recursos</p>
         </div>
         <form onSubmit={handleSubmit}>
-          <div className={styles.form_group}>
+          <div className="form_group">
             <label htmlFor="name">Nome</label>
             <Input
               type="text"
@@ -57,7 +56,7 @@ export default function Subscribe() {
             />
           </div>
 
-          <div className={styles.form_group}>
+          <div className="form_group">
             <label htmlFor="email">Email</label>
             <Input
               type="text"
@@ -68,7 +67,7 @@ export default function Subscribe() {
             />
           </div>
 
-          <div className={styles.form_group}>
+          <div className="form_group">
             <label htmlFor="password">Senha</label>
             <Input
               type="password"
@@ -79,7 +78,7 @@ export default function Subscribe() {
             />
           </div>
 
-          <div className={styles.form_group}>
+          <div className="form_group">
             <label htmlFor="confirm">Confirmar senha</label>
             <Input
               type="password"
@@ -90,7 +89,7 @@ export default function Subscribe() {
             />
           </div>
 
-          <div className={styles.form_group}>
+          <div className="form_group">
             <Button
               type="submit"
               theme="dark"
@@ -99,10 +98,10 @@ export default function Subscribe() {
             />
           </div>
         </form>
-        <div className={styles.hasLogin}>
+        <div className="hasLogin">
           <p>
             Já tem uma conta?{" "}
-            <a href="#login" className={styles.login}>
+            <a href="#login" className="login">
               Entrar
             </a>
           </p>

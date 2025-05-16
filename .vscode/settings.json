@@ -1,20 +1,10 @@
 {
     "java.configuration.updateBuildConfiguration": "interactive",
     "java.compile.nullAnalysis.mode": "automatic",
-    "tailwindCSS.includeLanguages": {
-        "scss": "html",
-        "postcss": "css"
-    },
-    "files.associations": {
-        "*.scss": "tailwindcss",
-        "*.module.scss": "tailwindcss"
-    },
-    "tailwindCSS.experimental.configFile": "frontend/src/styles/global.scss",
     "editor.quickSuggestions": {
         "strings": true
     },
-    "tailwindCSS.experimental.classRegex": [
-        "@apply\\s+([^;]*)"
-    ]
-
+    "files.associations": {
+        "*.css": "tailwindcss"
+    },
 }

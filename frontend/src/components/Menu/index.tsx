@@ -1,17 +1,17 @@
-import styles from "./index.module.scss";
+import "./index.css";
 import NetBooksSvg from "@components/NetBooksSvg";
 import { FaSearch } from "react-icons/fa";
 
 export default function Menu() {
   return (
-    <nav className={styles.menu}>
-      <div className={styles.container}>
+    <nav className="menu">
+      <div className="container">
         <div>
           <NetBooksSvg color="#8b5cf6" />
         </div>
 
         <div>
-          <ul className={styles.links}>
+          <ul className="links">
             <li>
               <a href="">
                 <FaSearch />
@@ -29,17 +29,17 @@ export default function Menu() {
           </ul>
         </div>
 
-        <div className={styles.buttons}>
-          <button type="button" className={styles.button_light} /*onClick={}*/>
+        <div className="buttons">
+          <button type="button" className="button_light" /*onClick={}*/>
             Entrar
           </button>
-          <button type="button" className={styles.button_dark} /*onClick={}*/>
+          <button type="button" className="button_dark" /*onClick={}*/>
             Cadastrar
           </button>
         </div>
-        <div className={styles.buttons}>
-          <span className={styles.user_name}>Nome Usuário</span>
-          <button type="button" className={styles.button_light} /*onClick={}*/>
+        <div className="buttons">
+          <span className="user_name">Nome Usuário</span>
+          <button type="button" className="button_light" /*onClick={}*/>
             Sair
           </button>
         </div>

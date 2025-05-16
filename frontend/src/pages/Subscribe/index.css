@@ -1,0 +1,50 @@
+@reference "@styles/global.css";
+
+.container {
+  @apply flex
+    flex-col
+    justify-center
+    items-center
+    h-[100vh]
+    w-[100%];
+}
+
+.box {
+  @apply w-[100%]
+    max-w-[450px];
+}
+
+.text {
+  @apply text-center;
+
+  h1 {
+    @apply text-3xl
+      font-bold;
+  }
+}
+
+form {
+  @apply flex
+    flex-col
+    w-[100%]
+    gap-[20px]
+    my-[20px];
+}
+
+.form_group {
+  @apply flex
+    flex-col;
+}
+
+.hasLogin {
+  @apply text-center;
+}
+
+.login {
+  @apply text-yellow-500
+    no-underline;
+
+  &:hover {
+    @apply underline;
+  }
+}

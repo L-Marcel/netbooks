@@ -1,5 +1,5 @@
 import { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
-import styles from "./index.module.scss";
+import "./index.css";
 
 interface ButtonProps
   extends DetailedHTMLProps<
@@ -16,10 +16,10 @@ export default function Button({
   className,
   ...props
 }: ButtonProps) {
-  const classes = [styles.button, className];
+  const classes = ["button", className];
 
-  if (theme === "dark") classes.push(styles.dark);
-  if (theme === "light") classes.push(styles.light);
+  if (theme === "dark") classes.push("button-dark");
+  if (theme === "light") classes.push("button-light");
 
   const finalClassName = classes.filter(Boolean).join(" ");
   return (

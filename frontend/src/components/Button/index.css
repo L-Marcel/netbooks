@@ -1,0 +1,33 @@
+@reference "@styles/global.css";
+
+.button {
+  @apply transition 
+    *:h-[40px] 
+    rounded-lg 
+    border
+    flex
+    justify-center
+    items-center;
+}
+
+.button-dark {
+  @apply text-white
+    border-violet-500
+    bg-violet-500;
+
+  &:hover {
+    @apply bg-violet-600
+      border-violet-600;
+  }
+}
+
+.button-light {
+  @apply text-violet-500
+    border-violet-500
+    bg-transparent;
+
+  &:hover {
+    @apply text-white bg-violet-500
+      border-violet-500;
+  }
+}

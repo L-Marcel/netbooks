@@ -1,4 +1,4 @@
-import styles from "./index.module.scss";
+import "./index.css";
 
 interface InputProps {
   type: string;
@@ -26,7 +26,7 @@ export default function Input({
         onChange={(e) => setFunction(e.target.value)}
         placeholder={placeholder}
         required
-        className={styles.input}
+        className="input"
         {...props}
       />
     </>

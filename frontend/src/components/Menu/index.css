@@ -1,72 +1,75 @@
+@reference "@styles/global.css";
+
 .menu {
   background-color: black;
-  width: 100vw;
   position: sticky;
+  width: 100vw;
 }
 
 .container {
-  display: flex;
   align-items: center;
+  display: flex;
   justify-content: space-between;
   padding: 6px 30px 6px 10px;
 }
 
 .links {
-  list-style: none;
-  font-size: large;
   display: flex;
+  font-size: large;
   gap: 50px;
+  list-style: none;
   margin-left: -80px;
 
   a {
-    text-decoration: none;
-    font-weight: bold;
     color: gray;
+    font-weight: bold;
+    text-decoration: none;
     transition: color 0.3s ease-in-out;
-    
+
     &:hover {
       color: whitesmoke;
     }
   }
 }
 
-.buttons{
+.buttons {
   display: flex;
   gap: 10px;
 
   button {
-    border-style: solid;
     border-radius: 7px;
-    padding: 10px 15px;
+    border-style: solid;
     font-weight: bold;
+    padding: 10px 15px;
   }
 }
 
-.button_light{
-  color: #8b5cf6;
-  border-color: #8b5cf6;
+.button_light {
   background-color: #0c0c0c;
-  transition:color 0.4s ease;
-
-    &:hover{
-      color: white;
-      background-color: #8b5cf6;
-    }
-}
-.button_dark{
-  color: white;
   border-color: #8b5cf6;
+  color: #8b5cf6;
+  transition: color 0.4s ease;
+
+  &:hover {
+    background-color: #8b5cf6;
+    color: white;
+  }
+}
+
+.button_dark {
   background-color: #8b5cf6;
+  border-color: #8b5cf6;
+  color: white;
   transition: color 01s ease-in-out;
-  
-  &:hover{
+
+  &:hover {
     background-color: #7d45ff;
     border-color: #7d45ff;
   }
 }
 
-.user_name{
-  display: flex;
+.user_name {
   align-items: center;
   color: white;
+  display: flex;
 }
