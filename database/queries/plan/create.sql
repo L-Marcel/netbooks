@@ -1,0 +1,1 @@
+INSERT INTO plan (name, description, duration) VALUES (?, ?, ?);

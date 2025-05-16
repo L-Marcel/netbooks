@@ -1,1 +1,0 @@
-SELECT uuid, name, email, access FROM Users;
