@@ -23,7 +23,7 @@ import app.netbooks.backend.models.Role;
 import app.netbooks.backend.models.User;
 
 @Repository
-public class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
+public class UsersRepositoryImpl extends BaseRepository implements UsersRepository, RolesRepository {
     @Autowired
     private BCryptPasswordEncoder encoder;
 
@@ -63,12 +63,11 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                         "SELECT * FROM user WHERE email = 'admin@gmail.com';"
                     );
                 ) {
-                    if(result.next()) {
-                        UUID uuid = UUID.fromString(result.getString("uuid"));
-                        preparedSetAdminStatement.setString(1, uuid.toString());
-                        preparedSetAdminStatement.setString(2, uuid.toString());
-                        preparedSetAdminStatement.executeUpdate();
-                    };
+                    result.next();
+                    UUID uuid = UUID.fromString(result.getString("uuid"));
+                    preparedSetAdminStatement.setString(1, uuid.toString());
+                    preparedSetAdminStatement.setString(2, uuid.toString());
+                    preparedSetAdminStatement.executeUpdate();
                 }
               
                 connection.commit();
@@ -78,10 +77,12 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         };
     };
 
-    private Map<UUID, List<Role>> findAllRoles(Connection connection) {
+    @Override
+    public Map<UUID, List<Role>> findAllRoles() {
         Map<UUID, List<Role>> rolesMap = new LinkedHashMap<>();
 
         try (
+            Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(
                 "SELECT * FROM user_roles;"
@@ -103,6 +104,33 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
     };
 
     @Override
+    public List<Role> findRoles(UUID uuid) {
+        List<Role> roles = new LinkedList<>();
+
+        try (
+            Connection connection = this.database.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT role FROM user_roles WHERE uuid = ?;"
+            );
+        ) {
+            preparedStatement.setString(1, uuid.toString());
+            
+            try (
+                ResultSet result = preparedStatement.executeQuery();
+            ) {
+                while(result.next()) {
+                    Role role = Role.fromString(result.getString("role"));
+                    roles.add(role);
+                };
+            };
+        } catch (SQLException e) {
+            e.printStackTrace();
+        };
+
+        return roles;
+    };
+
+    @Override
     public List<User> findAll() {
         List<User> persons = new ArrayList<User>();
 
@@ -113,7 +141,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 "SELECT * FROM user;"
             );
         ) {
-            Map<UUID, List<Role>> allRoles = this.findAllRoles(connection);
+            Map<UUID, List<Role>> allRoles = this.findAllRoles();
             while(result.next()) {
                 UUID uuid = UUID.fromString(result.getString("uuid"));
                 String email = result.getString("email");
@@ -140,7 +168,6 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         ) {
             statement.setString(1, uuid.toString());
 
-            Map<UUID, List<Role>> allRoles = this.findAllRoles(connection);
             try (ResultSet result = statement.executeQuery();) {
                 Optional<User> userFound = Optional.empty();
 
@@ -148,7 +175,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                     String name = result.getString("name");
                     String email = result.getString("email");
                     String password = result.getString("password");
-                    List<Role> roles = allRoles.getOrDefault(uuid, new LinkedList<>());
+                    List<Role> roles = this.findRoles(uuid);
                     User user = new User(uuid, name, email, password, roles);
                     userFound = Optional.of(user);
                 };
@@ -170,7 +197,6 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         ) {
             statement.setString(1, email);
 
-            Map<UUID, List<Role>> allRoles = this.findAllRoles(connection);
             try (ResultSet result = statement.executeQuery()) {
                 Optional<User> userFound = Optional.empty();
 
@@ -178,7 +204,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                     UUID uuid = UUID.fromString(result.getString("uuid"));
                     String name = result.getString("name");
                     String password = result.getString("password");
-                    List<Role> roles = allRoles.getOrDefault(uuid, new LinkedList<>());
+                    List<Role> roles = this.findRoles(uuid);
                     User user = new User(uuid, name, email, password, roles);
                     userFound = Optional.of(user);
                 };
