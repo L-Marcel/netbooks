@@ -1,9 +1,27 @@
 @import "tailwindcss";
+@plugin "daisyui";
+
+@plugin "daisyui/theme" {
+  name: "dark";
+  prefersdark: true;
+  --color-primary: var(--color-violet-500);
+  --color-base-100: var(--color-zinc-950);
+  --color-base-200: var(--color-zinc-900);
+  --color-base-300: var(--color-zinc-800);
+  --color-base-content: var(--color-zinc-100);
+}
+
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  --color-primary: var(--color-violet-500);
+  --color-base-100: var(--color-zinc-200);
+  --color-base-200: var(--color-zinc-100);
+  --color-base-300: var(--color-zinc-50);
+  --color-base-content: var(--color-zinc-900);
+}
 
 :root {
-  background-color: #141218;
-  color: gray-300;
-  color-scheme: dark;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -11,35 +29,4 @@
   font-weight: 400;
   line-height: 1.5;
   text-rendering: optimizelegibility;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  display: flex;
-  margin: 0;
-  min-height: 100vh;
-  min-width: 320px;
-
-  > div {
-    display: flex;
-    flex-direction: row;
-    height: 100vh;
-    margin: 0;
-    width: 100%;
-  }
-}
-
-button,
-a {
-  &:hover {
-    cursor: pointer;
-  }
-
-  &:disabled:hover {
-    cursor: not-allowed;
-  }
 }

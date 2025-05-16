@@ -1,82 +1,68 @@
-import "./index.css";
-import { useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import Button from "@components/Button";
 import Input from "@components/Input";
+import { Link } from "react-router-dom";
 
 export default function Login() {
-  //const login = useUser();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const onChangeData = (e: ChangeEvent<HTMLInputElement>) => {
+    setData((data) => ({
+      ...data,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (!email || !password) {
-      alert("preencha os campos");
-      // Alert para preenchimento de campos
-      return;
-    }
-
     setIsLoading(true);
-    // try {
-    //   alert("ok");
-    //   // Alert de sucesso e redirecionamento de página
-    // } catch (err) {
-    //   // Alert de erro
-    // } finally {
-    //   setIsLoading(false);
-    // }
   };
 
   return (
-    <div className="container">
-      <div className="box">
-        <div className="text">
-          <h1>Entrar</h1>
-          <p>Entre para acessar sua conta</p>
-        </div>
-        <form onSubmit={handleSubmit}>
-          <div className="form_group">
-            <label htmlFor="email">Email</label>
-            <Input
-              type="email"
-              id="email"
-              value={email}
-              setFunction={setEmail}
-              placeholder="seu@email.com"
-            />
-          </div>
-
-          <div className="form_group">
-            <label htmlFor="password">Senha</label>
-            <Input
-              type="password"
-              id="password"
-              value={password}
-              setFunction={setPassword}
-              placeholder="*****"
-            />
-          </div>
-
-          <div className="form_group">
-            <Button
-              type="submit"
-              theme="dark"
-              text={isLoading ? "Entrando..." : "Entrar"}
-              disabled={isLoading}
-            />
-          </div>
+    <main className="flex flex-col w-full h-screen justify-center items-center">
+      <section className="flex flex-col gap-6 w-full max-w-9/12 sm:max-w-sm">
+        <header className="text-center text-base-content">
+          <h1 className="text-3xl font-bold text-base-content">Criar conta</h1>
+          <p>Cadastre-se para acessar todos os recursos</p>
+        </header>
+        <form
+          className="flex flex-col gap-5 px-5 w-full"
+          onSubmit={handleSubmit}
+        >
+          <Input
+            label="E-mail"
+            id="email"
+            type="email"
+            value={data.email}
+            onChange={onChangeData}
+            placeholder="marcela@email.com"
+          />
+          <Input
+            label="Senha"
+            id="password"
+            type="password"
+            value={data.password}
+            onChange={onChangeData}
+            placeholder="******"
+          />
+          <Button type="submit" disabled={isLoading}>
+            {isLoading && <span className="loading loading-spinner" />}
+            {isLoading ? "Criando..." : "Criar"}
+          </Button>
         </form>
-        <div className="hasSubscription">
+        <footer className="text-center">
           <p>
             Não tem uma conta?{" "}
-            <a href="#cadastro" className="subscription">
+            <Link to="/register" className="text-primary">
               Cadastre-se
-            </a>
+            </Link>
           </p>
-        </div>
-      </div>
-    </div>
+        </footer>
+      </section>
+    </main>
   );
 }

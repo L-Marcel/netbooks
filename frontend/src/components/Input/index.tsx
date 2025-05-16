@@ -1,34 +1,26 @@
-import "./index.css";
-
-interface InputProps {
-  type: string;
-  id: string;
-  value: string;
-  setFunction: (value: string) => void;
-  placeholder?: string;
+interface InputProps
+  extends React.DetailedHTMLProps<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    HTMLInputElement
+  > {
+  label?: string;
 }
 
 export default function Input({
-  type,
   id,
-  value,
-  setFunction,
-  placeholder,
+  label,
+  className = "",
   ...props
 }: InputProps) {
   return (
-    <>
+    <label className="flex flex-col gap-2 w-full text-base-content">
+      <span>{label}</span>
       <input
-        type={type}
-        name={id}
+        className={`input w-full ${className}`}
         id={id}
-        value={value}
-        onChange={(e) => setFunction(e.target.value)}
-        placeholder={placeholder}
-        required
-        className="input"
+        name={id}
         {...props}
       />
-    </>
+    </label>
   );
 }

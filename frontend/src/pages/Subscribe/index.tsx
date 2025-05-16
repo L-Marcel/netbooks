@@ -1,112 +1,86 @@
-import "./index.css";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import Input from "@components/Input";
-import "@components/Input/index.css";
 import Button from "@components/Button";
+import { Link } from "react-router-dom";
 
 export default function Subscribe() {
-  //const login = useUser();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    passwordConfirmation: "",
+  });
+
+  const onChangeData = (e: ChangeEvent<HTMLInputElement>) => {
+    setData((data) => ({
+      ...data,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!email || !password) {
-      alert("preencha os campos");
-      // Alert para preenchimento de campos
-      return;
-    }
-    if (password != confirm) {
-      alert("senhas diferentes");
-      // Alert para informar que a senha e a confirmação estão diferentes
-      return;
-    }
-
     setIsLoading(true);
-    // try {
-    //   alert("ok");
-    //   // Alert de sucesso e redirecionamento de página
-    // } catch (error) {
-    //   // Alert de erro
-    // } finally {
-    //   setIsLoading(false);
-    // }
   };
 
   return (
-    <div className="container">
-      <div className="box">
-        <div className="text">
-          <h1>Criar Conta</h1>
+    <main className="flex flex-col w-full h-screen justify-center items-center">
+      <section className="flex flex-col gap-6 w-full max-w-9/12 sm:max-w-sm">
+        <header className="text-center text-base-content">
+          <h1 className="text-3xl font-bold text-base-content">Criar conta</h1>
           <p>Cadastre-se para acessar todos os recursos</p>
-        </div>
-        <form onSubmit={handleSubmit}>
-          <div className="form_group">
-            <label htmlFor="name">Nome</label>
-            <Input
-              type="text"
-              id="name"
-              value={name}
-              setFunction={setName}
-              placeholder="Seu nome"
-            />
-          </div>
-
-          <div className="form_group">
-            <label htmlFor="email">Email</label>
-            <Input
-              type="text"
-              id="email"
-              value={email}
-              setFunction={setEmail}
-              placeholder="seu@email.com"
-            />
-          </div>
-
-          <div className="form_group">
-            <label htmlFor="password">Senha</label>
-            <Input
-              type="password"
-              id="password"
-              value={password}
-              setFunction={setPassword}
-              placeholder="*****"
-            />
-          </div>
-
-          <div className="form_group">
-            <label htmlFor="confirm">Confirmar senha</label>
-            <Input
-              type="password"
-              id="confirm"
-              value={confirm}
-              setFunction={setConfirm}
-              placeholder="*****"
-            />
-          </div>
-
-          <div className="form_group">
-            <Button
-              type="submit"
-              theme="dark"
-              text={isLoading ? "Criando..." : "Criar conta"}
-              disabled={isLoading}
-            />
-          </div>
+        </header>
+        <form
+          className="flex flex-col gap-5 px-5 w-full"
+          onSubmit={handleSubmit}
+        >
+          <Input
+            label="Nome"
+            id="name"
+            type="text"
+            value={data.name}
+            onChange={onChangeData}
+            placeholder="Marcela"
+          />
+          <Input
+            label="E-mail"
+            id="email"
+            type="email"
+            value={data.email}
+            onChange={onChangeData}
+            placeholder="marcela@email.com"
+          />
+          <Input
+            label="Senha"
+            id="password"
+            type="password"
+            value={data.password}
+            onChange={onChangeData}
+            placeholder="******"
+          />
+          <Input
+            label="Confirmar senha"
+            id="passwordConfirmation"
+            type="passwordConfirmation"
+            value={data.passwordConfirmation}
+            onChange={onChangeData}
+            placeholder="******"
+          />
+          <Button type="submit" disabled={isLoading}>
+            {isLoading && <span className="loading loading-spinner" />}
+            {isLoading ? "Criando..." : "Criar"}
+          </Button>
         </form>
-        <div className="hasLogin">
+        <footer className="text-center">
           <p>
             Já tem uma conta?{" "}
-            <a href="#login" className="login">
-              Entrar
-            </a>
+            <Link to="/login" className="text-primary">
+              Conecte-se
+            </Link>
           </p>
-        </div>
-      </div>
-    </div>
+        </footer>
+      </section>
+    </main>
   );
 }

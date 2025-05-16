@@ -1,10 +1,9 @@
-import "./index.css";
-import Menu from "@components/Menu";
+import Navbar from "@components/Navbar";
 
 export default function Home() {
   return (
-    <div className="main">
-      <Menu />
-    </div>
+    <main className="flex flex-col w-full h-screen items-center">
+      <Navbar />
+    </main>
   );
 }
