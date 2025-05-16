@@ -28,7 +28,9 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
         try (
             Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery("SELECT name FROM tag;"); 
+            ResultSet result = statement.executeQuery(
+                "SELECT * FROM tag;"
+            ); 
         ) {
             while (result.next()) {
                 String name = result.getString("name");
@@ -45,7 +47,7 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "SELECT name FROM tag WHERE name = ?"
+                "SELECT * FROM tag WHERE name = ?;"
             );
         ) {
             statement.setString(1, name);

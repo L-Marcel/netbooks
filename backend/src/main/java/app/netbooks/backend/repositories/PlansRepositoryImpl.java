@@ -29,7 +29,9 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
         try (
             Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery("SELECT * FROM plan;");
+            ResultSet result = statement.executeQuery(
+                "SELECT * FROM plan;"
+            );
         ) {
             while(result.next()) {
                 Integer id = result.getInt("id");

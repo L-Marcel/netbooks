@@ -2,7 +2,6 @@ package app.netbooks.backend.models;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -35,7 +34,7 @@ public class User implements UserDetails {
             .filter((Role role) -> role != Role.UNKNOWN)
             .map((Role role) -> new SimpleGrantedAuthority("ROLE_" + role.toString()))
             .collect(Collectors.toList());
-    }
+    };
 
     @Override
     public String getUsername() {
