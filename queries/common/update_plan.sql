@@ -1,1 +1,0 @@
-UPDATE Plans SET (name, description, duration) = (?, ?, ?) WHERE uuid = ?;

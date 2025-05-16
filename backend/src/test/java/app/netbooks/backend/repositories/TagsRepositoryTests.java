@@ -28,7 +28,7 @@ public abstract class TagsRepositoryTests extends BaseTests {
 
     @BeforeAll
     public static void clear(@Autowired Database database) {
-        BaseTests.clear(database, "Tags");
+        BaseTests.clear(database, "tag");
     };
 
     @Test

@@ -15,5 +15,5 @@ public abstract class BaseRepository {
         this.initialize();
     };
 
-    abstract public void initialize();
+    public void initialize() {};
 };

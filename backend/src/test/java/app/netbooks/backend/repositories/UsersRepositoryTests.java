@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import app.netbooks.backend.BaseTests;
 import app.netbooks.backend.connections.Database;
 import app.netbooks.backend.errors.InternalServerError;
-import app.netbooks.backend.models.Access;
+import app.netbooks.backend.models.Role;
 import app.netbooks.backend.models.User;
 
 public abstract class UsersRepositoryTests extends BaseTests {
@@ -35,7 +35,9 @@ public abstract class UsersRepositoryTests extends BaseTests {
             Connection connection = database.getConnection();
             Statement statement = connection.createStatement();
         ) {
-            statement.execute("DELETE FROM Users WHERE access != 1;");
+            statement.executeUpdate(
+                "DELETE FROM user WHERE email != 'admin@gmail.com';"
+            );
         } catch (SQLException e) {
             e.printStackTrace();
         };
@@ -62,11 +64,17 @@ public abstract class UsersRepositoryTests extends BaseTests {
     public void mustFind() {
         assertDoesNotThrow(() -> {
             List<User> users = repository.findAll();
-            users.removeIf((User user) -> user.getAccess() != Access.DEFAULT);
+            users.removeIf(
+                (User user) -> user
+                    .getRoles()
+                    .contains(Role.ADMINISTRATOR)
+            );
             assertEquals(1, users.size());
 
             User user = users.get(0);
-            Optional<User> userFound = repository.findById(user.getUuid());
+            Optional<User> userFound = repository.findById(
+                user.getUuid()
+            );
             assertTrue(userFound.isPresent());
 
             userFound = repository.findByEmail(user.getEmail());
@@ -81,7 +89,7 @@ public abstract class UsersRepositoryTests extends BaseTests {
         assertDoesNotThrow(() -> {
             Optional<User> user = repository.findByEmail("admin@gmail.com");
             assertTrue(user.isPresent());
-            assertEquals(Access.ADMINISTRATOR, user.get().getAccess());
+            assertTrue(user.get().getRoles().contains(Role.ADMINISTRATOR));
         });
     };
 
@@ -98,11 +106,6 @@ public abstract class UsersRepositoryTests extends BaseTests {
 
             Optional<User> userFound = repository.findById(user.get().getUuid());
             assertEquals("Marcel", userFound.get().getName());
-            
-            user.get().setAccess(Access.SUBSCRIBER);
-            repository.update(user.get());
-            userFound = repository.findById(user.get().getUuid());
-            assertEquals(Access.SUBSCRIBER, userFound.get().getAccess());
         });
     };
 
@@ -205,6 +208,8 @@ public abstract class UsersRepositoryTests extends BaseTests {
             UsersRepositoryImpl usersRepositoryImpl = new UsersRepositoryImpl(database);
             usersRepositoryImpl.initialize();
             usersRepositoryImpl.findAll();
+            usersRepositoryImpl.findAllRoles();
+            usersRepositoryImpl.findRoles(null);
             usersRepositoryImpl.findById(null);
             usersRepositoryImpl.findByEmail(null);
         });

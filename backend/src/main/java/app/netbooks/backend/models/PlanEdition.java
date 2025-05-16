@@ -1,7 +1,7 @@
 package app.netbooks.backend.models;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,9 +11,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class PlanEdition {
-    private UUID uuid;
-    private double price;
+    private Integer id;
+    private BigDecimal price;
     private Plan plan;
-    private LocalDate startedAt;
-    private LocalDate closedAt;
+    private LocalDate startedIn;
+    private LocalDate closedIn;
 };

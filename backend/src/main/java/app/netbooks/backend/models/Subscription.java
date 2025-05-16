@@ -12,7 +12,7 @@ import lombok.Setter;
 public class Subscription {
     private User subscriber;
     private PlanEdition edition;
-    private LocalDate startedAt;
-    private int payments;
-    private boolean closed;
+    private LocalDate startedIn;
+    private Integer payments;
+    private Boolean closed;
 };

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import app.netbooks.backend.models.Access;
+import app.netbooks.backend.models.Role;
 import app.netbooks.backend.models.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,13 +19,13 @@ public class UserResponse {
     private UUID uuid;
     private String name;
     private String email;
-    private Access access;
+    private List<Role> roles;
 
     public UserResponse(User user) {
         this.uuid = user.getUuid();
         this.name = user.getName();
         this.email = user.getEmail();
-        this.access = user.getAccess();
+        this.roles = user.getRoles();
     };
 
     public static List<UserResponse> fromList(List<User> list) {

@@ -6,7 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,11 +19,11 @@ import org.springframework.stereotype.Repository;
 
 import app.netbooks.backend.connections.Database;
 import app.netbooks.backend.errors.InternalServerError;
-import app.netbooks.backend.models.Access;
+import app.netbooks.backend.models.Role;
 import app.netbooks.backend.models.User;
 
 @Repository
-public class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
+public class UsersRepositoryImpl extends BaseRepository implements UsersRepository, RolesRepository {
     @Autowired
     private BCryptPasswordEncoder encoder;
 
@@ -32,35 +35,99 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
     public void initialize() {
         try (
             Connection connection = this.database.getConnection();
-            Statement statement = connection.createStatement();
         ) {
-            statement.execute(
-                "CREATE TABLE IF NOT EXISTS Users(\n" +
-                "    uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n" +
-                "    name VARCHAR(120) NOT NULL,\n" +
-                "    email VARCHAR(320) NOT NULL UNIQUE,\n" +
-                "    password VARCHAR(60) NOT NULL,\n" +
-                "    access INTEGER DEFAULT 0\n" +
-                ");"
-            );
-
-            statement.execute(
-                "DELETE FROM Users WHERE email = 'admin@gmail.com';"
-            );
+            connection.setAutoCommit(false);
 
             try (
-                PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO Users(name, email, password, access) \n" +
-                    "VALUES ('Admin', 'admin@gmail.com', ?, 1)\n" +
-                    "ON CONFLICT DO NOTHING;"
+                Statement statement = connection.createStatement();
+                PreparedStatement preparedCreateStatement = connection.prepareStatement(
+                    "INSERT INTO user (uuid, name, email, password)\n" +
+                    "VALUES (UUID(), 'Admin', 'admin@gmail.com', ?)\n" +
+                    "ON DUPLICATE KEY UPDATE\n" +
+                    "    name = VALUES(name),\n" +
+                    "    password = VALUES(password);"
+                );
+                PreparedStatement preparedSetAdminStatement = connection.prepareStatement(
+                    "INSERT INTO admin (uuid)\n" +
+                    "SELECT * FROM (SELECT ?) AS tmp\n" +
+                    "WHERE NOT EXISTS (\n" +
+                    "    SELECT 1 FROM admin WHERE uuid = ?\n" +
+                    ") LIMIT 1;"
                 );
             ) {
-                preparedStatement.setString(1, encoder.encode("admin"));
-                preparedStatement.executeUpdate();
+                preparedCreateStatement.setString(1, encoder.encode("admin"));
+                preparedCreateStatement.executeUpdate();
+
+                try (
+                    ResultSet result = statement.executeQuery(
+                        "SELECT * FROM user WHERE email = 'admin@gmail.com';"
+                    );
+                ) {
+                    result.next();
+                    UUID uuid = UUID.fromString(result.getString("uuid"));
+                    preparedSetAdminStatement.setString(1, uuid.toString());
+                    preparedSetAdminStatement.setString(2, uuid.toString());
+                    preparedSetAdminStatement.executeUpdate();
+                }
+              
+                connection.commit();
             };
         } catch (SQLException e) {
             e.printStackTrace();
         };
+    };
+
+    @Override
+    public Map<UUID, List<Role>> findAllRoles() {
+        Map<UUID, List<Role>> rolesMap = new LinkedHashMap<>();
+
+        try (
+            Connection connection = this.database.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(
+                "SELECT * FROM user_roles;"
+            );
+        ) {
+            while(result.next()) {
+                UUID uuid = UUID.fromString(result.getString("uuid"));
+                Role role = Role.fromString(result.getString("role"));
+                rolesMap.computeIfAbsent(
+                    uuid,
+                    v -> new ArrayList<Role>()
+                ).add(role);
+            };
+        } catch (SQLException e) {
+            e.printStackTrace();
+        };
+
+        return rolesMap;
+    };
+
+    @Override
+    public List<Role> findRoles(UUID uuid) {
+        List<Role> roles = new LinkedList<>();
+
+        try (
+            Connection connection = this.database.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT role FROM user_roles WHERE uuid = ?;"
+            );
+        ) {
+            preparedStatement.setString(1, uuid.toString());
+            
+            try (
+                ResultSet result = preparedStatement.executeQuery();
+            ) {
+                while(result.next()) {
+                    Role role = Role.fromString(result.getString("role"));
+                    roles.add(role);
+                };
+            };
+        } catch (SQLException e) {
+            e.printStackTrace();
+        };
+
+        return roles;
     };
 
     @Override
@@ -71,19 +138,22 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
             Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(
-                "SELECT * FROM Users;"
+                "SELECT * FROM user;"
             );
         ) {
+            Map<UUID, List<Role>> allRoles = this.findAllRoles();
             while(result.next()) {
                 UUID uuid = UUID.fromString(result.getString("uuid"));
                 String email = result.getString("email");
                 String name = result.getString("name");
                 String password = result.getString("password");
-                Access access = Access.fromValue(result.getInt("access"));
-                User person = new User(uuid, name, email, password, access);
+                List<Role> roles = allRoles.getOrDefault(uuid, new LinkedList<>());
+                User person = new User(uuid, name, email, password, roles);
                 persons.add(person);
             };
-        } catch (SQLException e) {};
+        } catch (SQLException e) {
+            e.printStackTrace();
+        };
 
         return persons;
     };
@@ -93,10 +163,11 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "SELECT * FROM Users WHERE uuid = ?;"
+                "SELECT * FROM user WHERE uuid = ?;"
             );
         ) {
-            statement.setObject(1, uuid);
+            statement.setString(1, uuid.toString());
+
             try (ResultSet result = statement.executeQuery();) {
                 Optional<User> userFound = Optional.empty();
 
@@ -104,8 +175,8 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                     String name = result.getString("name");
                     String email = result.getString("email");
                     String password = result.getString("password");
-                    Access access = Access.fromValue(result.getInt("access"));
-                    User user = new User(uuid, name, email, password, access);
+                    List<Role> roles = this.findRoles(uuid);
+                    User user = new User(uuid, name, email, password, roles);
                     userFound = Optional.of(user);
                 };
 
@@ -121,10 +192,11 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "SELECT * FROM Users WHERE email = ?;"
+                "SELECT * FROM user WHERE email = ?;"
             );
         ) {
             statement.setString(1, email);
+
             try (ResultSet result = statement.executeQuery()) {
                 Optional<User> userFound = Optional.empty();
 
@@ -132,8 +204,8 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                     UUID uuid = UUID.fromString(result.getString("uuid"));
                     String name = result.getString("name");
                     String password = result.getString("password");
-                    Access access = Access.fromValue(result.getInt("access"));
-                    User user = new User(uuid, name, email, password, access);
+                    List<Role> roles = this.findRoles(uuid);
+                    User user = new User(uuid, name, email, password, roles);
                     userFound = Optional.of(user);
                 };
 
@@ -149,14 +221,13 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO Users(name, email, password, access) \n" +
-                "VALUES (?, ?, ?, ?);"
+                "INSERT INTO user (uuid, name, email, password) \n" +
+                "VALUES (UUID(), ?, ?, ?);"
             );
         ) {
             statement.setString(1, user.getName());
             statement.setString(2, user.getEmail());
             statement.setString(3, user.getPassword());
-            statement.setInt(4, user.getAccess().toValue());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new InternalServerError();
@@ -168,14 +239,17 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "UPDATE Users SET (name, email, password, access) = (?, ?, ?, ?) WHERE uuid = ?;"
+                "UPDATE user\n" +
+                "SET name = ?,\n" +
+                "    email = ?,\n" +
+                "    password = ?\n" +
+                "WHERE uuid = ?;"
             );
         ) {
             statement.setString(1, user.getName());
             statement.setString(2, user.getEmail());
             statement.setString(3, user.getPassword());
-            statement.setInt(4, user.getAccess().toValue());
-            statement.setObject(5, user.getUuid());
+            statement.setString(4, user.getUuid().toString());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new InternalServerError();
@@ -187,10 +261,10 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "DELETE FROM Users WHERE uuid = ?;"
+                "DELETE FROM user WHERE uuid = ?;"
             );
         ) {
-            statement.setObject(1, uuid);
+            statement.setString(1, uuid.toString());
             statement.executeUpdate();
         } catch (Exception e) {
             throw new InternalServerError();

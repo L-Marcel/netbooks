@@ -22,29 +22,15 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
     };
 
     @Override
-    public void initialize() {
-        try (
-            Connection connection = this.database.getConnection();
-            Statement statement = connection.createStatement();
-        ) {
-            statement.execute(
-                "CREATE TABLE IF NOT EXISTS Tags (\n" + 
-                "    name VARCHAR(20) PRIMARY KEY\n" + 
-                ");"
-            );
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    };
-
-    @Override
     public List<Tag> findAll() {
         List<Tag> tags = new ArrayList<Tag>();
 
         try (
             Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery("SELECT name FROM Tags;"); 
+            ResultSet result = statement.executeQuery(
+                "SELECT * FROM tag;"
+            ); 
         ) {
             while (result.next()) {
                 String name = result.getString("name");
@@ -61,7 +47,7 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "SELECT name FROM Tags WHERE name = ?"
+                "SELECT * FROM tag WHERE name = ?;"
             );
         ) {
             statement.setString(1, name);
@@ -87,7 +73,7 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO Tags (name) values (?);"
+                "INSERT INTO tag (name) values (?);"
             );
         ) {
             statement.setString(1, tag.getName());
@@ -102,7 +88,7 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "DELETE FROM Tags WHERE name = ?"
+                "DELETE FROM tag WHERE name = ?;"
             );
         ) {
             statement.setString(1, name);

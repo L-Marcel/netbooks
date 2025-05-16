@@ -1,27 +1,17 @@
 services:
-  postgres:
-    image: postgres
-    container_name: netbooks-postgres-container
-    restart: always
+  mysql:
+    image: mysql:8.0
+    container_name: netbooks-mysql-container
+    restart: "no"
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: netbooks
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: netbooks
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - mysqldata:/var/lib/mysql
     ports:
-      - '5433:5432'
-  postgres_tests:
-    image: postgres
-    container_name: netbooks-postgres-tests-container
-    restart: always
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: netbooks
-    tmpfs:
-      - /var/lib/postgresql/data
-    ports:
-      - '5434:5432'
+      - '3307:3306'
+
 volumes:
-  pgdata:
+  mysqldata:
