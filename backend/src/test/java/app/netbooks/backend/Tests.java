@@ -8,6 +8,7 @@ import org.junit.jupiter.api.TestClassOrder;
 import app.netbooks.backend.advices.ExceptionAdviceTests;
 import app.netbooks.backend.controllers.TagsControllerTests;
 import app.netbooks.backend.controllers.UsersControllerTests;
+import app.netbooks.backend.model.RoleTests;
 import app.netbooks.backend.repositories.PlansRepositoryTests;
 import app.netbooks.backend.repositories.TagsRepositoryTests;
 import app.netbooks.backend.repositories.UsersRepositoryTests;
@@ -15,6 +16,10 @@ import app.netbooks.backend.validation.ValidatorTests;
 
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 public class Tests {
+    @Nested
+    @Order(1)
+    class Role extends RoleTests {};
+    
     @Nested
     @Order(10)
     class Validator extends ValidatorTests {};
