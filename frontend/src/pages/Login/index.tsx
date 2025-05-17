@@ -1,11 +1,12 @@
 import { ChangeEvent, FormEvent, useState } from "react";
-import Button from "@components/Button";
 import Input from "@components/Input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { login, LoginData } from "../../services/auth";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState({
+  const [data, setData] = useState<LoginData>({
     email: "",
     password: "",
   });
@@ -20,6 +21,13 @@ export default function Login() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    login(data)
+      .then(() => {
+        navigate("/");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -49,10 +57,10 @@ export default function Login() {
             onChange={onChangeData}
             placeholder="******"
           />
-          <Button type="submit" disabled={isLoading}>
+          <button className="btn btn-primary" type="submit" disabled={isLoading}>
             {isLoading && <span className="loading loading-spinner" />}
             {isLoading ? "Criando..." : "Criar"}
-          </Button>
+          </button>
         </form>
         <footer className="text-center">
           <p>

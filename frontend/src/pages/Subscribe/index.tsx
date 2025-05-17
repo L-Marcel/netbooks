@@ -1,6 +1,5 @@
 import { ChangeEvent, useState } from "react";
 import Input from "@components/Input";
-import Button from "@components/Button";
 import { Link } from "react-router-dom";
 
 export default function Subscribe() {
@@ -67,10 +66,10 @@ export default function Subscribe() {
             onChange={onChangeData}
             placeholder="******"
           />
-          <Button type="submit" disabled={isLoading}>
+          <button className="btn btn-primary" type="submit" disabled={isLoading}>
             {isLoading && <span className="loading loading-spinner" />}
             {isLoading ? "Criando..." : "Criar"}
-          </Button>
+          </button>
         </form>
         <footer className="text-center">
           <p>
