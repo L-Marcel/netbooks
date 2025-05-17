@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 
 import app.netbooks.backend.connections.Database;
 import app.netbooks.backend.errors.InternalServerError;
+import app.netbooks.backend.images.UserAvatarStorage;
 import app.netbooks.backend.models.Role;
 import app.netbooks.backend.models.User;
 
@@ -26,6 +27,9 @@ import app.netbooks.backend.models.User;
 public class UsersRepositoryImpl extends BaseRepository implements UsersRepository, RolesRepository {
     @Autowired
     private BCryptPasswordEncoder encoder;
+
+    @Autowired
+    private UserAvatarStorage avatarStorage;
 
     public UsersRepositoryImpl(Database database) {
         super(database);
@@ -148,7 +152,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 String name = result.getString("name");
                 String password = result.getString("password");
                 List<Role> roles = allRoles.getOrDefault(uuid, new LinkedList<>());
-                User person = new User(uuid, name, email, password, roles);
+                User person = new User(uuid, name, null, email, password, roles);
                 persons.add(person);
             };
         } catch (SQLException e) {
@@ -176,7 +180,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                     String email = result.getString("email");
                     String password = result.getString("password");
                     List<Role> roles = this.findRoles(uuid);
-                    User user = new User(uuid, name, email, password, roles);
+                    User user = new User(uuid, name, null, email, password, roles);
                     userFound = Optional.of(user);
                 };
 
@@ -205,7 +209,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                     String name = result.getString("name");
                     String password = result.getString("password");
                     List<Role> roles = this.findRoles(uuid);
-                    User user = new User(uuid, name, email, password, roles);
+                    User user = new User(uuid, name, null, email, password, roles);
                     userFound = Optional.of(user);
                 };
 
@@ -220,16 +224,29 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
     public void create(User user) {
         try (
             Connection connection = this.database.getConnection();
-            PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO user (uuid, name, email, password) \n" +
-                "VALUES (UUID(), ?, ?, ?);"
-            );
         ) {
-            statement.setString(1, user.getName());
-            statement.setString(2, user.getEmail());
-            statement.setString(3, user.getPassword());
-            statement.executeUpdate();
+            connection.setAutoCommit(false);
+
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    "INSERT INTO user (uuid, name, email, password) \n" +
+                    "VALUES (?, ?, ?, ?);"
+                );
+            ) {
+                statement.setString(1, user.getUuid().toString());
+                statement.setString(2, user.getName());
+                statement.setString(3, user.getEmail());
+                statement.setString(4, user.getPassword());
+                statement.executeUpdate();
+            };
+
+            if(user.getAvatar() != null) {
+                avatarStorage.storeAvatar(user.getUuid(), user.getAvatar());
+            };
+            
+            connection.commit();
         } catch (SQLException e) {
+            avatarStorage.deleteAvatar(user.getUuid());
             throw new InternalServerError();
         }
     };
@@ -238,19 +255,32 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
     public void update(User user) {
         try (
             Connection connection = this.database.getConnection();
-            PreparedStatement statement = connection.prepareStatement(
-                "UPDATE user\n" +
-                "SET name = ?,\n" +
-                "    email = ?,\n" +
-                "    password = ?\n" +
-                "WHERE uuid = ?;"
-            );
         ) {
-            statement.setString(1, user.getName());
-            statement.setString(2, user.getEmail());
-            statement.setString(3, user.getPassword());
-            statement.setString(4, user.getUuid().toString());
-            statement.executeUpdate();
+            connection.setAutoCommit(false);
+
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE user\n" +
+                    "SET name = ?,\n" +
+                    "    email = ?,\n" +
+                    "    password = ?\n" +
+                    "WHERE uuid = ?;"
+                );
+            ) {
+                statement.setString(1, user.getName());
+                statement.setString(2, user.getEmail());
+                statement.setString(3, user.getPassword());
+                statement.setString(4, user.getUuid().toString());
+                statement.executeUpdate();
+            };
+
+            if(user.getAvatar() != null) {
+                avatarStorage.storeAvatar(user.getUuid(), user.getAvatar());
+            } else {
+                avatarStorage.deleteAvatar(user.getUuid());
+            };
+
+            connection.commit();
         } catch (SQLException e) {
             throw new InternalServerError();
         }

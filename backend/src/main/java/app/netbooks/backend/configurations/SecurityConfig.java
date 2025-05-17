@@ -19,7 +19,7 @@ import org.springframework.security.config.Customizer;
 
 @Configuration
 @EnableMethodSecurity
-public class SecurityConfiguration {
+public class SecurityConfig {
     @Autowired RestAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean

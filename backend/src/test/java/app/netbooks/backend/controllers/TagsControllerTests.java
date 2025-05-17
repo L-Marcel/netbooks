@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import app.netbooks.backend.BaseTests;
+import app.netbooks.backend.dtos.TagResponse;
 import app.netbooks.backend.models.Tag;
 
 public abstract class TagsControllerTests extends BaseTests {
@@ -30,15 +31,15 @@ public abstract class TagsControllerTests extends BaseTests {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<Void> request = new HttpEntity<>(headers);
-        ResponseEntity<Tag[]> response = restTemplate.exchange(
+        ResponseEntity<TagResponse[]> response = restTemplate.exchange(
             "/tags",
             HttpMethod.GET,
             request,
-            Tag[].class
+            TagResponse[].class
         );
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        Tag[] result = response.getBody();
+        TagResponse[] result = response.getBody();
         assertNotNull(result);
         assertEquals(1, result.length);
     };

@@ -1,0 +1,24 @@
+package app.netbooks.backend.images;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class UserAvatarStorageImpl extends ImageStorage implements UserAvatarStorage {
+    private Path getUsersAvatarsPath() {
+        return Paths.get("../database/data/users").toAbsolutePath();
+    };
+
+    @Override
+    public void storeAvatar(UUID uuid, String base64) {
+        this.store(uuid.toString(), base64, this.getUsersAvatarsPath());
+    };
+
+    @Override
+    public void deleteAvatar(UUID uuid) {
+        this.delete(uuid.toString(), this.getUsersAvatarsPath());
+    };
+};
