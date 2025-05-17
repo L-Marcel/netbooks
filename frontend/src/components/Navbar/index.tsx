@@ -1,10 +1,11 @@
 import NetBooksSvg from "@components/NetBooksSvg";
 import { FaSearch } from "react-icons/fa";
-import Button from "@components/Button/index";
 import { Link, NavLink } from "react-router-dom";
+import useAuth from "../../stores/useUser";
+import { logout } from "../../services/auth";
 
 export default function Navbar() {
-  const isAuthenticaded = false; //useUser
+  const user = useAuth((state) => state.user);
 
   return (
     <nav className="bg-base-100 w-full sticky top-0">
@@ -20,19 +21,19 @@ export default function Navbar() {
             <NavLink
               className={({ isActive }) =>
                 "text-base-content no-underline hover:underline font-bold transition" +
-                (isActive? " text-primary":"")
+                (isActive ? " text-primary" : "")
               }
               to="/home"
             >
               Início
             </NavLink>
           </li>
-          {isAuthenticaded && (
+          {user && (
             <li>
               <NavLink
                 className={({ isActive }) =>
                   "text-base-content no-underline hover:underline font-bold transition" +
-                  (isActive? " text-primary":"")
+                  (isActive ? " text-primary" : "")
                 }
                 to="/books"
               >
@@ -44,7 +45,7 @@ export default function Navbar() {
             <NavLink
               className={({ isActive }) =>
                 "text-base-content no-underline hover:underline font-bold transition" +
-                (isActive? " text-primary":"")
+                (isActive ? " text-primary" : "")
               }
               to="/sort"
             >
@@ -53,10 +54,10 @@ export default function Navbar() {
           </li>
         </ul>
         <div className="flex gap-2.5">
-          {isAuthenticaded ? (
+          {user ? (
             <>
-              <p className="flex items-center text-base-content">Usuário</p>
-              <Button>Sair</Button>
+              <p className="flex items-center text-base-content">{user.name}</p>
+              <button onClick={logout} className="btn btn-error">Sair</button>
             </>
           ) : (
             <>

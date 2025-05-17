@@ -38,7 +38,7 @@ public class UsersController {
     };
 
     @AdministratorOnly
-    @GetMapping("/validate")
+    @GetMapping("/me")
     public ResponseEntity<UserResponse> get(
         @AuthenticationPrincipal User user
     ) {
@@ -65,7 +65,7 @@ public class UsersController {
     };
 
     @PostMapping
-    public ResponseEntity<String> register(
+    public ResponseEntity<Void> register(
         @RequestBody RegisterRequestBody body
     ) {
         usersService.register(
@@ -76,6 +76,6 @@ public class UsersController {
         
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body("Usuário registrado com sucesso!");
+            .build();
     };
 };

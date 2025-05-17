@@ -22,6 +22,7 @@ import app.netbooks.backend.BaseTests;
 import app.netbooks.backend.dtos.LoginRequestBody;
 import app.netbooks.backend.dtos.RegisterRequestBody;
 import app.netbooks.backend.dtos.UserResponse;
+import app.netbooks.backend.models.Role;
 import app.netbooks.backend.services.TokensService;
 
 public abstract class UsersControllerTests extends BaseTests {
@@ -160,7 +161,7 @@ public abstract class UsersControllerTests extends BaseTests {
 
         HttpEntity<Void> request = new HttpEntity<>(headers);
         ResponseEntity<UserResponse> response = restTemplate.exchange(
-            "/users/validate",
+            "/users/me",
             HttpMethod.GET,
             request,
             UserResponse.class
@@ -170,7 +171,7 @@ public abstract class UsersControllerTests extends BaseTests {
         UserResponse result = response.getBody();
         assertNotNull(result);
         assertEquals("admin@gmail.com", result.getEmail());
-        // assertEquals(Access.ADMINISTRATOR, result.getAccess());
+        assertTrue(result.getRoles().contains(Role.ADMINISTRATOR));
     };
 
     @Test
