@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { fetchUser, User } from "../services/auth";
+import { fetchUser, User } from "../services/user";
 
 export type AuthStore = {
   token?: string;

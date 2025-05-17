@@ -11,10 +11,13 @@ public class ImagesConfig implements WebMvcConfigurer {
         @SuppressWarnings("null") ResourceHandlerRegistry registry
     ) {
         registry.addResourceHandler("/users/**")
-            .addResourceLocations("file:database/data/users/");
+            .addResourceLocations("file:database/data/users/")
+            .addResourceLocations("file:../database/data/users/");
         registry.addResourceHandler("/books/covers/**")
-            .addResourceLocations("file:database/data/books/covers/");
+            .addResourceLocations("file:database/data/books/covers/")
+            .addResourceLocations("file:../database/data/books/covers/");
         registry.addResourceHandler("/books/banners/**")
-            .addResourceLocations("file:database/data/books/banners/");
+            .addResourceLocations("file:database/data/books/banners/")
+            .addResourceLocations("file:../database/data/books/banners/");
     };
 };

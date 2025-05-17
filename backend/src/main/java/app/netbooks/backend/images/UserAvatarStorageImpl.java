@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserAvatarStorageImpl extends ImageStorage implements UserAvatarStorage {
     private Path getUsersAvatarsPath() {
-        return Paths.get("../database/data/users").toAbsolutePath();
+        return this.getStorageFolder().resolve("users");
     };
 
     @Override

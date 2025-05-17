@@ -1,18 +1,17 @@
 package app.netbooks.backend.images;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.springframework.stereotype.Component;
 
 @Component
 public class BookImagesStorageImpl extends ImageStorage implements BookImagesStorage {
     private Path getBooksCoversPath() {
-        return Paths.get("../database/data/books/covers").toAbsolutePath();
+        return this.getStorageFolder().resolve("books/covers");
     };
 
     private Path getBooksBannersPath() {
-        return Paths.get("../database/data/books/banners").toAbsolutePath();
+        return this.getStorageFolder().resolve("books/banners");
     };
 
     @Override

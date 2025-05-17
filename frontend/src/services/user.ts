@@ -16,21 +16,40 @@ export type User = {
   roles: Role[];
 };
 
-export type LoginData = {
+export type UserLoginData = {
   email: string;
   password: string;
 };
 
-export async function login(data: LoginData) {
+export type UserRegisterData = {
+  name: string;
+  avatar?: {
+    url: string;
+    base64: string;
+  };
+  email: string;
+  password: string;
+  passwordConfirmation: string;
+};
+
+export async function login(data: UserLoginData) {
   return api.post<string>("/users/login", data).then((response) => {
     useAuth.getState().setToken(response.data);
   });
 }
 
+export async function register(data: UserRegisterData) {
+  return api.post<void>("/users", {
+    ...data,
+    passwordConfirmation: undefined,
+    avatar: data.avatar?.base64
+  });
+}
+
 export async function logout() {
-    const { setToken, setUser } = useAuth.getState();
-    setToken(undefined);
-    setUser(undefined);
+  const { setToken, setUser } = useAuth.getState();
+  setToken(undefined);
+  setUser(undefined);
 }
 
 export async function fetchUser(token: string): Promise<User> {

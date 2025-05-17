@@ -12,11 +12,23 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Base64;
 
 public abstract class ImageStorage {
     public ImageStorage() {
         ImageIO.scanForPlugins();
+    };
+
+    protected Path getStorageFolder() {
+        Path path = Paths.get("").toAbsolutePath();
+
+        String lastSegment = path.getFileName().toString();
+        if (lastSegment.equals("backend") || lastSegment.equals("src")) {
+            path = path.getParent();
+        }
+    
+        return path.resolve("database").resolve("data");
     };
 
     protected void delete(

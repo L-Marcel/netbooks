@@ -1,12 +1,12 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import Input from "@components/Input";
 import { Link, useNavigate } from "react-router-dom";
-import { login, LoginData } from "../../services/auth";
+import { login, UserLoginData } from "../../services/user";
 
 export default function Login() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState<LoginData>({
+  const [data, setData] = useState<UserLoginData>({
     email: "",
     password: "",
   });
@@ -32,7 +32,7 @@ export default function Login() {
 
   return (
     <main className="flex flex-col w-full h-screen justify-center items-center">
-      <section className="flex flex-col gap-6 w-full max-w-9/12 sm:max-w-sm">
+      <section className="flex flex-col gap-6 w-full max-w-11/12 sm:max-w-sm">
         <header className="text-center text-base-content">
           <h1 className="text-3xl font-bold text-base-content">Criar conta</h1>
           <p>Cadastre-se para acessar todos os recursos</p>
@@ -57,7 +57,11 @@ export default function Login() {
             onChange={onChangeData}
             placeholder="******"
           />
-          <button className="btn btn-primary" type="submit" disabled={isLoading}>
+          <button
+            className="btn btn-primary"
+            type="submit"
+            disabled={isLoading}
+          >
             {isLoading && <span className="loading loading-spinner" />}
             {isLoading ? "Criando..." : "Criar"}
           </button>

@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
 import useUser from "../stores/useUser";
-import { logout } from "./auth";
+import { logout } from "./user";
 
 const api = axios.create({
   baseURL: "http://localhost:8080",
