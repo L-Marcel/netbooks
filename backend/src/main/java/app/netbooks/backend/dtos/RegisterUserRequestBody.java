@@ -9,8 +9,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequestBody {
+public class RegisterUserRequestBody {
     private String name;
+    private String avatar;
     private String email;
     private String password;
 };

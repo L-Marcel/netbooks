@@ -2,6 +2,7 @@ package app.netbooks.backend.authentication;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
@@ -16,6 +17,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
+    @Autowired
+    private ObjectMapper objectMapper;
+    
     @Override
     public void commence(
         HttpServletRequest request,
@@ -27,6 +31,6 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         
-        new ObjectMapper().writeValue(response.getOutputStream(), unauthorized.getError());
+        objectMapper.writeValue(response.getOutputStream(), unauthorized.getError());
     };
 };

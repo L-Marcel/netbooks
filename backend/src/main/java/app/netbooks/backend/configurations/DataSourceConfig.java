@@ -10,7 +10,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
-public class DataSourceConfiguration {
+public class DataSourceConfig {
     @Bean
     public DataSource dataSource(Environment environment) {
         String url = environment.getProperty("database.url");

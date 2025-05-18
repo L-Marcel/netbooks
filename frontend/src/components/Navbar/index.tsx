@@ -2,7 +2,7 @@ import NetBooksSvg from "@components/NetBooksSvg";
 import { FaSearch } from "react-icons/fa";
 import { Link, NavLink } from "react-router-dom";
 import useAuth from "../../stores/useUser";
-import { logout } from "../../services/auth";
+import { logout } from "../../services/user";
 
 export default function Navbar() {
   const user = useAuth((state) => state.user);
@@ -57,7 +57,9 @@ export default function Navbar() {
           {user ? (
             <>
               <p className="flex items-center text-base-content">{user.name}</p>
-              <button onClick={logout} className="btn btn-error">Sair</button>
+              <button onClick={logout} className="btn btn-error">
+                Sair
+              </button>
             </>
           ) : (
             <>

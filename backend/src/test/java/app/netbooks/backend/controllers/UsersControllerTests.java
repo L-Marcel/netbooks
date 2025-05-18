@@ -19,8 +19,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import app.netbooks.backend.BaseTests;
+import app.netbooks.backend.TestImages;
 import app.netbooks.backend.dtos.LoginRequestBody;
-import app.netbooks.backend.dtos.RegisterRequestBody;
+import app.netbooks.backend.dtos.RegisterUserRequestBody;
+import app.netbooks.backend.dtos.UpdateUserRequestBody;
 import app.netbooks.backend.dtos.UserResponse;
 import app.netbooks.backend.models.Role;
 import app.netbooks.backend.services.TokensService;
@@ -57,7 +59,7 @@ public abstract class UsersControllerTests extends BaseTests {
             String.class
         );
         
-        assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         this.token = response.getBody();
         assertNotNull(this.token);
 
@@ -178,26 +180,26 @@ public abstract class UsersControllerTests extends BaseTests {
     @Order(4)
     @DisplayName("Register")
     public void mustRegister() {
-        RegisterRequestBody body = new RegisterRequestBody(
+        RegisterUserRequestBody body = new RegisterUserRequestBody(
             "Test",
+            TestImages.getTestImageBase64("jpeg"),
             "test@gmail.com",
             "TeSt1234"
         );
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(this.token);
 
-        HttpEntity<RegisterRequestBody> request = new HttpEntity<>(
+        HttpEntity<RegisterUserRequestBody> request = new HttpEntity<>(
             body, 
             headers
         );
 
-        ResponseEntity<String> response = restTemplate.exchange(
+        ResponseEntity<Void> response = restTemplate.exchange(
             "/users",
             HttpMethod.POST,
             request,
-            String.class
+            Void.class
         );
         
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -206,9 +208,62 @@ public abstract class UsersControllerTests extends BaseTests {
             "/users",
             HttpMethod.POST,
             request,
-            String.class
+            Void.class
         );
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    };
+
+    @Test
+    @Order(5)
+    @DisplayName("Update")
+    public void mustUpdate() {
+        LoginRequestBody body = new LoginRequestBody(
+            "test@gmail.com",
+            "TeSt1234"
+        );
+    
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<LoginRequestBody> request = new HttpEntity<>(
+            body, 
+            headers
+        );
+
+        ResponseEntity<String> response = restTemplate.postForEntity(
+            "/users/login", 
+            request,
+            String.class
+        );
+        
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        UpdateUserRequestBody updateBody = new UpdateUserRequestBody(
+            "Testando",
+            null,
+            "test@gmail.com",
+            "TeSt1234"
+        );
+
+        HttpHeaders updateHeaders = new HttpHeaders();
+        updateHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+        String token = response.getBody();
+        if(token != null) updateHeaders.setBearerAuth(token);
+
+        HttpEntity<UpdateUserRequestBody> updateRequest = new HttpEntity<>(
+            updateBody, 
+            updateHeaders
+        );
+
+        ResponseEntity<Void> updateResponse = restTemplate.exchange(
+            "/users",
+            HttpMethod.PUT,
+            updateRequest,
+            Void.class
+        );
+        
+        assertEquals(HttpStatus.OK, updateResponse.getStatusCode());
     };
 };

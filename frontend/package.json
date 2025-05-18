@@ -16,6 +16,7 @@
     "postcss-import": "^16.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-easy-crop": "^5.4.1",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.5.0",
     "zustand": "^5.0.4"

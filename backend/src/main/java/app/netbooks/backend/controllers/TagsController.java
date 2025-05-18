@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import app.netbooks.backend.dtos.TagResponse;
 import app.netbooks.backend.models.Tag;
 import app.netbooks.backend.services.TagsService;
 
@@ -18,8 +19,9 @@ public class TagsController {
     private TagsService service;
 
     @GetMapping
-    public ResponseEntity<List<Tag>> get() {
+    public ResponseEntity<List<TagResponse>> get() {
         List<Tag> tags = service.findAll();
-        return ResponseEntity.ok().body(tags);
+        List<TagResponse> response = TagResponse.fromList(tags);
+        return ResponseEntity.ok().body(response);
     };
 };

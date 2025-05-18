@@ -8,13 +8,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.netbooks.backend.annotations.AdministratorOnly;
+import app.netbooks.backend.annotations.AuhenticatedOnly;
 import app.netbooks.backend.dtos.LoginRequestBody;
-import app.netbooks.backend.dtos.RegisterRequestBody;
+import app.netbooks.backend.dtos.RegisterUserRequestBody;
+import app.netbooks.backend.dtos.UpdateUserRequestBody;
 import app.netbooks.backend.dtos.UserResponse;
 import app.netbooks.backend.models.User;
 import app.netbooks.backend.services.TokensService;
@@ -60,22 +63,42 @@ public class UsersController {
         );
 
         return ResponseEntity
-            .status(HttpStatus.ACCEPTED)
+            .status(HttpStatus.OK)
             .body(token);
     };
 
     @PostMapping
     public ResponseEntity<Void> register(
-        @RequestBody RegisterRequestBody body
+        @RequestBody RegisterUserRequestBody body
     ) {
         usersService.register(
             body.getName(),
+            body.getAvatar(),
             body.getEmail(),
             body.getPassword()
         );
         
         return ResponseEntity
             .status(HttpStatus.CREATED)
+            .build();
+    };
+
+    @AuhenticatedOnly
+    @PutMapping
+    public ResponseEntity<UserResponse> update(
+        @AuthenticationPrincipal User user,
+        @RequestBody UpdateUserRequestBody body
+    ) {
+        usersService.update(
+            user,
+            body.getName(),
+            body.getAvatar(),
+            body.getEmail(),
+            body.getPassword()
+        );
+        
+        return ResponseEntity
+            .status(HttpStatus.OK)
             .build();
     };
 };

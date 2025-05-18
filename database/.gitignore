@@ -1,1 +1,5 @@
 *.bak
+*.jpeg
+*.png
+*.webp
+!test.*

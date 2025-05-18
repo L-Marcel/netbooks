@@ -1,6 +1,7 @@
 package app.netbooks.backend.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,23 @@ public class UsersService {
         );
     }; 
 
+    public User login(
+        String email, 
+        String password
+    ) throws UserNotFound {
+        User user = repository.findByEmail(email).orElseThrow(
+            () -> new UserNotFound()
+        );
+
+        if(!encoder.matches(password, user.getPassword()))
+            throw new UserNotFound();
+        
+        return user;
+    };
+
     public void register(
         String name, 
+        String avatar,
         String email, 
         String password
     ) throws ValidationsError {
@@ -57,23 +73,56 @@ public class UsersService {
             .pattern("(.*[a-z].*){2,}", "Senha deve conter pelo menos duas letras minúsculas!")
             .pattern("(.*[\\d].*){2,}", "Senha deve conter pelo menos dois dígitos!");
 
+        validator.validate("avatar", avatar)
+            .nullable()
+            .pattern("^data:image\\/(png|jpeg|jpg);base64,[A-Za-z0-9+/]+={0,2}$", "Formato inválido de imagem!");
+
         validator.run();
         
-        User user = new User(name, email, encoder.encode(password));
+        User user = new User(name, avatar, email, encoder.encode(password));
         repository.create(user);
     };
 
-    public User login(
+    public void update(
+        User user,
+        String name, 
+        String avatar,
         String email, 
         String password
-    ) throws UserNotFound {
-        User user = repository.findByEmail(email).orElseThrow(
-            () -> new UserNotFound()
-        );
+    ) throws ValidationsError {
+        Validator validator = new Validator();
 
-        if(!encoder.matches(password, user.getPassword()))
-            throw new UserNotFound();
+        validator.validate("name", name)
+            .min(3, "Nome deve conter pelo menos 3 caracteres!")
+            .max(120, "Nome não deve conter mais de 120 caracteres!")
+            .pattern("^[A-Za-zÀ-ÿ ]*$", "Evite caracteres especiais no nome!");
         
-        return user;
+        Optional<User> candidate = repository.findByEmail(email);
+        validator.validate("email", email)
+            .email("Forneça um e-mail válido!")
+            .min(6, "Email deve conter pelo menos 3 caracteres!")
+            .max(320, "Email não deve conter mais de 320 caracteres!")
+            .verify(!candidate.isPresent() || candidate.get().getEmail().equals(email), "Email já está em uso!");
+
+        validator.validate("password", password)
+            .min(8, "Senha deve conter pelo menos 8 caracteres!")
+            .max(24, "Senha não deve conter mais de 24 caracteres!")
+            .pattern("^\\S+$", "Senha não deve conter espaços em branco!")
+            .pattern("(.*[A-Z].*){2,}", "Senha deve conter pelo menos duas letras maísculas!")
+            .pattern("(.*[a-z].*){2,}", "Senha deve conter pelo menos duas letras minúsculas!")
+            .pattern("(.*[\\d].*){2,}", "Senha deve conter pelo menos dois dígitos!");
+
+        validator.validate("avatar", avatar)
+            .nullable()
+            .pattern("^data:image\\/(png|jpeg|jpg);base64,[A-Za-z0-9+/]+={0,2}$", "Formato inválido de imagem!");
+
+        validator.run();
+        
+        user.setName(name);
+        user.setAvatar(avatar);
+        user.setEmail(email);
+        user.setPassword(encoder.encode(password));
+        
+        repository.update(user);
     };
 };

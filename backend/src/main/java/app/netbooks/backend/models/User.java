@@ -18,12 +18,15 @@ import lombok.Setter;
 public class User implements UserDetails {
     private UUID uuid;
     private String name;
+    private String avatar;
     private String email;
     private String password;
     private List<Role> roles;
 
-    public User(String name, String email, String password) {
+    public User(String name, String avatar, String email, String password) {
+        this.uuid = UUID.randomUUID();
         this.name = name;
+        this.avatar = avatar;
         this.email = email;
         this.password = password;
     };

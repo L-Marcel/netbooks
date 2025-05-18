@@ -51,6 +51,7 @@ public abstract class UsersRepositoryTests extends BaseTests {
             repository.create(
                 new User(
                     "Lucas",
+                    null,
                     "lucas@gmail.com",
                     ""
                 )
@@ -130,6 +131,7 @@ public abstract class UsersRepositoryTests extends BaseTests {
         repository.create(
             new User(
                 "Lucas",
+                null,
                 "lucas@gmail.com",
                 ""
             )
@@ -139,6 +141,7 @@ public abstract class UsersRepositoryTests extends BaseTests {
             repository.create(
                 new User(
                     "Lucas",
+                    null,
                     "lucas@gmail.com",
                     ""
                 )
@@ -148,6 +151,7 @@ public abstract class UsersRepositoryTests extends BaseTests {
         assertThrows(InternalServerError.class, () -> {
             repository.create(
                 new User(
+                    null,
                     null,
                     "lucas@lucas.com",
                     ""
@@ -160,6 +164,7 @@ public abstract class UsersRepositoryTests extends BaseTests {
                 new User(
                     "Lucas",
                     null,
+                    null,
                     ""
                 )
             );
@@ -169,6 +174,7 @@ public abstract class UsersRepositoryTests extends BaseTests {
             repository.create(
                 new User(
                     "Lucas",
+                    null,
                     "lucas@lucas.com",
                     null
                 )
