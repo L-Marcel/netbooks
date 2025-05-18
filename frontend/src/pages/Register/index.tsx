@@ -2,7 +2,7 @@ import { ChangeEvent, useState } from "react";
 import Input from "@components/Input";
 import { Link, useNavigate } from "react-router-dom";
 import { register, UserRegisterData } from "../../services/user";
-import CropImageDialogue from "@components/Input/CropImage";
+import ImageInput from "@components/Input/FileInput";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -21,7 +21,25 @@ export default function Register() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const onClearAvatar = () => {
+    setData((data) => ({
+      ...data,
+      avatar: undefined,
+    }));
+  };
+
+  const onLoadAvatar = (base64: string, blob: Blob) => {
+    const url = URL.createObjectURL(blob);
+    setData((data) => ({
+      ...data,
+      avatar: {
+        url,
+        base64,
+      },
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     register(data)
@@ -32,34 +50,6 @@ export default function Register() {
         setIsLoading(false);
       });
   };
-
-  const InputFile = () => (
-    <CropImageDialogue
-      imageSize={{
-        aspect: 1,
-        height: 300,
-        width: 300,
-      }}
-      name="picture"
-      canClear={!!data.avatar}
-      onFileClear={() => {
-        setData((data) => ({
-          ...data,
-          avatar: undefined,
-        }));
-      }}
-      onFileLoaded={(base64, blob) => {
-        const url = URL.createObjectURL(blob);
-        setData((data) => ({
-          ...data,
-          avatar: {
-            url,
-            base64,
-          },
-        }));
-      }}
-    />
-  );
 
   return (
     <main className="flex flex-col w-full h-screen justify-center items-center">
@@ -73,7 +63,10 @@ export default function Register() {
           onSubmit={handleSubmit}
         >
           <div className="flex gap-5">
-            <div className="avatar avatar-placeholder">
+            <div
+              tabIndex={-1}
+              className="relative avatar avatar-placeholder justify-center overflow-visible w-20 h-20 rounded-full focus-within:ring-2 outline-none ring-primary ring-offset-2 ring-offset-base-200"
+            >
               <div className="bg-neutral text-neutral-content w-20 h-20 rounded-full">
                 {data.avatar ? (
                   <img src={data.avatar.url} />
@@ -83,6 +76,17 @@ export default function Register() {
                   </span>
                 )}
               </div>
+              <ImageInput
+                className="absolute bottom-0 right-0"
+                imageSize={{
+                  aspect: 1,
+                  height: 300,
+                  width: 300,
+                }}
+                canClear={!!data.avatar}
+                onFileClear={onClearAvatar}
+                onFileLoaded={onLoadAvatar}
+              />
             </div>
             <Input
               label="Nome"
@@ -93,7 +97,6 @@ export default function Register() {
               placeholder="Marcela"
             />
           </div>
-          <InputFile />
           <Input
             label="E-mail"
             id="email"

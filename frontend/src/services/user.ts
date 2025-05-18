@@ -42,7 +42,7 @@ export async function register(data: UserRegisterData) {
   return api.post<void>("/users", {
     ...data,
     passwordConfirmation: undefined,
-    avatar: data.avatar?.base64
+    avatar: data.avatar?.base64,
   });
 }
 
