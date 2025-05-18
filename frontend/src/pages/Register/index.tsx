@@ -3,6 +3,7 @@ import Input from "@components/Input";
 import { Link, useNavigate } from "react-router-dom";
 import { register, UserRegisterData } from "../../services/user";
 import ImageInput from "@components/Input/FileInput";
+import { FaUpload } from "react-icons/fa";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -28,13 +29,14 @@ export default function Register() {
     }));
   };
 
-  const onLoadAvatar = (base64: string, blob: Blob) => {
+  const onLoadAvatar = (base64: string, blob: Blob, filename?: string) => {
     const url = URL.createObjectURL(blob);
     setData((data) => ({
       ...data,
       avatar: {
         url,
         base64,
+        filename,
       },
     }));
   };
@@ -77,16 +79,22 @@ export default function Register() {
                 )}
               </div>
               <ImageInput
-                className="absolute bottom-0 right-0"
+                className="absolute bottom-0 right-0 btn btn-xs btn-circle btn-neutral focus:btn-primary"
                 imageSize={{
                   aspect: 1,
                   height: 300,
                   width: 300,
                 }}
+                file={{
+                  url: data.avatar?.url ?? "",
+                  name: data.avatar?.filename,
+                }}
                 canClear={!!data.avatar}
-                onFileClear={onClearAvatar}
-                onFileLoaded={onLoadAvatar}
-              />
+                onImageClear={onClearAvatar}
+                onImageLoaded={onLoadAvatar}
+              >
+                <FaUpload />
+              </ImageInput>
             </div>
             <Input
               label="Nome"

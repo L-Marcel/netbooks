@@ -26,6 +26,7 @@ export type UserRegisterData = {
   avatar?: {
     url: string;
     base64: string;
+    filename?: string;
   };
   email: string;
   password: string;
