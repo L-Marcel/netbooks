@@ -9,7 +9,7 @@ import {
 import Cropper, { Area } from "react-easy-crop";
 import getCroppedImg from "../../services/crop";
 import { FaCloudUploadAlt, FaTrash } from "react-icons/fa";
-import { FaCheck, FaRotate, FaX } from "react-icons/fa6";
+import { FaCheck, FaPencil, FaRotate, FaX } from "react-icons/fa6";
 
 interface CropProps
   extends Exclude<
@@ -146,6 +146,8 @@ export default function ImageInput({
     areaRef.current?.close();
   };
 
+  // [TODO] Adicionar botão de editar imagem (quando há)
+
   return (
     <>
       <button {...props} onClick={onClickToOpen} />
@@ -187,6 +189,13 @@ export default function ImageInput({
             <p className="overflow-ellipsis overflow-hidden w-full text-nowrap font-light">
               {file.name ?? file.url ?? "Nenhum arquivo carregado..."}
             </p>
+            <button
+              disabled={!canClear}
+              className="btn btn-soft btn-primary btn-square"
+              onClick={onClickToUpload}
+            >
+              <FaPencil />
+            </button>
             <button
               disabled={!canClear}
               className="btn btn-soft btn-secondary btn-square"
