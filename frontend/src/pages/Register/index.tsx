@@ -4,10 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { register, UserRegisterData } from "../../services/user";
 import ImageInput from "@components/Input/FileInput";
 import { FaUpload } from "react-icons/fa";
+import { ApiError, ValidationError } from "../../services/axios";
 
 export default function Register() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [validations, setValidations] = useState<ValidationError>({});
+
   const [data, setData] = useState<UserRegisterData>({
     name: "",
     email: "",
@@ -48,14 +51,23 @@ export default function Register() {
       .then(() => {
         navigate("/login");
       })
+      .catch((error: ApiError) => {
+        const { type, status, ...rest } = error;
+
+        if (type === "validation" && status === 400) {
+          setValidations({
+            ...rest,
+          } as ValidationError);
+        }
+      })
       .finally(() => {
         setIsLoading(false);
       });
   };
 
   return (
-    <main className="flex flex-col w-full h-screen justify-center items-center">
-      <section className="flex flex-col gap-6 w-full max-w-11/12 sm:max-w-sm">
+    <main className="py-10 flex flex-col w-full h-full min-h-screen justify-center items-center">
+      <section className="flex flex-col gap-6 w-full max-w-11/12 sm:max-w-md">
         <header className="text-center text-base-content">
           <h1 className="text-3xl font-bold text-base-content">Criar conta</h1>
           <p>Cadastre-se para acessar todos os recursos</p>
@@ -67,9 +79,9 @@ export default function Register() {
           <div className="flex gap-5">
             <div
               tabIndex={-1}
-              className="relative avatar avatar-placeholder justify-center overflow-visible w-20 h-20 rounded-full focus-within:ring-2 outline-none ring-primary ring-offset-2 ring-offset-base-200"
+              className="relative avatar avatar-placeholder justify-center overflow-visible size-20 rounded-full focus-within:ring-2 outline-none ring-primary ring-offset-2 ring-offset-base-200"
             >
-              <div className="bg-neutral text-neutral-content w-20 h-20 rounded-full">
+              <div className="bg-neutral text-neutral-content size-20 rounded-full">
                 {data.avatar ? (
                   <img src={data.avatar.url} />
                 ) : (
@@ -97,6 +109,7 @@ export default function Register() {
               </ImageInput>
             </div>
             <Input
+              validations={validations["name"]}
               label="Nome"
               id="name"
               type="text"
@@ -106,6 +119,7 @@ export default function Register() {
             />
           </div>
           <Input
+            validations={validations["email"]}
             label="E-mail"
             id="email"
             type="email"
@@ -114,6 +128,7 @@ export default function Register() {
             placeholder="marcela@email.com"
           />
           <Input
+            validations={validations["password"]}
             label="Senha"
             id="password"
             type="password"
@@ -122,9 +137,10 @@ export default function Register() {
             placeholder="******"
           />
           <Input
+            validations={validations["passwordConfirmation"]}
             label="Confirmar senha"
             id="passwordConfirmation"
-            type="passwordConfirmation"
+            type="password"
             value={data.passwordConfirmation}
             onChange={onChangeData}
             placeholder="******"

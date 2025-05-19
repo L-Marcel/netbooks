@@ -75,7 +75,8 @@ public class UsersController {
             body.getName(),
             body.getAvatar(),
             body.getEmail(),
-            body.getPassword()
+            body.getPassword(),
+            body.getPasswordConfirmation()
         );
         
         return ResponseEntity

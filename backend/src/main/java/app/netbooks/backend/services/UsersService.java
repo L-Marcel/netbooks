@@ -50,28 +50,32 @@ public class UsersService {
         String name, 
         String avatar,
         String email, 
-        String password
+        String password,
+        String passwordConfirmation
     ) throws ValidationsError {
         Validator validator = new Validator();
 
         validator.validate("name", name)
-            .min(3, "Nome deve conter pelo menos 3 caracteres!")
-            .max(120, "Nome não deve conter mais de 120 caracteres!")
-            .pattern("^[A-Za-zÀ-ÿ ]*$", "Evite caracteres especiais no nome!");
+            .min(3, "Deve conter pelo menos 3 caracteres!")
+            .max(120, "Não deve conter mais de 120 caracteres!")
+            .pattern("^[A-Za-zÀ-ÿ ]*$", "Não deve conter caracteres especiais!");
         
         validator.validate("email", email)
-            .email("Forneça um e-mail válido!")
-            .min(6, "Email deve conter pelo menos 3 caracteres!")
-            .max(320, "Email não deve conter mais de 320 caracteres!")
-            .verify(!repository.findByEmail(email).isPresent(), "Email já está em uso!");
+            .email("Deve ser válido!")
+            .min(6, "Deve conter pelo menos 3 caracteres!")
+            .max(320, "Não deve conter mais de 320 caracteres!")
+            .verify(!repository.findByEmail(email).isPresent(), "Deve estar disponível!");
 
         validator.validate("password", password)
-            .min(8, "Senha deve conter pelo menos 8 caracteres!")
-            .max(24, "Senha não deve conter mais de 24 caracteres!")
-            .pattern("^\\S+$", "Senha não deve conter espaços em branco!")
-            .pattern("(.*[A-Z].*){2,}", "Senha deve conter pelo menos duas letras maísculas!")
-            .pattern("(.*[a-z].*){2,}", "Senha deve conter pelo menos duas letras minúsculas!")
-            .pattern("(.*[\\d].*){2,}", "Senha deve conter pelo menos dois dígitos!");
+            .min(8, "Deve conter pelo menos 8 caracteres!")
+            .max(24, "Não deve conter mais de 24 caracteres!")
+            .pattern("^\\S+$", "Não deve conter espaços em branco!")
+            .pattern("(.*[A-Z].*){2,}", "Deve conter pelo menos 2 letras maísculas!")
+            .pattern("(.*[a-z].*){2,}", "Deve conter pelo menos 2 letras minúsculas!")
+            .pattern("(.*[\\d].*){2,}", "Deve conter pelo menos 2 dígitos!");
+
+        validator.validate("passwordConfirmation", passwordConfirmation)
+            .verify(passwordConfirmation != null && passwordConfirmation.equals(password), "Senhas devem coincidir!");
 
         validator.validate("avatar", avatar)
             .nullable()
