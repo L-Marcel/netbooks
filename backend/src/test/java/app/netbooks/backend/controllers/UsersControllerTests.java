@@ -184,6 +184,7 @@ public abstract class UsersControllerTests extends BaseTests {
             "Test",
             TestImages.getTestImageBase64("jpeg"),
             "test@gmail.com",
+            "TeSt1234",
             "TeSt1234"
         );
 

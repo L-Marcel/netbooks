@@ -15,7 +15,7 @@ public class ValidationsError extends RuntimeException {
     private final HttpStatus status = HttpStatus.BAD_REQUEST;
 
     @Getter
-    private final List<ValidationError> errors;
+    private final List<ValidationFieldError> errors;
 
     public ValidationsError() {
         super();
@@ -26,11 +26,9 @@ public class ValidationsError extends RuntimeException {
         Map<String, Object> error = new LinkedHashMap<>();
         List<Map<String, Object>> errors = this.errors
             .stream()
-            .map(
-                (ValidationError validationError) -> 
-                    validationError.getError()
-            )
-            .collect(Collectors.toList());
+            .map((ValidationFieldError validationError) -> 
+                validationError.getError()
+            ).collect(Collectors.toList());
         
         error.put("status", this.status.value());
         error.put("errors", errors);

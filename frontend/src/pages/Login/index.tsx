@@ -31,8 +31,8 @@ export default function Login() {
   };
 
   return (
-    <main className="flex flex-col w-full h-screen justify-center items-center">
-      <section className="flex flex-col gap-6 w-full max-w-11/12 sm:max-w-sm">
+    <main className="py-10 flex flex-col w-full h-full min-h-screen justify-center items-center">
+      <section className="flex flex-col gap-6 w-full max-w-11/12 sm:max-w-md">
         <header className="text-center text-base-content">
           <h1 className="text-3xl font-bold text-base-content">Criar conta</h1>
           <p>Cadastre-se para acessar todos os recursos</p>

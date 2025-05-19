@@ -14,4 +14,5 @@ public class RegisterUserRequestBody {
     private String avatar;
     private String email;
     private String password;
+    private String passwordConfirmation;
 };
