@@ -3,7 +3,7 @@ import Input from "@components/Input";
 import { Link, useNavigate } from "react-router-dom";
 import { register, UserRegisterData } from "../../services/user";
 import ImageInput from "@components/Input/FileInput";
-import { FaUpload } from "react-icons/fa";
+import { FaEnvelope, FaKey, FaUpload, FaUser } from "react-icons/fa";
 import { ApiError, ValidationError } from "../../services/axios";
 
 export default function Register() {
@@ -66,8 +66,8 @@ export default function Register() {
   };
 
   return (
-    <main className="py-10 flex flex-col w-full h-full min-h-screen justify-center items-center">
-      <section className="flex flex-col gap-6 w-full max-w-11/12 sm:max-w-md">
+    <main className="py-10 flex flex-col w-full h-full min-h-screen justify-center items-center bg-gradient-to-br from-base-100 via-base-200 to-base-300">
+      <section className="flex flex-col gap-6 w-full max-w-11/12 sm:max-w-sm">
         <header className="text-center text-base-content">
           <h1 className="text-3xl font-bold text-base-content">Criar conta</h1>
           <p>Cadastre-se para acessar todos os recursos</p>
@@ -109,6 +109,7 @@ export default function Register() {
               </ImageInput>
             </div>
             <Input
+              icon={FaUser}
               validations={validations["name"]}
               label="Nome"
               id="name"
@@ -119,6 +120,7 @@ export default function Register() {
             />
           </div>
           <Input
+            icon={FaEnvelope}
             validations={validations["email"]}
             label="E-mail"
             id="email"
@@ -128,22 +130,24 @@ export default function Register() {
             placeholder="marcela@email.com"
           />
           <Input
+            icon={FaKey}
             validations={validations["password"]}
             label="Senha"
             id="password"
             type="password"
             value={data.password}
             onChange={onChangeData}
-            placeholder="******"
+            placeholder="••••••••"
           />
           <Input
+            icon={FaKey}
             validations={validations["passwordConfirmation"]}
             label="Confirmar senha"
             id="passwordConfirmation"
             type="password"
             value={data.passwordConfirmation}
             onChange={onChangeData}
-            placeholder="******"
+            placeholder="••••••••"
           />
           <button
             className="btn btn-primary"
@@ -157,7 +161,7 @@ export default function Register() {
         <footer className="text-center">
           <p>
             Já tem uma conta?{" "}
-            <Link to="/login" className="text-primary">
+            <Link to="/login" className="link link-primary">
               Conecte-se
             </Link>
           </p>

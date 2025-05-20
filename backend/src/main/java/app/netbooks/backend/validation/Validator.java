@@ -75,12 +75,12 @@ public class Validator {
             return this;
         };
 
-        public Field<T> min(int size, String message) {
+        public Field<T> min(int size, String message, String error) {
             this.steps.add(new Tuple<Runnable, String>(() -> {
                 int length = -1;
 
                 if(this.value == null) {
-                    throw new ValidationStepError(message);
+                    throw new ValidationStepError(error);
                 } else if (value instanceof String) {
                     length = ((String) value).length();
                 } else if (value instanceof Collection) {
@@ -92,18 +92,18 @@ public class Validator {
                 };
 
                 if (length < size)
-                    throw new ValidationStepError(message);
+                    throw new ValidationStepError(error);
             }, message));
 
             return this;
         };
 
-        public Field<T> max(int size, String message) {
+        public Field<T> max(int size, String message, String error) {
             this.steps.add(new Tuple<Runnable, String>(() -> {
                 int length = Integer.MAX_VALUE;
 
                 if(this.value == null) {
-                    throw new ValidationStepError(message);
+                    throw new ValidationStepError(error);
                 } else if (value instanceof String) {
                     length = ((String) value).length();
                 } else if (value instanceof Collection) {
@@ -115,52 +115,52 @@ public class Validator {
                 };
 
                 if (length > size) 
-                    throw new ValidationStepError(message);
+                    throw new ValidationStepError(error);
             }, message));
 
             return this;
         };
 
-        public Field<T> email(String message) {
+        public Field<T> email(String message, String error) {
             this.steps.add(new Tuple<Runnable, String>(() -> {
                 if(!(this.value instanceof String))
-                    throw new ValidationStepError(message);
+                    throw new ValidationStepError(error);
                 else {
                     String email = (String) this.value;
 
                     if(!email.contains("@")) 
-                        throw new ValidationStepError(message);
+                        throw new ValidationStepError(error);
                 };
             }, message));
 
             return this;
         };
 
-        public Field<T> pattern(String regex, String message) {
+        public Field<T> pattern(String regex, String message, String error) {
             this.steps.add(new Tuple<Runnable, String>(() -> {
                 try {
                     Pattern pattern = Pattern.compile(regex);
 
                     if (!(this.value instanceof CharSequence)) {
-                        throw new ValidationStepError(message);
+                        throw new ValidationStepError(error);
                     };
                 
                     CharSequence str = (CharSequence) value;
                     if (!pattern.matcher(str).matches()) {
-                        throw new ValidationStepError(message);
+                        throw new ValidationStepError(error);
                     };
                 } catch (PatternSyntaxException e) {
-                    throw new ValidationStepError(message);
+                    throw new ValidationStepError(error);
                 }
             }, message));
 
             return this;
         };
 
-        public Field<T> verify(boolean condition, String message) {
+        public Field<T> verify(boolean condition, String message, String error) {
             this.steps.add(new Tuple<Runnable, String>(() -> {
                 if(!condition || this.value == null)
-                    throw new ValidationStepError(message);
+                    throw new ValidationStepError(error);
             }, message));
 
             return this;

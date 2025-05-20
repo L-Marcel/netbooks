@@ -8,8 +8,8 @@ import {
 } from "react";
 import Cropper, { Area } from "react-easy-crop";
 import getCroppedImg from "../../services/crop";
-import { FaCloudUploadAlt, FaTrash } from "react-icons/fa";
-import { FaCheck, FaPencil, FaRotate, FaX } from "react-icons/fa6";
+import { FaCloudUploadAlt, FaTrash, FaUpload } from "react-icons/fa";
+import { FaCheck, FaRotate, FaX } from "react-icons/fa6";
 
 interface CropProps
   extends Exclude<
@@ -190,11 +190,10 @@ export default function ImageInput({
               {file.name ?? file.url ?? "Nenhum arquivo carregado..."}
             </p>
             <button
-              disabled={!canClear}
               className="btn btn-soft btn-primary btn-square"
               onClick={onClickToUpload}
             >
-              <FaPencil />
+              <FaUpload />
             </button>
             <button
               disabled={!canClear}
