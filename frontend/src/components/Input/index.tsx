@@ -1,5 +1,6 @@
 import { FaCheck, FaX } from "react-icons/fa6";
 import { Validation } from "../../services/axios";
+import { IconType } from "react-icons";
 
 interface InputProps
   extends React.DetailedHTMLProps<
@@ -8,6 +9,7 @@ interface InputProps
   > {
   label?: string;
   validations?: Validation[];
+  icon?: IconType;
 }
 
 export default function Input({
@@ -15,6 +17,7 @@ export default function Input({
   validations = [],
   label,
   className = "",
+  icon: Icon,
   ...props
 }: InputProps) {
   const hasError =
@@ -23,10 +26,11 @@ export default function Input({
 
   return (
     <fieldset className="flex flex-col w-full">
-      <p className="mb-2 font-light text-sm">{label}</p>
+      <p className="mb-2 font-medium text-sm">{label}</p>
       <label
         className={`input focus-within:input-primary ${hasError ? "!input-error" : ""} w-full text-base-content ${className}`}
       >
+        {Icon && <Icon className="size-4"/>}
         <input id={id} name={id} {...props} />
       </label>
       <p

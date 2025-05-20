@@ -56,30 +56,30 @@ public class UsersService {
         Validator validator = new Validator();
 
         validator.validate("name", name)
-            .min(3, "Deve conter pelo menos 3 caracteres!")
-            .max(120, "Não deve conter mais de 120 caracteres!")
-            .pattern("^[A-Za-zÀ-ÿ ]*$", "Não deve conter caracteres especiais!");
+            .min(3, "Tem mais de 2 caracteres!", "Tem menos de 3 caracteres!")
+            .max(120, "Tem menos de 121 caracteres!", "Tem mais de 120 caracteres!")
+            .pattern("^[A-Za-zÀ-ÿ ]*$", "Sem caracteres especiais!", "Caracteres especiais detectados!");
         
         validator.validate("email", email)
-            .email("Deve ser válido!")
-            .min(6, "Deve conter pelo menos 3 caracteres!")
-            .max(320, "Não deve conter mais de 320 caracteres!")
-            .verify(!repository.findByEmail(email).isPresent(), "Deve estar disponível!");
+            .email("Formato válido!", "Fomato inválido!")
+            .min(6, "Tem mais de 5 caracteres!", "Tem menos de 6 caracteres!")
+            .max(120, "Tem menos de 121 caracteres!", "Tem mais de 120 caracteres!")
+            .verify(!repository.findByEmail(email).isPresent(), "Disponível para uso!", "Já se encontra em uso!");
 
         validator.validate("password", password)
-            .min(8, "Deve conter pelo menos 8 caracteres!")
-            .max(24, "Não deve conter mais de 24 caracteres!")
-            .pattern("^\\S+$", "Não deve conter espaços em branco!")
-            .pattern("(.*[A-Z].*){2,}", "Deve conter pelo menos 2 letras maísculas!")
-            .pattern("(.*[a-z].*){2,}", "Deve conter pelo menos 2 letras minúsculas!")
-            .pattern("(.*[\\d].*){2,}", "Deve conter pelo menos 2 dígitos!");
+            .min(8, "Tem mais de 7 caracteres!", "Tem menos de 8 caracteres!")
+            .max(24, "Tem menos de 25 caracteres!", "Tem mais de 24 caracteres!")
+            .pattern("^\\S+$", "Sem espaços em branco!", "Espaços em branco detectados!")
+            .pattern("(.*[A-Z].*){2,}", "Tem 2 letras maísculas!", "Precisa ter 2 letras maísculas!")
+            .pattern("(.*[a-z].*){2,}", "Tem 2 letras minúsculas!", "Precisa ter 2 letras minúsculas!")
+            .pattern("(.*[\\d].*){2,}", "Tem 2 dígitos!", "Precisa ter 2 dígitos!");
 
         validator.validate("passwordConfirmation", passwordConfirmation)
-            .verify(passwordConfirmation != null && passwordConfirmation.equals(password), "Senhas devem coincidir!");
+            .verify(passwordConfirmation != null && passwordConfirmation.equals(password), "Senhas coincidem!", "Senhas não coincidem!");
 
         validator.validate("avatar", avatar)
             .nullable()
-            .pattern("^data:image\\/(png|jpeg|jpg);base64,[A-Za-z0-9+/]+={0,2}$", "Formato inválido de imagem!");
+            .pattern("^data:image\\/(png|jpeg|jpg);base64,[A-Za-z0-9+/]+={0,2}$", "Formato valido de imagem!", "Formato inválido de imagem!");
 
         validator.run();
         
@@ -97,28 +97,28 @@ public class UsersService {
         Validator validator = new Validator();
 
         validator.validate("name", name)
-            .min(3, "Nome deve conter pelo menos 3 caracteres!")
-            .max(120, "Nome não deve conter mais de 120 caracteres!")
-            .pattern("^[A-Za-zÀ-ÿ ]*$", "Evite caracteres especiais no nome!");
-        
+            .min(3, "Tem mais de 2 caracteres!", "Tem menos de 3 caracteres!")
+            .max(120, "Tem menos de 121 caracteres!", "Tem mais de 120 caracteres!")
+            .pattern("^[A-Za-zÀ-ÿ ]*$", "Sem caracteres especiais!", "Caracteres especiais detectados!");
+    
         Optional<User> candidate = repository.findByEmail(email);
         validator.validate("email", email)
-            .email("Forneça um e-mail válido!")
-            .min(6, "Email deve conter pelo menos 3 caracteres!")
-            .max(320, "Email não deve conter mais de 320 caracteres!")
-            .verify(!candidate.isPresent() || candidate.get().getEmail().equals(email), "Email já está em uso!");
+            .email("Formato válido!", "Fomato inválido!")
+            .min(6, "Tem mais de 5 caracteres!", "Tem menos de 6 caracteres!")
+            .max(120, "Tem menos de 121 caracteres!", "Tem mais de 120 caracteres!")
+            .verify(!candidate.isPresent() || candidate.get().getEmail().equals(email), "Disponível para uso!", "Já se encontra em uso!");
 
         validator.validate("password", password)
-            .min(8, "Senha deve conter pelo menos 8 caracteres!")
-            .max(24, "Senha não deve conter mais de 24 caracteres!")
-            .pattern("^\\S+$", "Senha não deve conter espaços em branco!")
-            .pattern("(.*[A-Z].*){2,}", "Senha deve conter pelo menos duas letras maísculas!")
-            .pattern("(.*[a-z].*){2,}", "Senha deve conter pelo menos duas letras minúsculas!")
-            .pattern("(.*[\\d].*){2,}", "Senha deve conter pelo menos dois dígitos!");
-
+            .min(8, "Tem mais de 7 caracteres!", "Tem menos de 8 caracteres!")
+            .max(24, "Tem menos de 25 caracteres!", "Tem mais de 24 caracteres!")
+            .pattern("^\\S+$", "Sem espaços em branco!", "Espaços em branco detectados!")
+            .pattern("(.*[A-Z].*){2,}", "Tem 2 letras maísculas!", "Precisa ter 2 letras maísculas!")
+            .pattern("(.*[a-z].*){2,}", "Tem 2 letras minúsculas!", "Precisa ter 2 letras minúsculas!")
+            .pattern("(.*[\\d].*){2,}", "Tem 2 dígitos!", "Precisa ter 2 dígitos!");
+        
         validator.validate("avatar", avatar)
             .nullable()
-            .pattern("^data:image\\/(png|jpeg|jpg);base64,[A-Za-z0-9+/]+={0,2}$", "Formato inválido de imagem!");
+            .pattern("^data:image\\/(png|jpeg|jpg);base64,[A-Za-z0-9+/]+={0,2}$", "Formato valido de imagem!", "Formato inválido de imagem!");
 
         validator.run();
         
