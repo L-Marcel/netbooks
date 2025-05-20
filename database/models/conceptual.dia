@@ -91,6 +91,7 @@
   <dia:layer name="Segundo plano" visible="true" connectable="true"/>
   <dia:layer name="Segundo plano" visible="true" connectable="true"/>
   <dia:layer name="Segundo plano" visible="true" connectable="true"/>
+  <dia:layer name="Segundo plano" visible="true" connectable="true"/>
   <dia:layer name="Segundo plano" visible="true" connectable="false"/>
   <dia:layer name="Segundo plano" visible="true" connectable="true" active="true">
     <dia:object type="ER - Entity" version="0" id="O0">
@@ -1566,13 +1567,13 @@
     </dia:object>
     <dia:object type="ER - Attribute" version="0" id="O43">
       <dia:attribute name="obj_pos">
-        <dia:point val="28.1244,14.1561"/>
+        <dia:point val="30.5919,13.385"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="28.0744,14.1061;32.0994,16.0061"/>
+        <dia:rectangle val="30.5419,13.335;34.5669,15.235"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="28.1244,14.1561"/>
+        <dia:point val="30.5919,13.385"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
         <dia:real val="3.9249999999999998"/>
@@ -1613,13 +1614,13 @@
     </dia:object>
     <dia:object type="Standard - Line" version="0" id="O44">
       <dia:attribute name="obj_pos">
-        <dia:point val="31.3859,14.3439"/>
+        <dia:point val="33.5566,13.4704"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="31.3181,12.4291;34.8222,14.4117"/>
+        <dia:rectangle val="33.4863,12.4267;34.8246,13.5408"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
-        <dia:point val="31.3859,14.3439"/>
+        <dia:point val="33.5566,13.4704"/>
         <dia:point val="34.7543,12.497"/>
       </dia:attribute>
       <dia:attribute name="numcp">
@@ -2020,7 +2021,7 @@
         <dia:point val="-12.4326,-1.75422"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-12.4826,-1.80422;-6.5326,0.0957791"/>
+        <dia:rectangle val="-12.4826,-1.80422;-6.5326,0.09578"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="-12.4326,-1.75422"/>
@@ -2246,11 +2247,11 @@
         <dia:point val="-7.22593,-0.260434"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-7.28691,-0.321415;-6.11576,0.073587"/>
+        <dia:rectangle val="-7.28691,-0.321415;-6.11576,0.0735874"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
         <dia:point val="-7.22593,-0.260434"/>
-        <dia:point val="-6.17674,0.012606"/>
+        <dia:point val="-6.17674,0.0126065"/>
       </dia:attribute>
       <dia:attribute name="numcp">
         <dia:int val="1"/>
