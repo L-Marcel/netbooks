@@ -1,0 +1,4 @@
+book,tag
+
+Questao_3,book -> tag
+tag -> book

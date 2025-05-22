@@ -1,0 +1,4 @@
+uuid,name,email,password
+
+Questao_3,name -> name,email,password
+email -> uuid,name,password
