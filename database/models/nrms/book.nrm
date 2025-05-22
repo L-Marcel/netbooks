@@ -1,0 +1,4 @@
+id,isbn,tittle,num_pages,publisher,published_in,description
+
+Questao_3,id -> isbn,tittle,num_pages,publisher,published_in,description
+isbn -> tittle,num_pages,publisher,published_in,description,id

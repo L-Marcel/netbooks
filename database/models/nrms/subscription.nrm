@@ -1,0 +1,3 @@
+edition,subscriber,started_in,num_payments
+
+Questao_3,edition,subscriber -> started_in,num_payments
