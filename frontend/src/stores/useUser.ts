@@ -2,14 +2,14 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { fetchUser, User } from "../services/user";
 
-export type AuthStore = {
+export type UserStore = {
   token?: string;
   user?: User;
   setToken: (token?: string) => void;
   setUser: (user?: User) => void;
 };
 
-const useAuth = create<AuthStore>()(
+const useUser = create<UserStore>()(
   persist(
     (set) => ({
       setToken: (token?: string) => {
@@ -25,9 +25,9 @@ const useAuth = create<AuthStore>()(
     {
       name: "netbooks@auth",
       storage: createJSONStorage(() => localStorage),
-      partialize: (state: AuthStore) => ({ token: state.token }),
+      partialize: (state: UserStore) => ({ token: state.token }),
       onRehydrateStorage: () => {
-        return (state?: AuthStore, error?: unknown) => {
+        return (state?: UserStore, error?: unknown) => {
           if (state?.token && !error) {
             fetchUser(state.token).then((user) => {
               state?.setUser(user);
@@ -39,4 +39,4 @@ const useAuth = create<AuthStore>()(
   )
 );
 
-export default useAuth;
+export default useUser;

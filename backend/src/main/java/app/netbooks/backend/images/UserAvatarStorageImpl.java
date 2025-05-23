@@ -1,7 +1,6 @@
 package app.netbooks.backend.images;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
