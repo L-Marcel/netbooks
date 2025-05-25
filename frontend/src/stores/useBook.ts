@@ -5,16 +5,24 @@ export type Author = {
   name: string;
 };
 
+export type Tag = {
+  name: string;
+};
+
+export type Publisher = {
+  name: string;
+};
+
 export type Book = {
   id: number;
   isbn?: number;
   title: string;
   numPages: number;
   publishedIn: Date;
-  publisher: string;
+  publisher: Publisher;
   description: string;
   stars: number;
-  tags: string[];
+  tags: Tag[];
   authors: Author[];
   cover: string;
   banner: string;

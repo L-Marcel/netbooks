@@ -1,30 +1,32 @@
+import { Tag } from "@stores/useBook";
+
 interface Props {
-  tags?: string[];
+  tags?: Tag[];
 }
 
-const DEFAULT_TAGS: string[] = [];
+const DEFAULT_TAGS: Tag[] = [];
 
 export default function BookTag({ tags = DEFAULT_TAGS }: Props) {
   const MAX_VISIBLE_TAGS = 3;
-  const visibleTags = tags.slice(0, MAX_VISIBLE_TAGS);
+  const visibleTags = tags.length > MAX_VISIBLE_TAGS? tags.slice(0, MAX_VISIBLE_TAGS):tags;
   const extraTagsCount = tags.length - MAX_VISIBLE_TAGS;
 
   return (
     <div className="flex flex-wrap sm:flex-nowrap gap-2 mb-1">
       {visibleTags.map((tag) => (
         <div
-          key={tag}
+          key={tag.name}
           className="badge badge-outline badge-primary"
-          title={tag}
+          title={tag.name}
         >
-          {tag}
+          {tag.name}
         </div>
       ))}
 
       {extraTagsCount > 0 && (
         <div
           className="badge badge-outline badge-secondary tooltip tooltip-secondary tooltip-bottom lg:tooltip-right"
-          data-tip={tags.slice(MAX_VISIBLE_TAGS).join(", ")}
+          data-tip={tags.map((tag) => tag.name).slice(MAX_VISIBLE_TAGS).join(", ")}
         >
           +{extraTagsCount}
         </div>
