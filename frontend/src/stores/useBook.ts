@@ -13,7 +13,7 @@ export type Book = {
   publishedIn: Date;
   publisher: string;
   description: string;
-  classification: number;
+  stars: number;
   tags: string[];
   authors: Author[];
   cover: string;

@@ -15,7 +15,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Vow Press",
       description:
         "Um romance de fantasia juvenil centrado em telepatia e fuga. A história acompanha Kallista, uma jovem telepata que desperta no isolado Vale sem memória de seu passado. Durante uma década, ela treina como soldado sob a liderança de Valeria Reed, uma guerreira telepata lendária, na enigmática organização militar conhecida como Vow.",
-      classification: 8.6,
+      stars: 8.6,
       tags: [
         "Fantasia",
         "Mistério",
@@ -37,7 +37,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Nebula Books",
       description:
         "Uma arqueóloga espacial descobre fragmentos de uma civilização capaz de manipular o tempo.",
-      classification: 4.2,
+      stars: 4.2,
       tags: ["Sci-fi", "Viagem no Tempo"],
       authors: [{ id: 2, name: "Carlos L. Meirelles" }],
       cover: coverImg,
@@ -52,7 +52,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Editora Mística",
       description:
         "Um menino cego herda um poder ancestral que o permite enxergar o destino das pessoas.",
-      classification: 4.6,
+      stars: 4.6,
       tags: ["Fantasia", "Aventura", "Magia"],
       authors: [{ id: 3, name: "Helena Castro" }],
       cover: coverImg,
@@ -67,7 +67,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Tempus Livros",
       description:
         "Em um mundo onde emoções controlam o clima, uma jovem com raiva incontrolável ameaça destruir tudo.",
-      classification: 4.5,
+      stars: 4.5,
       tags: ["Fantasia", "Distopia"],
       authors: [{ id: 4, name: "Renata F. Lemos" }],
       cover: coverImg,
@@ -82,7 +82,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Arthurian House",
       description:
         "O ciclo de Avalon chega ao fim com a última sacerdotisa buscando restaurar o equilíbrio místico.",
-      classification: 4.0,
+      stars: 4.0,
       tags: ["Fantasia", "Mitologia"],
       authors: [{ id: 5, name: "Diana McKnight" }],
       cover: coverImg,
@@ -97,7 +97,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Editora Voz Interior",
       description:
         "Em um mundo onde ninguém pode falar, a protagonista descobre que sua voz pode libertar ou destruir.",
-      classification: 4.3,
+      stars: 4.3,
       tags: ["Distopia", "Drama"],
       authors: [{ id: 6, name: "Miguel Serafim" }],
       cover: coverImg,
@@ -112,7 +112,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Ocean Press",
       description:
         "Após um desastre ambiental, uma cidade é construída sob o mar, cheia de segredos esquecidos.",
-      classification: 4.7,
+      stars: 4.7,
       tags: ["Sci-fi", "Mistério", "Ambiental"],
       authors: [{ id: 7, name: "Laura Nishida" }],
       cover: coverImg,
@@ -127,7 +127,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Orbe Fantástico",
       description:
         "Uma guerra esquecida retorna quando artefatos sombrios ressurgem do subsolo de Duralith.",
-      classification: 4.1,
+      stars: 4.1,
       tags: ["Fantasia", "Guerra", "Magia Negra"],
       authors: [{ id: 8, name: "João R. Farias" }],
       cover: coverImg,
@@ -142,7 +142,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Bitpress",
       description:
         "Um hacker descobre um código que pode mudar a realidade digital — e o mundo físico.",
-      classification: 3.9,
+      stars: 3.9,
       tags: ["Techno-thriller", "Hackers", "IA"],
       authors: [{ id: 9, name: "Fernanda Lopes" }],
       cover: coverImg,
@@ -157,7 +157,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Memória Editorial",
       description:
         "Uma historiadora descobre um diário que reconta sua vida sob uma nova luz — e com perigos reais.",
-      classification: 4.4,
+      stars: 4.4,
       tags: ["Drama", "Mistério", "Histórico"],
       authors: [{ id: 10, name: "Ana Beatriz Ramos" }],
       cover: coverImg,
@@ -172,7 +172,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Vow Press",
       description:
         "Kallista acorda sem memória em um vale isolado. Treinada como telepata, ela busca fugir da organização que a controla.",
-      classification: 4.8,
+      stars: 4.8,
       tags: ["Fantasia", "Mistério", "Telepatia"],
       authors: [{ id: 1, name: "Amisha Sathi" }],
       cover: coverImg,
@@ -187,7 +187,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Nebula Books",
       description:
         "Uma arqueóloga espacial descobre fragmentos de uma civilização capaz de manipular o tempo.",
-      classification: 4.2,
+      stars: 4.2,
       tags: ["Sci-fi", "Viagem no Tempo"],
       authors: [{ id: 2, name: "Carlos L. Meirelles" }],
       cover: coverImg,
@@ -202,7 +202,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Editora Mística",
       description:
         "Um menino cego herda um poder ancestral que o permite enxergar o destino das pessoas.",
-      classification: 4.6,
+      stars: 4.6,
       tags: ["Fantasia", "Aventura", "Magia"],
       authors: [{ id: 3, name: "Helena Castro" }],
       cover: coverImg,
@@ -217,7 +217,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Tempus Livros",
       description:
         "Em um mundo onde emoções controlam o clima, uma jovem com raiva incontrolável ameaça destruir tudo.",
-      classification: 4.5,
+      stars: 4.5,
       tags: ["Fantasia", "Distopia"],
       authors: [{ id: 4, name: "Renata F. Lemos" }],
       cover: coverImg,
@@ -232,7 +232,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Arthurian House",
       description:
         "O ciclo de Avalon chega ao fim com a última sacerdotisa buscando restaurar o equilíbrio místico.",
-      classification: 4.0,
+      stars: 4.0,
       tags: ["Fantasia", "Mitologia"],
       authors: [{ id: 5, name: "Diana McKnight" }],
       cover: coverImg,
@@ -247,7 +247,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Editora Voz Interior",
       description:
         "Em um mundo onde ninguém pode falar, a protagonista descobre que sua voz pode libertar ou destruir.",
-      classification: 4.3,
+      stars: 4.3,
       tags: ["Distopia", "Drama"],
       authors: [{ id: 6, name: "Miguel Serafim" }],
       cover: coverImg,
@@ -262,7 +262,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Ocean Press",
       description:
         "Após um desastre ambiental, uma cidade é construída sob o mar, cheia de segredos esquecidos.",
-      classification: 4.7,
+      stars: 4.7,
       tags: ["Sci-fi", "Mistério", "Ambiental"],
       authors: [{ id: 7, name: "Laura Nishida" }],
       cover: coverImg,
@@ -277,7 +277,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Orbe Fantástico",
       description:
         "Uma guerra esquecida retorna quando artefatos sombrios ressurgem do subsolo de Duralith.",
-      classification: 4.1,
+      stars: 4.1,
       tags: ["Fantasia", "Guerra", "Magia Negra"],
       authors: [{ id: 8, name: "João R. Farias" }],
       cover: coverImg,
@@ -292,7 +292,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Bitpress",
       description:
         "Um hacker descobre um código que pode mudar a realidade digital — e o mundo físico.",
-      classification: 3.9,
+      stars: 3.9,
       tags: ["Techno-thriller", "Hackers", "IA"],
       authors: [{ id: 9, name: "Fernanda Lopes" }],
       cover: coverImg,
@@ -307,7 +307,7 @@ export function getMockedBooks(): Book[] {
       publisher: "Memória Editorial",
       description:
         "Uma historiadora descobre um diário que reconta sua vida sob uma nova luz — e com perigos reais.",
-      classification: 4.4,
+      stars: 4.4,
       tags: ["Drama", "Mistério", "Histórico"],
       authors: [{ id: 10, name: "Ana Beatriz Ramos" }],
       cover: coverImg,

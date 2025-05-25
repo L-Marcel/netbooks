@@ -7,6 +7,6 @@ import java.util.UUID;
 import app.netbooks.backend.models.Role;
 
 public interface RolesRepository {
-    public Map<UUID, List<Role>> findAllRoles();
+    public Map<UUID, List<Role>> mapAllRoles();
     public List<Role> findRoles(UUID uuid);
 };

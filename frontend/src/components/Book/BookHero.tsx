@@ -24,7 +24,7 @@ export default function BookHero({ book }: Props) {
           <header className="flex flex-col gap-4 md:gap-2">
             <h1 className="text-3xl lg:text-5xl font-bold">{book.title}</h1>
             <BookTags tags={book.tags} />
-            <RatingInput readonly rate={book.classification} />
+            <RatingInput readonly rate={book.stars} />
           </header>
           <main>
             <p className="text-sm md:text-base">{book.description}</p>
