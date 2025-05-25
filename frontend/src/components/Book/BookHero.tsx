@@ -1,6 +1,6 @@
 import { RatingInput } from "@components/Input/RatingInput";
 import BookTags from "./BookTags";
-import { Book } from "@stores/useBook";
+import { Book } from "@services/books";
 
 interface Props {
   book?: Book;

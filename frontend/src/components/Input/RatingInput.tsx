@@ -13,52 +13,52 @@ export function RatingInput({ readonly = false, rate }: Props) {
           <div
             className="mask mask-star-2 mask-half-1 bg-primary"
             aria-label="0.5 star"
-            aria-current={value === 0.5? "true":"false"}
+            aria-current={value === 0.5 ? "true" : "false"}
           />
           <div
             className="mask mask-star-2 mask-half-2 bg-primary"
             aria-label="1 star"
-            aria-current={value === 1? "true":"false"}
+            aria-current={value === 1 ? "true" : "false"}
           />
           <div
             className="mask mask-star-2 mask-half-1 bg-primary"
             aria-label="1.5 star"
-            aria-current={value === 1.5? "true":"false"}
+            aria-current={value === 1.5 ? "true" : "false"}
           />
           <div
             className="mask mask-star-2 mask-half-2 bg-primary"
             aria-label="2 star"
-            aria-current={value === 2? "true":"false"}
+            aria-current={value === 2 ? "true" : "false"}
           />
           <div
             className="mask mask-star-2 mask-half-1 bg-primary"
             aria-label="2.5 star"
-            aria-current={value === 2.5? "true":"false"}
+            aria-current={value === 2.5 ? "true" : "false"}
           />
           <div
             className="mask mask-star-2 mask-half-2 bg-primary"
             aria-label="3 star"
-            aria-current={value === 3? "true":"false"}
+            aria-current={value === 3 ? "true" : "false"}
           />
           <div
             className="mask mask-star-2 mask-half-1 bg-primary"
             aria-label="3.5 star"
-            aria-current={value === 3.5? "true":"false"}
+            aria-current={value === 3.5 ? "true" : "false"}
           />
           <div
             className="mask mask-star-2 mask-half-2 bg-primary"
             aria-label="4 star"
-            aria-current={value === 4? "true":"false"}
+            aria-current={value === 4 ? "true" : "false"}
           />
           <div
             className="mask mask-star-2 mask-half-1 bg-primary"
             aria-label="4.5 star"
-            aria-current={value === 4.5? "true":"false"}
+            aria-current={value === 4.5 ? "true" : "false"}
           />
           <div
             className="mask mask-star-2 mask-half-2 bg-primary"
             aria-label="5 star"
-            aria-current={value === 5? "true":"false"}
+            aria-current={value === 5 ? "true" : "false"}
           />
         </>
       ) : (

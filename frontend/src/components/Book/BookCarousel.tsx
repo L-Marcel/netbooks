@@ -1,14 +1,15 @@
-import useMediaQuery from "@components/hooks/useMediaQuery";
+import useMediaQuery from "../../hooks/useMediaQuery";
 import { remToPx } from "@components/utils/pixels";
-import { Book } from "@stores/useBook";
+import { Book, Tag } from "@services/books";
 import { KeyboardEvent, useLayoutEffect, useRef, useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 interface Props {
+  tag: Tag;
   books: Book[];
 }
 
-export default function BookCarousel({ books }: Props) {
+export default function BookCarousel({ tag, books }: Props) {
   const carousel = useRef<HTMLDivElement>(null);
   const isLarge = useMediaQuery("(width >= 64rem)");
   const [viewportWidth, setViewportWidth] = useState(0);
@@ -19,12 +20,21 @@ export default function BookCarousel({ books }: Props) {
   const finalItemWidth = ITEM_WIDTH + gap;
 
   const visibleCount = Math.ceil(viewportWidth / finalItemWidth);
+  const completeVisibleCount = Math.floor(viewportWidth / finalItemWidth);
+  const needArrows = completeVisibleCount < books.length;
 
   useLayoutEffect(() => {
-    if (carousel.current) {
-      setViewportWidth(carousel.current.clientWidth);
+    function updateWidth() {
+      if (carousel.current) {
+        setViewportWidth(carousel.current.clientWidth);
+      }
     }
-  }, [carousel, isLarge]);
+  
+    updateWidth();
+  
+    window.addEventListener("resize", updateWidth);
+    return () => window.removeEventListener("resize", updateWidth);
+  }, [carousel]);
 
   const onToNext = () => {
     carousel.current?.scrollBy({
@@ -48,26 +58,29 @@ export default function BookCarousel({ books }: Props) {
   return (
     <section className="relative flex flex-col w-full overflow-hidden">
       <h4 className="text-xl lg:text-2xl px-4 lg:px-8 pt-2 lg:pt-4 text-base-content align-middle">
-        Aventura <span className="font-light text-base">({books.length})</span>
+        {tag.name}{" "}
+        <span className="font-light text-base">({books.length})</span>
       </h4>
       <hr className="mx-4 lg:mx-8 w-1/6 mt-2" />
       <div className="relative flex flex-col">
-        <div className="absolute z-10 left-6 right-6 lg:left-4 lg:right-4 top-1/2 flex -translate-y-[1.5rem] transform justify-between">
-          <button
-            type="button"
-            onClick={onToPrevious}
-            className="btn btn-circle btn-soft btn-primary"
-          >
-            <FaArrowLeft />
-          </button>
-          <button
-            type="button"
-            onClick={onToNext}
-            className="btn btn-circle btn-soft btn-primary"
-          >
-            <FaArrowRight />
-          </button>
-        </div>
+        {needArrows && (
+          <div className="absolute z-10 left-6 right-6 lg:left-4 lg:right-4 top-1/2 flex -translate-y-[1.5rem] transform justify-between">
+            <button
+              type="button"
+              onClick={onToPrevious}
+              className="btn btn-circle btn-soft btn-primary"
+            >
+              <FaArrowLeft />
+            </button>
+            <button
+              type="button"
+              onClick={onToNext}
+              className="btn btn-circle btn-soft btn-primary"
+            >
+              <FaArrowRight />
+            </button>
+          </div>
+        )}
         <div
           ref={carousel}
           tabIndex={0}

@@ -1,4 +1,4 @@
-import { Tag } from "@stores/useBook";
+import { Tag } from "@services/books";
 
 interface Props {
   tags?: Tag[];
@@ -8,7 +8,8 @@ const DEFAULT_TAGS: Tag[] = [];
 
 export default function BookTag({ tags = DEFAULT_TAGS }: Props) {
   const MAX_VISIBLE_TAGS = 3;
-  const visibleTags = tags.length > MAX_VISIBLE_TAGS? tags.slice(0, MAX_VISIBLE_TAGS):tags;
+  const visibleTags =
+    tags.length > MAX_VISIBLE_TAGS ? tags.slice(0, MAX_VISIBLE_TAGS) : tags;
   const extraTagsCount = tags.length - MAX_VISIBLE_TAGS;
 
   return (
@@ -26,7 +27,10 @@ export default function BookTag({ tags = DEFAULT_TAGS }: Props) {
       {extraTagsCount > 0 && (
         <div
           className="badge badge-outline badge-secondary tooltip tooltip-secondary tooltip-bottom lg:tooltip-right"
-          data-tip={tags.map((tag) => tag.name).slice(MAX_VISIBLE_TAGS).join(", ")}
+          data-tip={tags
+            .map((tag) => tag.name)
+            .slice(MAX_VISIBLE_TAGS)
+            .join(", ")}
         >
           +{extraTagsCount}
         </div>
