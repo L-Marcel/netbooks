@@ -14,22 +14,23 @@ import app.netbooks.backend.models.Role;
 import app.netbooks.backend.models.User;
 
 public abstract class RoleTests extends BaseTests {
-    // @Test
-    // @Order(1)
-    // @DisplayName("Unknown")
-    // public void mustCreate() {
-    //     List<Role> roles = new LinkedList<>();
-    //     roles.add(Role.UNKNOWN);
-    //     roles.add(Role.fromString("FAKE"));
+    @Test
+    @Order(1)
+    @DisplayName("Unknown")
+    public void mustCreate() {
+        List<Role> roles = new LinkedList<>();
+        roles.add(Role.UNKNOWN);
+        roles.add(Role.fromString("FAKE"));
 
-    //     User user = new User(
-    //         null, 
-    //         null, 
-    //         null, 
-    //         null, 
-    //         roles
-    //     );
+        User user = new User(
+            null, 
+            null, 
+            null, 
+            null,
+            null,
+            roles
+        );
 
-    //     assertEquals(0, user.getAuthorities().size());
-    // };
+        assertEquals(0, user.getAuthorities().size());
+    };
 };

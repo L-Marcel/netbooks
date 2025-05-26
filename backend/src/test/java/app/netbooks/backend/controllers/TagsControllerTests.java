@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 
 import app.netbooks.backend.BaseTests;
 import app.netbooks.backend.dtos.TagResponse;
-import app.netbooks.backend.models.Tag;
 
 public abstract class TagsControllerTests extends BaseTests {
     @Autowired
