@@ -12,9 +12,10 @@ interface InputProps
   icon?: IconType;
 }
 
+const DEFAULT_VALIDATIONS: Validation[] = [];
 export default function Input({
   id,
-  validations = [],
+  validations = DEFAULT_VALIDATIONS,
   label,
   className = "",
   icon: Icon,
@@ -30,7 +31,7 @@ export default function Input({
       <label
         className={`input focus-within:input-primary ${hasError ? "!input-error" : ""} w-full text-base-content ${className}`}
       >
-        {Icon && <Icon className="size-4"/>}
+        {Icon && <Icon className="size-4" />}
         <input id={id} name={id} {...props} />
       </label>
       <p
@@ -39,6 +40,7 @@ export default function Input({
       >
         {validations.map((validation) => (
           <span
+            key={validation.content + "-" + validation.error}
             className={`flex flex-row justify-start items-baseline gap-1 ${validation.error ? "text-error" : "text-success"}`}
           >
             {validation.error ? (

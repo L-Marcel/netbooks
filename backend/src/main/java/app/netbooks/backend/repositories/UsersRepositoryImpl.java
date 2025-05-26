@@ -82,7 +82,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
     };
 
     @Override
-    public Map<UUID, List<Role>> findAllRoles() {
+    public Map<UUID, List<Role>> mapAllRoles() {
         Map<UUID, List<Role>> rolesMap = new LinkedHashMap<>();
 
         try (
@@ -145,13 +145,13 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 "SELECT * FROM user;"
             );
         ) {
-            Map<UUID, List<Role>> allRoles = this.findAllRoles();
+            Map<UUID, List<Role>> mappedRoles = this.mapAllRoles();
             while(result.next()) {
                 UUID uuid = UUID.fromString(result.getString("uuid"));
                 String email = result.getString("email");
                 String name = result.getString("name");
                 String password = result.getString("password");
-                List<Role> roles = allRoles.getOrDefault(uuid, new LinkedList<>());
+                List<Role> roles = mappedRoles.getOrDefault(uuid, new LinkedList<>());
                 User person = new User(uuid, name, null, email, password, roles);
                 persons.add(person);
             };

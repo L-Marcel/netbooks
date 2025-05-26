@@ -1,0 +1,2 @@
+INSERT INTO book (isbn, title, description, num_pages, published_in, publisher) 
+VALUES (9780747532743, 'Harry Potter', 'Primeiro livro da série Harry Potter.', 309, '1997-01-01', 'Livros Mundo Aberto');

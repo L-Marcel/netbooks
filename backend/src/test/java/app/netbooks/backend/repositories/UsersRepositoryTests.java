@@ -214,7 +214,7 @@ public abstract class UsersRepositoryTests extends BaseTests {
             UsersRepositoryImpl usersRepositoryImpl = new UsersRepositoryImpl(database);
             usersRepositoryImpl.initialize();
             usersRepositoryImpl.findAll();
-            usersRepositoryImpl.findAllRoles();
+            usersRepositoryImpl.mapAllRoles();
             usersRepositoryImpl.findRoles(null);
             usersRepositoryImpl.findById(null);
             usersRepositoryImpl.findByEmail(null);

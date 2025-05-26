@@ -150,11 +150,12 @@ export default function ImageInput({
 
   return (
     <>
-      <button {...props} onClick={onClickToOpen} />
+      <button type="button" {...props} onClick={onClickToOpen} />
       <dialog ref={areaRef} className="modal">
         <div className="modal-box flex flex-col gap-4">
           <h1 className="text-lg font-semibold">Importar imagem</h1>
           <button
+            type="button"
             onClick={onClickToUpload}
             onDrop={onDropImage}
             onDragOver={(e) => e.preventDefault()}
@@ -190,12 +191,14 @@ export default function ImageInput({
               {file.name ?? file.url ?? "Nenhum arquivo carregado..."}
             </p>
             <button
+              type="button"
               className="btn btn-soft btn-primary btn-square"
               onClick={onClickToUpload}
             >
               <FaUpload />
             </button>
             <button
+              type="button"
               disabled={!canClear}
               className="btn btn-soft btn-secondary btn-square"
               onClick={onClickToClear}
@@ -203,6 +206,7 @@ export default function ImageInput({
               <FaTrash />
             </button>
             <button
+              type="button"
               onClick={onCancel}
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
             >
@@ -239,6 +243,7 @@ export default function ImageInput({
             <div className="flex flex-row gap-4 justify-between items-center w-full flex-wrap">
               <div className="flex flex-row gap-4 justify-start items-center not-sm:w-full">
                 <button
+                  type="button"
                   className="btn btn-circle btn-soft btn-primary"
                   onClick={onResetZoom}
                 >
@@ -256,6 +261,7 @@ export default function ImageInput({
               </div>
               <div className="flex flex-row gap-4 justify-start items-center">
                 <button
+                  type="button"
                   className="btn btn-soft btn-primary"
                   onClick={onConfirm}
                 >
@@ -263,6 +269,7 @@ export default function ImageInput({
                   Confirmar
                 </button>
                 <button
+                  type="button"
                   className="btn btn-soft btn-square btn-secondary"
                   onClick={onCancel}
                 >
@@ -271,6 +278,7 @@ export default function ImageInput({
               </div>
             </div>
             <button
+              type="button"
               onClick={onCancel}
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
             >
