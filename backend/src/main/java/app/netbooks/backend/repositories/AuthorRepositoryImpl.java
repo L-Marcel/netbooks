@@ -1,15 +1,11 @@
 package app.netbooks.backend.repositories;
 
-import java.beans.Statement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-
 import org.springframework.stereotype.Repository;
 
 import app.netbooks.backend.connections.Database;
@@ -24,7 +20,7 @@ public class AuthorRepositoryImpl extends BaseRepository implements AuthorReposi
     }
 
     @Override
-    public Optional<Author> findById(int id) {
+    public Optional<Author> findById(Integer id) {
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
@@ -63,7 +59,7 @@ public class AuthorRepositoryImpl extends BaseRepository implements AuthorReposi
                 ResultSet result = preparedStatement.executeQuery();
             ) {
                 while (result.next()) {
-                    int id = result.getInt("id");
+                    Integer id = result.getInt("id");
                     String completeName = result.getString("name");
                     Author author = new Author(id, completeName);
                     authors.add(author);
@@ -93,7 +89,7 @@ public class AuthorRepositoryImpl extends BaseRepository implements AuthorReposi
     }
 
     @Override
-    public void deleteById(int id) {
+    public void deleteById(Integer id) {
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
