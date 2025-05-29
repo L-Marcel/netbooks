@@ -9,7 +9,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 import app.netbooks.backend.connections.Database;
-import app.netbooks.backend.errors.AuthorNotFound;
 import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.models.Author;
 
@@ -78,12 +77,11 @@ public class AuthorRepositoryImpl extends BaseRepository implements AuthorReposi
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO author (id, name) VALUES (?, ?);"
+                "INSERT INTO author (name) VALUES (?);"
             )
         ) {
-           statement.setString(1, String.valueOf(author.getId()));
-           statement.setString(2, author.getName());
-           statement.executeQuery();
+           statement.setString(1, author.getName());
+           statement.executeUpdate();
         } catch (Exception e) {
             throw new InternalServerError();
         }
@@ -98,7 +96,7 @@ public class AuthorRepositoryImpl extends BaseRepository implements AuthorReposi
             )
         ) {
             statement.setString(1, String.valueOf(id));
-            statement.executeQuery();            
+            statement.executeUpdate();            
         } catch (Exception e) {
             throw new InternalServerError();
         }

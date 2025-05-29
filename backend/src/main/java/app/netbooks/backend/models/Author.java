@@ -12,4 +12,8 @@ import lombok.Setter;
 public class Author {
     private Integer id;
     private String name;
+
+    public Author(String name){
+        this.name = name;
+    }
 };
