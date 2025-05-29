@@ -1,6 +1,6 @@
-import { FaSearch } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import { User } from "../../services/user";
+import { FaBook, FaCompass, FaHome } from "react-icons/fa";
 
 interface Props {
   user?: User;
@@ -9,9 +9,6 @@ interface Props {
 export default function NavbarLinks({ user }: Props) {
   return (
     <>
-      <li className="mt-1">
-        <FaSearch />
-      </li>
       <li>
         <NavLink
           className={({ isActive }) =>
@@ -20,7 +17,7 @@ export default function NavbarLinks({ user }: Props) {
           }
           to="/home"
         >
-          Início
+          <FaHome /> Início
         </NavLink>
       </li>
       {user && (
@@ -30,9 +27,9 @@ export default function NavbarLinks({ user }: Props) {
               "text-base-content no-underline hover:underline font-bold transition" +
               (isActive ? " text-primary" : "")
             }
-            to="/books"
+            to="/bookcase"
           >
-            Estante
+            <FaBook /> Estante
           </NavLink>
         </li>
       )}
@@ -42,9 +39,9 @@ export default function NavbarLinks({ user }: Props) {
             "text-base-content no-underline hover:underline font-bold transition" +
             (isActive ? " text-primary" : "")
           }
-          to="/sort"
+          to="/explore"
         >
-          Sortear
+          <FaCompass /> Encontrar
         </NavLink>
       </li>
     </>
