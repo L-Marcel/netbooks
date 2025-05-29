@@ -3,6 +3,7 @@ package app.netbooks.backend.repositories;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +41,7 @@ public class AuthorRepositoryImpl extends BaseRepository implements AuthorReposi
 
                 return authorFound;
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new InternalServerError();
         }
     }
@@ -65,7 +66,7 @@ public class AuthorRepositoryImpl extends BaseRepository implements AuthorReposi
                     authors.add(author);
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new InternalServerError();
         }
 
@@ -82,7 +83,7 @@ public class AuthorRepositoryImpl extends BaseRepository implements AuthorReposi
         ) {
            statement.setString(1, author.getName());
            statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new InternalServerError();
         }
     }
@@ -97,7 +98,7 @@ public class AuthorRepositoryImpl extends BaseRepository implements AuthorReposi
         ) {
             statement.setString(1, String.valueOf(id));
             statement.executeUpdate();            
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new InternalServerError();
         }
     }

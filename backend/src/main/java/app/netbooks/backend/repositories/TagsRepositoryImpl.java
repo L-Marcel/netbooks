@@ -78,7 +78,7 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
         ) {
             statement.setString(1, tag.getName());
             statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new InternalServerError();
         }
     };
@@ -93,7 +93,7 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
         ) {
             statement.setString(1, name);
             statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new InternalServerError();
         }
     };
