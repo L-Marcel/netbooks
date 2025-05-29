@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import app.netbooks.backend.errors.AuthorNotFound;
 import app.netbooks.backend.models.Author;
 import app.netbooks.backend.repositories.AuthorRepository;
 
@@ -14,11 +15,12 @@ public class AuthorsService {
     @Autowired
     private AuthorRepository repository;
 
-    public List<Author> findAuthorsByName(String name) {
-        return repository.findByName(name);
+    public List<Author> searchAuthorsByName(String name) {
+        return repository.searchByName(name);
     }
 
-    public Optional<Author> findAuthorById(Integer id) {
-        return repository.findById(id);
+    public Author findAuthorById(Integer id) throws AuthorNotFound {
+        return repository.findById(id)
+        .orElseThrow(() -> new AuthorNotFound());
     }
 }

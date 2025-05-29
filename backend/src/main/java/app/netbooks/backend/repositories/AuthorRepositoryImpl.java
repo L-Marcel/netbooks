@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 import app.netbooks.backend.connections.Database;
+import app.netbooks.backend.errors.AuthorNotFound;
 import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.models.Author;
 
@@ -41,12 +42,12 @@ public class AuthorRepositoryImpl extends BaseRepository implements AuthorReposi
                 return authorFound;
             }
         } catch (Exception e) {
-            return Optional.empty();
+            throw new InternalServerError();
         }
     }
     
     @Override
-    public List<Author> findByName(String name) {
+    public List<Author> searchByName(String name) {
         List<Author> authors = new ArrayList<Author>();
         try (
             Connection connection = this.database.getConnection();
@@ -66,7 +67,7 @@ public class AuthorRepositoryImpl extends BaseRepository implements AuthorReposi
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new InternalServerError();
         }
 
         return authors;
@@ -77,7 +78,7 @@ public class AuthorRepositoryImpl extends BaseRepository implements AuthorReposi
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO author (uuid, name) VALUES (?, ?);"
+                "INSERT INTO author (id, name) VALUES (?, ?);"
             )
         ) {
            statement.setString(1, String.valueOf(author.getId()));

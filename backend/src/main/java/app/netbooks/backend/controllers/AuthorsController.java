@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.netbooks.backend.dtos.AuthorResponse;
@@ -20,11 +21,11 @@ public class AuthorsController {
     @Autowired
     private AuthorsService service;
 
-    @GetMapping("/{name}")
+    @GetMapping
     public ResponseEntity<List<AuthorResponse>> getAuthorsByName(
-        @PathVariable String name
+        @RequestParam(required = false, defaultValue = "") String name
     ) {
-        List<Author> authors = service.findAuthorsByName(name);
+        List<Author> authors = service.searchAuthorsByName(name);
         List<AuthorResponse> response = AuthorResponse.fromList(authors);
         
         return ResponseEntity.ok().body(response);
@@ -34,8 +35,9 @@ public class AuthorsController {
     public ResponseEntity<AuthorResponse> getAuthorById(
         @PathVariable Integer id
     ) {
-        return service.findAuthorById(id)
-            .map(author -> ResponseEntity.ok(new AuthorResponse(author)))
-            .orElse(ResponseEntity.notFound().build());
+        Author author = service.findAuthorById(id);
+        AuthorResponse response = new AuthorResponse(author);
+
+        return ResponseEntity.ok().body(response);
     }
 }
