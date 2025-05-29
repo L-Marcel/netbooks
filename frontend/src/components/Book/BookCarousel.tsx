@@ -1,5 +1,5 @@
 import useMediaQuery from "../../hooks/useMediaQuery";
-import { remToPx } from "@components/utils/pixels";
+import { remToPx } from "@components/Utils/pixels";
 import { Book, Tag } from "@services/books";
 import { KeyboardEvent, useLayoutEffect, useRef, useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
@@ -29,9 +29,9 @@ export default function BookCarousel({ tag, books }: Props) {
         setViewportWidth(carousel.current.clientWidth);
       }
     }
-  
+
     updateWidth();
-  
+
     window.addEventListener("resize", updateWidth);
     return () => window.removeEventListener("resize", updateWidth);
   }, [carousel]);
