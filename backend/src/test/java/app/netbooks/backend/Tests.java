@@ -9,6 +9,7 @@ import app.netbooks.backend.advices.ExceptionAdviceTests;
 import app.netbooks.backend.controllers.TagsControllerTests;
 import app.netbooks.backend.controllers.UsersControllerTests;
 import app.netbooks.backend.model.RoleTests;
+import app.netbooks.backend.repositories.AuthorRepositoryTests;
 import app.netbooks.backend.repositories.PlansRepositoryTests;
 import app.netbooks.backend.repositories.TagsRepositoryTests;
 import app.netbooks.backend.repositories.UsersRepositoryTests;
@@ -36,6 +37,9 @@ public class Tests {
     @Order(102)
     class UsersRepository extends UsersRepositoryTests {};
 
+    @Nested
+    @Order(103)
+    class AuthorRepository extends AuthorRepositoryTests {};
 
     @Nested
     @Order(10000)
