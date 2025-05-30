@@ -38,7 +38,7 @@ public class PublisherRepositoryImpl extends BaseRepository implements Publisher
                 publishers.add(publisher);
 
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new InternalServerError();
         }
         return publishers;
@@ -49,7 +49,7 @@ public class PublisherRepositoryImpl extends BaseRepository implements Publisher
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "SELECT FROM publisher WHERE name = ?;"
+                "SELECT * FROM publisher WHERE name = ?;"
             )
         ) {
             statement.setString(1, name);
