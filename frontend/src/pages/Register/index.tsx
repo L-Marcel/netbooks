@@ -5,8 +5,17 @@ import { register, UserRegisterData } from "../../services/user";
 import ImageInput from "@components/Input/FileInput";
 import { FaEnvelope, FaKey, FaUpload, FaUser } from "react-icons/fa";
 import { ApiError, ValidationError } from "../../services/axios";
+import AuthGuard from "@components/Guards/AuthGuard";
 
 export default function Register() {
+  return (
+    <AuthGuard onlyUnauthenticated>
+      <Page />
+    </AuthGuard>
+  );
+}
+
+function Page() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [validations, setValidations] = useState<ValidationError>({});
@@ -44,7 +53,7 @@ export default function Register() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     register(data)
@@ -72,10 +81,7 @@ export default function Register() {
           <h1 className="text-3xl font-bold text-base-content">Criar conta</h1>
           <p>Cadastre-se para acessar todos os recursos</p>
         </header>
-        <form
-          className="flex flex-col gap-5 px-5 w-full"
-          onSubmit={handleSubmit}
-        >
+        <form className="flex flex-col gap-5 px-5 w-full" onSubmit={onSubmit}>
           <div className="flex gap-5">
             <div
               tabIndex={-1}

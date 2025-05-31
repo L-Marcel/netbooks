@@ -29,7 +29,7 @@ export default function Navbar() {
         <Logo className="h-8 w-18 lg:h-12 lg:w-28" />
       </div>
       <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1 items-center">
+        <ul className="menu menu-horizontal px-1 items-center gap-1">
           <NavbarLinks user={user} />
         </ul>
       </div>

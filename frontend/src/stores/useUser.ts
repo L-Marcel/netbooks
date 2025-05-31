@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { fetchUser, User } from "../services/user";
+import { fetchUser } from "@services/user";
+import { User } from "../models/user";
 
 export type UserStore = {
   token?: string;

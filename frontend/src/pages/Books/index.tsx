@@ -1,7 +1,7 @@
 import AuthGuard from "@components/Guards/AuthGuard";
 import SubscriberGuard from "@components/Guards/SubscriberGuard";
 
-export default function Explore() {
+export default function Books() {
   return (
     <AuthGuard>
       <SubscriberGuard>

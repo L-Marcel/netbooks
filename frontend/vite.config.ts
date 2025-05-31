@@ -14,6 +14,7 @@ export default defineConfig({
       "@assets": path.join(__dirname, "src", "assets"),
       "@services": path.join(__dirname, "src", "services"),
       "@stores": path.join(__dirname, "src", "stores"),
+      "@models": path.join(__dirname, "src", "models"),
       "@icons": path.join(__dirname, "src", "components", "icons"),
     },
   },

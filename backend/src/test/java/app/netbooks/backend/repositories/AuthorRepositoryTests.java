@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -24,6 +26,8 @@ public class AuthorRepositoryTests extends BaseTests {
     @Autowired
     private AuthorRepository repository;
 
+    private Author testAuthor;
+
     @BeforeAll
     public static void clear(@Autowired Database database) {
         BaseTests.clear(database, "author");
@@ -35,26 +39,16 @@ public class AuthorRepositoryTests extends BaseTests {
     public void mustCreate() {
         assertDoesNotThrow(() -> {
             repository.create(
-                new Author(1, "Victoria Aveyard")
+                new Author("Victoria Aveyard")
             );
             repository.create(
-                new Author(2, "Tori Christin")
+                new Author("Tori Christin")
             );
         });
     }
     
     @Test
     @Order(2)
-    @DisplayName("Find")
-    public void mustFind() {
-        assertDoesNotThrow(() -> {
-            Optional<Author> author = repository.findById(1);
-            assertEquals("Victoria Aveyard", author.get().getName());
-        });
-    }
-    
-    @Test
-    @Order(3)
     @DisplayName("Search")
     public void mustSearch() {
         assertDoesNotThrow(() -> {
@@ -64,15 +58,25 @@ public class AuthorRepositoryTests extends BaseTests {
     }
 
     @Test
+    @Order(3)
+    @DisplayName("Find")
+    public void mustFind() {
+        assertDoesNotThrow(() -> {
+            List<Author> authors = repository.searchByName("Victoria Aveyard");
+            assertEquals(1, authors.size());
+            this.testAuthor = authors.getFirst();
+            Optional<Author> author = repository.findById(this.testAuthor.getId());
+            assertEquals(this.testAuthor.getName(), author.get().getName());
+        });
+    }
+
+    @Test
     @Order(4)
     @DisplayName("Delete")
     public void mustDelete() {
         assertDoesNotThrow(() -> {
-            Optional<Author> author = repository.findById(1);
-            assertTrue(author.isPresent());
-            repository.deleteById(1);
-            
-            author = repository.findById(1);
+            repository.deleteById(this.testAuthor.getId());
+            Optional<Author> author = repository.findById(this.testAuthor.getId());
             assertTrue(author.isEmpty());
         });
     }
@@ -81,8 +85,14 @@ public class AuthorRepositoryTests extends BaseTests {
     @Order(5)
     @DisplayName("Exceptions")
     public void mustThrowExpections() throws SQLException {
+        Database database = mock(Database.class);
+        when(database.getConnection()).thenThrow(
+            new SQLException("Erro simulado de conexão!")
+        );
+
         assertThrows(InternalServerError.class, () -> {
-            repository.deleteById(1);
+            UsersRepositoryImpl usersRepositoryImpl = new UsersRepositoryImpl(database);
+            usersRepositoryImpl.deleteById(null);
         });
     }
 }

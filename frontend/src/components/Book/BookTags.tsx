@@ -1,4 +1,4 @@
-import { Tag } from "@services/books";
+import { Tag } from "@models/book";
 
 interface Props {
   tags?: Tag[];

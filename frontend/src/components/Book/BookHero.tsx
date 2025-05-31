@@ -1,12 +1,17 @@
 import { RatingInput } from "@components/Input/RatingInput";
 import BookTags from "./BookTags";
-import { Book } from "@services/books";
-
+import { Book } from "@models/book";
+import { useNavigate } from "react-router-dom";
 interface Props {
   book?: Book;
 }
 
 export default function BookHero({ book }: Props) {
+  const navigate = useNavigate();
+  const onReadRequested = () => {
+    navigate("/books/" + book?.id);
+  };
+
   return (
     <div className="hero justify-start max-h-screen min-h-96 relative bg-gradient-to-br from-base-100 via-base-200 to-base-300">
       <div
@@ -30,7 +35,11 @@ export default function BookHero({ book }: Props) {
             <p className="text-sm md:text-base">{book?.description}</p>
           </main>
           <footer>
-            <button type="button" className="btn btn-primary">
+            <button
+              type="button"
+              onClick={onReadRequested}
+              className="btn btn-primary"
+            >
               Começar a ler
             </button>
           </footer>
