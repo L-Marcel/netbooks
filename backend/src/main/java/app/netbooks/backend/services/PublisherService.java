@@ -30,6 +30,6 @@ public class PublisherService {
     }
 
     public void delete(String name) {
-        repository.delete(name);
+        repository.deleteByName(name);
     }
 }

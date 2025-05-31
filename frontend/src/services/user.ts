@@ -1,20 +1,7 @@
-import { UUID } from "crypto";
 import api from "./axios";
 import useAuth from "../stores/useUser";
 import axios from "axios";
-
-enum Role {
-  ADMINISTRATOR = "ADMINISTRATOR",
-  SUBSCRIBER = "SUBSCRIBER",
-  UNKNOWN = "UNKNOWN",
-}
-
-export type User = {
-  uuid: UUID;
-  name: string;
-  email: string;
-  roles: Role[];
-};
+import { User, UserData } from "../models/user";
 
 export type UserLoginData = {
   email: string;
@@ -54,11 +41,11 @@ export async function logout() {
 
 export async function fetchUser(token: string): Promise<User> {
   return axios
-    .get<User>("http://localhost:8080/users/me", {
+    .get<UserData>("http://localhost:8080/users/me", {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token,
       },
     })
-    .then((response) => response.data);
+    .then((response) => new User(response.data));
 }

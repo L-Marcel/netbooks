@@ -40,7 +40,7 @@ public class UsersController {
         return ResponseEntity.ok().body(response);
     };
 
-    @AdministratorOnly
+    @AuhenticatedOnly
     @GetMapping("/me")
     public ResponseEntity<UserResponse> get(
         @AuthenticationPrincipal User user

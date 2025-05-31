@@ -3,8 +3,17 @@ import Input from "@components/Input";
 import { Link, useNavigate } from "react-router-dom";
 import { login, UserLoginData } from "../../services/user";
 import { FaEnvelope, FaKey } from "react-icons/fa";
+import AuthGuard from "@components/Guards/AuthGuard";
 
 export default function Login() {
+  return (
+    <AuthGuard onlyUnauthenticated>
+      <Page />
+    </AuthGuard>
+  );
+}
+
+function Page() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<UserLoginData>({
@@ -19,7 +28,7 @@ export default function Login() {
     }));
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     login(data)
@@ -38,10 +47,7 @@ export default function Login() {
           <h1 className="text-3xl font-bold text-base-content">Entrar</h1>
           <p>Acesse sua conta agora mesmo</p>
         </header>
-        <form
-          className="flex flex-col gap-5 px-5 w-full"
-          onSubmit={handleSubmit}
-        >
+        <form className="flex flex-col gap-5 px-5 w-full" onSubmit={onSubmit}>
           <Input
             icon={FaEnvelope}
             label="E-mail"
@@ -66,7 +72,7 @@ export default function Login() {
             disabled={isLoading}
           >
             {isLoading && <span className="loading loading-spinner" />}
-            {isLoading ? "Criando..." : "Criar"}
+            {isLoading ? "Entrando..." : "Entrar"}
           </button>
         </form>
         <footer className="text-center">

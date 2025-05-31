@@ -9,5 +9,5 @@ public interface PublisherRepository {
     public List<Publisher> findAll();
     public Optional<Publisher> find(String name);
     public void create(Publisher publisher);
-    public void delete(String name);
+    public void deleteByName(String name);
 }

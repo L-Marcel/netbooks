@@ -1,6 +1,6 @@
 import useMediaQuery from "../../hooks/useMediaQuery";
 import { remToPx } from "@components/Utils/pixels";
-import { Book, Tag } from "@services/books";
+import { Book, Tag } from "@models/book";
 import { KeyboardEvent, useLayoutEffect, useRef, useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 

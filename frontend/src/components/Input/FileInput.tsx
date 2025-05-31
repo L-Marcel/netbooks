@@ -146,8 +146,6 @@ export default function ImageInput({
     areaRef.current?.close();
   };
 
-  // [TODO] Adicionar botão de editar imagem (quando há)
-
   return (
     <>
       <button type="button" {...props} onClick={onClickToOpen} />

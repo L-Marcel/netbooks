@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
-import { User } from "../../services/user";
-import { FaBook, FaCompass, FaHome } from "react-icons/fa";
+import { FaBook, FaCompass, FaFireAlt, FaHome } from "react-icons/fa";
+import { User } from "@models/user";
 
 interface Props {
   user?: User;
@@ -20,30 +20,44 @@ export default function NavbarLinks({ user }: Props) {
           <FaHome /> Início
         </NavLink>
       </li>
-      {user && (
+      {user?.isSubscriber() ? (
+        <>
+          <li>
+            <NavLink
+              className={({ isActive }) =>
+                "text-base-content no-underline hover:underline font-bold transition" +
+                (isActive ? " text-primary" : "")
+              }
+              to="/bookcase"
+            >
+              <FaBook /> Estante
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              className={({ isActive }) =>
+                "text-base-content no-underline hover:underline font-bold transition" +
+                (isActive ? " text-primary" : "")
+              }
+              to="/explore"
+            >
+              <FaCompass /> Encontrar
+            </NavLink>
+          </li>
+        </>
+      ) : (
         <li>
           <NavLink
             className={({ isActive }) =>
-              "text-base-content no-underline hover:underline font-bold transition" +
-              (isActive ? " text-primary" : "")
+              "text-base-content hover:text-warning focus:!text-warning focus-visible:text-warning no-underline hover:underline font-bold transition" +
+              (isActive ? " text-warning" : "")
             }
-            to="/bookcase"
+            to="/subscribe"
           >
-            <FaBook /> Estante
+            <FaFireAlt /> Assinar
           </NavLink>
         </li>
       )}
-      <li>
-        <NavLink
-          className={({ isActive }) =>
-            "text-base-content no-underline hover:underline font-bold transition" +
-            (isActive ? " text-primary" : "")
-          }
-          to="/explore"
-        >
-          <FaCompass /> Encontrar
-        </NavLink>
-      </li>
     </>
   );
 }

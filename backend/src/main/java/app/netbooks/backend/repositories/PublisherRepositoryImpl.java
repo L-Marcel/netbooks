@@ -86,7 +86,7 @@ public class PublisherRepositoryImpl extends BaseRepository implements Publisher
     }
 
     @Override
-    public void delete(String name) {
+    public void deleteByName(String name) {
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
