@@ -22,8 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import app.netbooks.backend.BaseTests;
 import app.netbooks.backend.connections.Database;
 import app.netbooks.backend.errors.InternalServerError;
-import app.netbooks.backend.models.Role;
 import app.netbooks.backend.models.User;
+import app.netbooks.backend.repositories.interfaces.UsersRepository;
 
 public abstract class UsersRepositoryTests extends BaseTests {
     @Autowired
@@ -36,7 +36,15 @@ public abstract class UsersRepositoryTests extends BaseTests {
             Statement statement = connection.createStatement();
         ) {
             statement.executeUpdate(
-                "DELETE FROM user WHERE email != 'admin@gmail.com';"
+                "DELETE FROM user WHERE true;"
+            );
+            statement.executeUpdate(
+                "INSERT IGNORE INTO user (uuid, name, email, password) VALUES\n" +
+                "  ('3e78b287-399b-11f0-a0a8-7605c53cdf13', 'Administrador', 'admin@gmail.com', '$2a$10$iszhyLRMNIYy04weFz8dReJh3GxRsDv7hQYUBzaAAdn5WFc2csLXS');"
+            );
+            statement.executeUpdate(
+                "INSERT IGNORE INTO admin (uuid) VALUES\n" +
+                "  ('3e78b287-399b-11f0-a0a8-7605c53cdf13');"
             );
         } catch (SQLException e) {
             e.printStackTrace();
@@ -66,9 +74,9 @@ public abstract class UsersRepositoryTests extends BaseTests {
         assertDoesNotThrow(() -> {
             List<User> users = repository.findAll();
             users.removeIf(
-                (User user) -> user
-                    .getRoles()
-                    .contains(Role.ADMINISTRATOR)
+                (User user) -> !user
+                    .getEmail()
+                    .equals("admin@gmail.com")
             );
             assertEquals(1, users.size());
 
@@ -90,7 +98,6 @@ public abstract class UsersRepositoryTests extends BaseTests {
         assertDoesNotThrow(() -> {
             Optional<User> user = repository.findByEmail("admin@gmail.com");
             assertTrue(user.isPresent());
-            assertTrue(user.get().getRoles().contains(Role.ADMINISTRATOR));
         });
     };
 
@@ -214,8 +221,6 @@ public abstract class UsersRepositoryTests extends BaseTests {
             UsersRepositoryImpl usersRepositoryImpl = new UsersRepositoryImpl(database);
             usersRepositoryImpl.initialize();
             usersRepositoryImpl.findAll();
-            usersRepositoryImpl.mapAllRoles();
-            usersRepositoryImpl.findRoles(null);
             usersRepositoryImpl.findById(null);
             usersRepositoryImpl.findByEmail(null);
         });

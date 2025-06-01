@@ -7,19 +7,19 @@ import org.springframework.stereotype.Service;
 
 import app.netbooks.backend.errors.AuthorNotFound;
 import app.netbooks.backend.models.Author;
-import app.netbooks.backend.repositories.AuthorRepository;
+import app.netbooks.backend.repositories.interfaces.AuthorRepository;
 
 @Service
 public class AuthorsService {
     @Autowired
     private AuthorRepository repository;
 
-    public List<Author> searchAuthorsByName(String name) {
+    public List<Author> searchByName(String name) {
         return repository.searchByName(name);
-    }
+    };
 
-    public Author findAuthorById(Integer id) throws AuthorNotFound {
+    public Author findById(Integer id) throws AuthorNotFound {
         return repository.findById(id)
         .orElseThrow(() -> new AuthorNotFound());
-    }
-}
+    };
+};

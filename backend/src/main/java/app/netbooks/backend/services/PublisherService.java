@@ -7,19 +7,19 @@ import org.springframework.stereotype.Service;
 
 import app.netbooks.backend.errors.PublisherNotFound;
 import app.netbooks.backend.models.Publisher;
-import app.netbooks.backend.repositories.PublisherRepository;
+import app.netbooks.backend.repositories.interfaces.PublishersRepository;
 
 @Service
 public class PublisherService {
     @Autowired
-    private PublisherRepository repository;
+    private PublishersRepository repository;
 
     public List<Publisher> findAll() {
         return repository.findAll();
     }
 
-    public Publisher find(String name) {
-        return repository.find(name)
+    public Publisher findByName(String name) {
+        return repository.findByName(name)
             .orElseThrow(
                 () -> new PublisherNotFound()
             );

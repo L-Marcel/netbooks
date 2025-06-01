@@ -1,0 +1,17 @@
+DELETE FROM publisher WHERE true;
+DELETE FROM tag WHERE true;
+DELETE FROM author WHERE true;
+DELETE FROM benefit WHERE true;
+DELETE FROM book WHERE true;
+DELETE FROM book_benefit WHERE true;
+DELETE FROM book_author WHERE true;
+DELETE FROM book_tag WHERE true;
+DELETE FROM plan WHERE true;
+DELETE FROM plan_benefit WHERE true;
+DELETE FROM plan_edition WHERE true;
+DELETE FROM user WHERE true;
+DELETE FROM classification WHERE true;
+DELETE FROM reading WHERE true;
+DELETE FROM admin WHERE true;
+DELETE FROM subscriber WHERE true;
+DELETE FROM subscription WHERE true;

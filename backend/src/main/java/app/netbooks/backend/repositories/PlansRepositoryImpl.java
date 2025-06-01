@@ -15,11 +15,38 @@ import org.springframework.stereotype.Repository;
 import app.netbooks.backend.connections.Database;
 import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.models.Plan;
+import app.netbooks.backend.repositories.interfaces.PlansRepository;
 
 @Repository
 public class PlansRepositoryImpl extends BaseRepository implements PlansRepository {
     public PlansRepositoryImpl(Database database) {
         super(database);
+    };
+
+    @Override
+    public List<Plan> findAllAvailable() {
+        List<Plan> plans = new ArrayList<Plan>();
+
+        try (
+            Connection connection = this.database.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(
+               "SELECT DISTINCT plan, name, description, duration FROM plans_editions WHERE closed_in IS NULL;"
+            );
+        ) {
+            while(result.next()) {
+                Integer id = result.getInt("plan");
+                String name = result.getString("name");
+                String description = result.getString("description");
+                Duration duration = Duration.ofSeconds(result.getLong("duration"));
+                Plan plan = new Plan(id, name, description, duration);
+                plans.add(plan);
+            };
+        } catch (SQLException e) {
+            e.printStackTrace();
+        };
+
+        return plans;
     };
 
     @Override

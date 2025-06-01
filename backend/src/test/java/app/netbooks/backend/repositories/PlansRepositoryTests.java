@@ -23,6 +23,7 @@ import app.netbooks.backend.BaseTests;
 import app.netbooks.backend.connections.Database;
 import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.models.Plan;
+import app.netbooks.backend.repositories.interfaces.PlansRepository;
 
 public abstract class PlansRepositoryTests extends BaseTests {
     @Autowired

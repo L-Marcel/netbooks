@@ -14,9 +14,10 @@ import org.springframework.stereotype.Repository;
 import app.netbooks.backend.connections.Database;
 import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.models.Tag;
+import app.netbooks.backend.repositories.interfaces.TagsRepository;
 
 @Repository
-public class TagsRepositoryImpl extends BaseRepository implements TagsRepository{
+public class TagsRepositoryImpl extends BaseRepository implements TagsRepository {
     public TagsRepositoryImpl(Database database) {
         super(database);
     };
