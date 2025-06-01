@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.netbooks.backend.dtos.TagResponse;
+import app.netbooks.backend.dtos.response.TagResponse;
 import app.netbooks.backend.models.Tag;
 import app.netbooks.backend.services.TagsService;
 

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.netbooks.backend.dtos.AuthorResponse;
+import app.netbooks.backend.dtos.response.AuthorResponse;
 import app.netbooks.backend.models.Author;
 import app.netbooks.backend.services.AuthorsService;
 
@@ -22,22 +22,22 @@ public class AuthorsController {
     private AuthorsService service;
 
     @GetMapping
-    public ResponseEntity<List<AuthorResponse>> getAuthorsByName(
+    public ResponseEntity<List<AuthorResponse>> searchByName(
         @RequestParam(required = false, defaultValue = "") String name
     ) {
-        List<Author> authors = service.searchAuthorsByName(name);
+        List<Author> authors = service.searchByName(name);
         List<AuthorResponse> response = AuthorResponse.fromList(authors);
         
         return ResponseEntity.ok().body(response);
-    }
+    };
 
     @GetMapping("/{id}")
-    public ResponseEntity<AuthorResponse> getAuthorById(
+    public ResponseEntity<AuthorResponse> findById(
         @PathVariable Integer id
     ) {
-        Author author = service.findAuthorById(id);
+        Author author = service.findById(id);
         AuthorResponse response = new AuthorResponse(author);
 
         return ResponseEntity.ok().body(response);
-    }
-}
+    };
+};

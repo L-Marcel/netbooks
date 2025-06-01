@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.netbooks.backend.dtos.PublisherResponse;
+import app.netbooks.backend.dtos.response.PublisherResponse;
 import app.netbooks.backend.models.Publisher;
 import app.netbooks.backend.services.PublisherService;
 import org.springframework.web.bind.annotation.PostMapping;

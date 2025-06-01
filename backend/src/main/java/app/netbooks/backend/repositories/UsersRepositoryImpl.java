@@ -6,132 +6,26 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import app.netbooks.backend.connections.Database;
 import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.images.UserAvatarStorage;
-import app.netbooks.backend.models.Role;
 import app.netbooks.backend.models.User;
+import app.netbooks.backend.repositories.interfaces.UsersRepository;
 
 @Repository
-public class UsersRepositoryImpl extends BaseRepository implements UsersRepository, RolesRepository {
-    @Autowired
-    private BCryptPasswordEncoder encoder;
-
+public class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
     @Autowired
     private UserAvatarStorage avatarStorage;
 
     public UsersRepositoryImpl(Database database) {
         super(database);
-    };
-
-    @Override
-    public void initialize() {
-        try (
-            Connection connection = this.database.getConnection();
-        ) {
-            connection.setAutoCommit(false);
-
-            try (
-                Statement statement = connection.createStatement();
-                PreparedStatement preparedCreateStatement = connection.prepareStatement(
-                    "INSERT INTO user (uuid, name, email, password)\n" +
-                    "VALUES (UUID(), 'Admin', 'admin@gmail.com', ?)\n" +
-                    "ON DUPLICATE KEY UPDATE\n" +
-                    "    name = VALUES(name),\n" +
-                    "    password = VALUES(password);"
-                );
-                PreparedStatement preparedSetAdminStatement = connection.prepareStatement(
-                    "INSERT INTO admin (uuid)\n" +
-                    "SELECT * FROM (SELECT ?) AS tmp\n" +
-                    "WHERE NOT EXISTS (\n" +
-                    "    SELECT 1 FROM admin WHERE uuid = ?\n" +
-                    ") LIMIT 1;"
-                );
-            ) {
-                preparedCreateStatement.setString(1, encoder.encode("admin"));
-                preparedCreateStatement.executeUpdate();
-
-                try (
-                    ResultSet result = statement.executeQuery(
-                        "SELECT * FROM user WHERE email = 'admin@gmail.com';"
-                    );
-                ) {
-                    result.next();
-                    UUID uuid = UUID.fromString(result.getString("uuid"));
-                    preparedSetAdminStatement.setString(1, uuid.toString());
-                    preparedSetAdminStatement.setString(2, uuid.toString());
-                    preparedSetAdminStatement.executeUpdate();
-                }
-              
-                connection.commit();
-            };
-        } catch (SQLException e) {
-            e.printStackTrace();
-        };
-    };
-
-    @Override
-    public Map<UUID, List<Role>> mapAllRoles() {
-        Map<UUID, List<Role>> rolesMap = new LinkedHashMap<>();
-
-        try (
-            Connection connection = this.database.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery(
-                "SELECT * FROM user_roles;"
-            );
-        ) {
-            while(result.next()) {
-                UUID uuid = UUID.fromString(result.getString("uuid"));
-                Role role = Role.fromString(result.getString("role"));
-                rolesMap.computeIfAbsent(
-                    uuid,
-                    v -> new ArrayList<Role>()
-                ).add(role);
-            };
-        } catch (SQLException e) {
-            e.printStackTrace();
-        };
-
-        return rolesMap;
-    };
-
-    @Override
-    public List<Role> findRoles(UUID uuid) {
-        List<Role> roles = new LinkedList<>();
-
-        try (
-            Connection connection = this.database.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT role FROM user_roles WHERE uuid = ?;"
-            );
-        ) {
-            preparedStatement.setString(1, uuid.toString());
-            
-            try (
-                ResultSet result = preparedStatement.executeQuery();
-            ) {
-                while(result.next()) {
-                    Role role = Role.fromString(result.getString("role"));
-                    roles.add(role);
-                };
-            };
-        } catch (SQLException e) {
-            e.printStackTrace();
-        };
-
-        return roles;
     };
 
     @Override
@@ -145,14 +39,12 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 "SELECT * FROM user;"
             );
         ) {
-            Map<UUID, List<Role>> mappedRoles = this.mapAllRoles();
             while(result.next()) {
                 UUID uuid = UUID.fromString(result.getString("uuid"));
                 String email = result.getString("email");
                 String name = result.getString("name");
                 String password = result.getString("password");
-                List<Role> roles = mappedRoles.getOrDefault(uuid, new LinkedList<>());
-                User person = new User(uuid, name, null, email, password, roles);
+                User person = new User(uuid, name, null, email, password);
                 persons.add(person);
             };
         } catch (SQLException e) {
@@ -179,8 +71,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                     String name = result.getString("name");
                     String email = result.getString("email");
                     String password = result.getString("password");
-                    List<Role> roles = this.findRoles(uuid);
-                    User user = new User(uuid, name, null, email, password, roles);
+                    User user = new User(uuid, name, null, email, password);
                     userFound = Optional.of(user);
                 };
 
@@ -208,8 +99,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                     UUID uuid = UUID.fromString(result.getString("uuid"));
                     String name = result.getString("name");
                     String password = result.getString("password");
-                    List<Role> roles = this.findRoles(uuid);
-                    User user = new User(uuid, name, null, email, password, roles);
+                    User user = new User(uuid, name, null, email, password);
                     userFound = Optional.of(user);
                 };
 

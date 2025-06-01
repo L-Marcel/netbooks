@@ -1,7 +1,7 @@
 package app.netbooks.backend.models;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.sql.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,8 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PlanEdition {
     private Integer id;
+    private Integer plan;
     private BigDecimal price;
-    private Plan plan;
-    private LocalDate startedIn;
-    private LocalDate closedIn;
+    private Date startedIn;
+    private Date closedIn;
 };
