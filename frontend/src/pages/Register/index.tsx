@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from "react";
 import Input from "@components/Input";
 import { Link, useNavigate } from "react-router-dom";
-import { register, UserRegisterData } from "../../services/user";
+import { registerUser, UserRegisterData } from "../../services/user";
 import ImageInput from "@components/Input/FileInput";
 import { FaEnvelope, FaKey, FaUpload, FaUser } from "react-icons/fa";
 import { ApiError, ValidationError } from "../../services/axios";
@@ -56,7 +56,7 @@ function Page() {
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    register(data)
+    registerUser(data)
       .then(() => {
         navigate("/login");
       })

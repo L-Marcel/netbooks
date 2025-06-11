@@ -18,6 +18,7 @@ import lombok.Setter;
 public class PlanEditionResponse {
     private Integer id;
     private Integer plan;
+    private Integer popularity;
     private BigDecimal price;
     private Date startedIn;
     private Date closedIn;
@@ -25,6 +26,7 @@ public class PlanEditionResponse {
     public PlanEditionResponse(PlanEdition edition) {
         this.id = edition.getId();
         this.plan = edition.getPlan();
+        this.popularity = edition.getPopularity();
         this.price = edition.getPrice();
         this.startedIn = edition.getStartedIn();
         this.closedIn = edition.getClosedIn();

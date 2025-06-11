@@ -31,17 +31,22 @@ public class PlansEditionsRepositoryImpl extends BaseRepository implements Plans
             Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(
-                "SELECT DISTINCT edition, plan, price, started_in, closed_in FROM plans_editions WHERE closed_in IS NULL;"
+                "SELECT * FROM plan_editions\n" +
+                "WHERE closed_in IS NULL;"
             );
         ) {
             while(result.next()) {
-                Integer id = result.getInt("edition");
+                Integer id = result.getInt("id");
                 Integer plan = result.getInt("plan");
+                Integer popularity = result.getInt("popularity");
                 BigDecimal price = result.getBigDecimal("price");
                 Date startedIn = result.getDate("started_in");
                 Date closedIn = result.getDate("closed_in");
             
-                PlanEdition plan_edition = new PlanEdition(id, plan, price, startedIn, closedIn);
+                PlanEdition plan_edition = new PlanEdition(
+                    id, plan, popularity, price, 
+                    startedIn, closedIn
+                );
 
                 editionsMap.computeIfAbsent(
                     plan,
@@ -63,17 +68,21 @@ public class PlansEditionsRepositoryImpl extends BaseRepository implements Plans
             Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(
-                "SELECT * FROM plan_edition;"
+                "SELECT * FROM plan_editions;"
             );
         ) {
             while(result.next()) {
                 Integer id = result.getInt("id");
                 Integer plan = result.getInt("plan");
+                Integer popularity = result.getInt("popularity");
                 BigDecimal price = result.getBigDecimal("price");
                 Date startedIn = result.getDate("started_in");
                 Date closedIn = result.getDate("closed_in");
             
-                PlanEdition plan_edition = new PlanEdition(id, plan, price, startedIn, closedIn);
+                PlanEdition plan_edition = new PlanEdition(
+                    id, plan, popularity, price, 
+                    startedIn, closedIn
+                );
 
                 editionsMap.computeIfAbsent(
                     plan,
@@ -95,17 +104,22 @@ public class PlansEditionsRepositoryImpl extends BaseRepository implements Plans
             Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(
-                "SELECT * FROM plan_edition;"
+                "SELECT * FROM plan_editions;"
             );
         ) {
             while(result.next()) {
                 Integer id = result.getInt("id");
                 Integer plan = result.getInt("plan");
+                Integer popularity = result.getInt("popularity");
                 BigDecimal price = result.getBigDecimal("price");
                 Date startedIn = result.getDate("started_in");
                 Date closedIn = result.getDate("closed_in");
             
-                PlanEdition plan_edition = new PlanEdition(id, plan, price, startedIn, closedIn);
+                PlanEdition plan_edition = new PlanEdition(
+                    id, plan, popularity, price, 
+                    startedIn, closedIn
+                );
+
                 editions.add(plan_edition);
             };
         } catch (SQLException e) {

@@ -165,7 +165,7 @@ SELECT * FROM user;
 
 CALL subscribe(1, 'a1b2c3d4-e5f6-7890-1234-56789abcdef0');
 CALL subscribe(2, '09876543-2109-fedc-ba98-7654321fedcb');
-CALL subscribe(3, 'e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e');
+CALL subscribe(4, 'e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e');
 
 SELECT * FROM subscription;
 SELECT * FROM subscriber;

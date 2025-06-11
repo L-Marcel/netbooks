@@ -13,6 +13,7 @@ import lombok.Setter;
 public class PlanEdition {
     private Integer id;
     private Integer plan;
+    private Integer popularity;
     private BigDecimal price;
     private Date startedIn;
     private Date closedIn;

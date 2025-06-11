@@ -31,15 +31,21 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
             Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(
-               "SELECT DISTINCT plan, name, description, duration FROM plans_editions WHERE closed_in IS NULL;"
+               "SELECT * FROM plans WHERE available;"
             );
         ) {
             while(result.next()) {
-                Integer id = result.getInt("plan");
+                Integer id = result.getInt("id");
                 String name = result.getString("name");
                 String description = result.getString("description");
+                Integer popularity = result.getInt("popularity");
                 Duration duration = Duration.ofSeconds(result.getLong("duration"));
-                Plan plan = new Plan(id, name, description, duration);
+                
+                Plan plan = new Plan(
+                    id, name, description, 
+                    popularity, duration
+                );
+
                 plans.add(plan);
             };
         } catch (SQLException e) {
@@ -57,15 +63,21 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
             Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(
-                "SELECT * FROM plan;"
+                "SELECT * FROM plans;"
             );
         ) {
             while(result.next()) {
                 Integer id = result.getInt("id");
                 String name = result.getString("name");
                 String description = result.getString("description");
+                Integer popularity = result.getInt("popularity");
                 Duration duration = Duration.ofSeconds(result.getLong("duration"));
-                Plan plan = new Plan(id, name, description, duration);
+                
+                Plan plan = new Plan(
+                    id, name, description, 
+                    popularity, duration
+                );
+
                 plans.add(plan);
             };
         } catch (SQLException e) {
@@ -80,7 +92,7 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                "SELECT * FROM plan WHERE id = ?;"
+                "SELECT * FROM plans WHERE id = ?;"
             );
         ){
             statement.setObject(1, id);
@@ -90,8 +102,14 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
                 if(result.next()) {
                     String name = result.getString("name");
                     String description = result.getString("description");
+                    Integer popularity = result.getInt("popularity");
                     Duration duration = Duration.ofSeconds(result.getLong("duration"));
-                    Plan plan = new Plan(id, name, description, duration);
+                    
+                    Plan plan = new Plan(
+                        id, name, description, 
+                        popularity, duration
+                    );
+                    
                     planFound = Optional.of(plan);
                 };
                 

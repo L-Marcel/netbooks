@@ -13,6 +13,7 @@ public class Plan {
     private Integer id;
     private String name;
     private String description;
+    private Integer popularity;
     private Duration duration;
 
     public Plan(String name, String description, Duration duration) {
