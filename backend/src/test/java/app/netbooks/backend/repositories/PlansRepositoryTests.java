@@ -81,10 +81,10 @@ public abstract class PlansRepositoryTests extends BaseTests {
             Optional<Plan> planFound = repository.findById(plan.getId());
             assertEquals("Plano", planFound.get().getName());
             
-            plan.setDuration(Duration.ofSeconds(30));
+            plan.setDuration(Duration.ofHours(30));
             repository.update(plan);
             planFound = repository.findById(plan.getId());
-            assertEquals(30, planFound.get().getDuration().toSeconds());
+            assertEquals(30, planFound.get().getDuration().toHours());
         });
     };
 
