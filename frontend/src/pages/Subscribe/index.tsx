@@ -1,4 +1,4 @@
-import PlanCard from "@components/Plan";
+import PlanCard from "@components/Plan/PlanCard";
 import { Plan } from "@models/plan";
 import { fetchAvailablePlans } from "@services/plans";
 import { useEffect, useState } from "react";

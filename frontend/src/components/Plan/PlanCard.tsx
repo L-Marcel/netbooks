@@ -1,6 +1,7 @@
 import { Plan } from "@models/plan";
 import { FaBullhorn, FaFireAlt, FaPiggyBank } from "react-icons/fa";
 import PlanTags, { PlanTag } from "./PlanTags";
+import { format } from "date-fns";
 
 interface Props {
   plan: Plan;
@@ -17,6 +18,8 @@ export default function PlanCard({ plan, mostPopular, mostEconomic }: Props) {
   if (mostPopular) tags.push({ value: "Popular", style: "badge-warning pl-2", icon: FaFireAlt });
   if (promotional) tags.push({ value: "Promoção", style: "badge-primary pl-2", icon: FaBullhorn });
   if (mostEconomic) tags.push({ value: "Econômico", style: "badge-primary pl-2", icon: FaPiggyBank });
+
+  const endDate = plan.getCheapestEndDate();
 
   return (
     <div className="card w-96 bg-base-200 shadow-sm">
@@ -62,7 +65,10 @@ export default function PlanCard({ plan, mostPopular, mostEconomic }: Props) {
             </li>
           ))}
         </ul>
-        <div className="mt-6">
+        <div className="mt-2">
+          {promotional && <p className="ml-0.5 mb-1 text-xs font-extralight italic">
+            Promoção disponível {endDate? ("até " + format(endDate, "dd/MM/yyyy")):"por tempo indeterminado"}
+          </p>}
           <button type="button" className="btn btn-primary btn-block">
             Inscreve-se
           </button>

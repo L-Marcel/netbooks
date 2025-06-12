@@ -32,7 +32,7 @@ public class PlansEditionsRepositoryImpl extends BaseRepository implements Plans
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(
                 "SELECT * FROM plan_edition_with_subscribers\n" +
-                "WHERE closed_in IS NULL\n" +
+                "WHERE available\n" +
                 "ORDER BY price ASC;"
             );
         ) {
@@ -70,7 +70,7 @@ public class PlansEditionsRepositoryImpl extends BaseRepository implements Plans
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(
                 "SELECT * FROM plan_edition_with_subscribers\n" +
-                "ORDER BY closed_in IS NULL DESC, price ASC;"
+                "ORDER BY available DESC, price ASC;"
             );
         ) {
             while(result.next()) {
@@ -107,7 +107,7 @@ public class PlansEditionsRepositoryImpl extends BaseRepository implements Plans
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(
                 "SELECT * FROM plan_edition_with_subscribers\n" +
-                "ORDER BY closed_in IS NULL DESC, price ASC;"
+                "ORDER BY available DESC, price ASC;"
             );
         ) {
             while(result.next()) {

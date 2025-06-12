@@ -62,6 +62,11 @@ export class Plan {
     return edition ? edition.price : this.getCheapestPrice();
   }
 
+  public getCheapestEndDate(): Date | undefined {
+    const promotial = this.getCheapestEdition();
+    return promotial? promotial.closedIn : undefined;
+  }
+
   public getDurationText(): string {
     console.log(formatDuration(this.duration, {
       format: ["years", "months", "days"],
