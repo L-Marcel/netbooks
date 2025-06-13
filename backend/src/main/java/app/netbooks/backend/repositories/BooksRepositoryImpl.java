@@ -74,7 +74,7 @@ public class BooksRepositoryImpl extends BaseRepository implements BooksReposito
                 "SELECT * FROM book WHERE id = ?;"
             );
         ){
-            statement.setObject(1, id);
+            statement.setLong(1, id);
             try(ResultSet result = statement.executeQuery()) {
                 Optional<Book> bookFound = Optional.empty();
 

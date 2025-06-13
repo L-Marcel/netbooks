@@ -1,24 +1,28 @@
 import PlanCard from "@components/Plan/PlanCard";
 import { Plan } from "@models/plan";
-import { PlanEdition } from "@models/plan_edition";
+import { Subscription } from "@models/subscription";
 import { fetchAvailablePlans } from "@services/plans";
-import { fetchSubscription } from "@services/subscriptions";
-import { useEffect, useMemo, useState } from "react";
+import { fetchSubscription, renewSubscription, subscribe, unsubscribe } from "@services/subscriptions";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function Subscribe() {
-  const [userPlanEdition, setUserPlanEdition] = useState<
-    PlanEdition | undefined
+  const [subscription, setSubscription] = useState<
+    Subscription | undefined
   >(undefined);
   const [plans, setPlans] = useState<Plan[]>([]);
 
-  useEffect(() => {
+  const update = useCallback(() => {
     fetchSubscription().then((subscription) => {
-      setUserPlanEdition(subscription.edition);
+      setSubscription(subscription);
     });
     fetchAvailablePlans().then((plans) => {
       setPlans(plans.sort((a, b) => a.benefits.length - b.benefits.length));
     });
-  }, []);
+  }, [setSubscription, setPlans]);
+
+  useEffect(() => {
+    update();
+  }, [update]);
 
   const { mostPopular, mostEconomic } = useMemo(() => {
     return plans.reduce(
@@ -54,12 +58,12 @@ export default function Subscribe() {
         <PlanCard
           key={plan.id}
           plan={plan}
-          userPlanEdition={userPlanEdition}
+          subscription={subscription}
           mostPopular={mostPopular && mostPopular?.id === plan.id}
           mostEconomic={mostEconomic && mostEconomic?.id === plan.id}
-          onSubscribe={() => {}}
-          onUnsubscribe={() => {}}
-          onRenew={() => {}}
+          onSubscribe={(edition) => subscribe(edition.id).finally(() => update())}
+          onUnsubscribe={() => unsubscribe().finally(() => update())}
+          onRenew={() => renewSubscription().finally(() => update())}
         />
       ))}
     </main>

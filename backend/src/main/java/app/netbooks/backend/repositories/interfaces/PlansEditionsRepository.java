@@ -3,7 +3,6 @@ package app.netbooks.backend.repositories.interfaces;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import app.netbooks.backend.models.PlanEdition;
 

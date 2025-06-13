@@ -2,9 +2,13 @@ package app.netbooks.backend.configurations;
 
 import java.util.List;
 
+import javax.crypto.SecretKey;
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -13,7 +17,12 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import app.netbooks.backend.authentication.RestAuthenticationEntryPoint;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 
 import org.springframework.security.config.Customizer;
 
@@ -49,5 +58,12 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    };
+
+    @Bean
+    public SecretKey secretKey(Environment environment) {
+        String key = environment.getProperty("jwt.secret.key");
+        byte[] keyBytes = Decoders.BASE64.decode(key);
+        return Keys.hmacShaKeyFor(keyBytes);
     };
 };

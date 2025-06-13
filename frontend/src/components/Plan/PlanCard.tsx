@@ -2,30 +2,33 @@ import { Plan } from "@models/plan";
 import { FaBullhorn, FaFireAlt, FaPiggyBank } from "react-icons/fa";
 import PlanTags, { PlanTag } from "./PlanTags";
 import { format } from "date-fns";
-import { PlanEdition } from "@models/plan_edition";
-import { subscribe } from "@services/subscriptions";
 import Decimal from "decimal.js";
+import { Subscription } from "@models/subscription";
+import { PlanEdition } from "@models/plan_edition";
 
 interface Props {
   plan: Plan;
-  userPlanEdition?: PlanEdition;
+  subscription?: Subscription;
   mostPopular?: boolean;
   mostEconomic?: boolean;
-  onSubscribe: () => void;
+  onSubscribe: (edition: PlanEdition) => void;
   onUnsubscribe: () => void;
   onRenew: () => void;
 }
 
 export default function PlanCard({
   plan,
-  userPlanEdition,
+  subscription,
   mostPopular,
   mostEconomic,
+  onSubscribe,
+  onUnsubscribe,
+  onRenew,
 }: Props) {
-  const isUserPlan = userPlanEdition && plan.id === userPlanEdition?.plan;
+  const isUserPlan = subscription && plan.id === subscription?.edition.plan;
   
-  const currentEdition = isUserPlan && userPlanEdition? 
-    userPlanEdition:plan.getCheapestEdition();
+  const currentEdition = isUserPlan && subscription? 
+    subscription.edition:plan.getCheapestEdition();
 
   const currentPrice = currentEdition?.price ?? new Decimal(1);
 
@@ -107,27 +110,21 @@ export default function PlanCard({
                 : "por tempo indeterminado"}
             </p>
           )}
-          {isUserPlan && !currentEdition?.closedIn ? (
-            <button type="button" className="btn btn-error btn-block">
+          {isUserPlan && subscription.actived && subscription.automaticBilling? (
+            <button onClick={onUnsubscribe} type="button" className="btn btn-error btn-block">
               Cancelar
             </button>
-          ) : isUserPlan && currentEdition?.closedIn && currentEdition.available? (
+          ) : isUserPlan && subscription.actived && !subscription.automaticBilling? (
             <button
-              onClick={() => {
-                if(isUserPlan)
-                subscribe(plan.getCheapestEdition()?.id)
-              }}
+              onClick={onRenew}
               type="button"
               className="btn btn-primary btn-block"
             >
-              Renovar
+              Ativar renovação automática            
             </button>
           ):(
             <button
-              onClick={() => {
-                if(isUserPlan)
-                subscribe(plan.getCheapestEdition()?.id)
-              }}
+              onClick={() => onSubscribe(plan.getCheapestEdition() as PlanEdition)}
               type="button"
               className="btn btn-primary btn-block"
             >

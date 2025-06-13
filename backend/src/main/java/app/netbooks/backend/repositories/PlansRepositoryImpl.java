@@ -7,7 +7,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
@@ -95,7 +97,7 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
                 "SELECT * FROM plan_with_availability WHERE id = ?;"
             );
         ){
-            statement.setObject(1, id);
+            statement.setInt(1, id);
             try(ResultSet result = statement.executeQuery()) {
                 Optional<Plan> planFound = Optional.empty();
 
@@ -156,6 +158,34 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new InternalServerError();
+        }
+    }
+
+    @Override
+    public Map<Integer, Integer> compareBenefitsById(Integer a, Integer b) {
+        Map<Integer, Integer> counter = new LinkedHashMap<>();
+
+        try (
+            Connection connection = this.database.getConnection();
+            PreparedStatement statement = connection.prepareStatement(
+                "CALL compare_plans(?, ?)"
+            );
+        ){
+            statement.setInt(1, a);
+            statement.setInt(2, b);
+
+            try(ResultSet result = statement.executeQuery()) {
+                while(result.next()) {
+                    Integer id = result.getInt("id");
+                    Integer amount = result.getInt("amount");
+                    
+                    counter.put(id, amount);
+                };
+                
+                return counter;
+            }
+        } catch (SQLException e) {
+            return counter;
         }
     };
 };

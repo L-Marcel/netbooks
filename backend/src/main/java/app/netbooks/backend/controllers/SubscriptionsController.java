@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.netbooks.backend.annotations.AuhenticatedOnly;
+import app.netbooks.backend.annotations.SubscriberOnly;
 import app.netbooks.backend.authentication.AuthenticatedUser;
 import app.netbooks.backend.dtos.response.SubscriptionResponse;
 import app.netbooks.backend.models.PlanEdition;
-import app.netbooks.backend.models.Subscription;
 import app.netbooks.backend.services.PlansEditionsService;
 import app.netbooks.backend.services.SubscriptionsService;
 
@@ -27,21 +27,29 @@ public class SubscriptionsController {
     @Autowired
     private SubscriptionsService subscriptionsService;
 
-    @AuhenticatedOnly
+    @SubscriberOnly
     @GetMapping("/me")
     public ResponseEntity<SubscriptionResponse> findAvailableById(
         @AuthenticationPrincipal AuthenticatedUser user
     ) {
-        Subscription subscription = subscriptionsService.findBySubscriber(
-            user.getUser().getUuid()
-        );
-
         PlanEdition edition = plansEditionService.findById(
-            subscription.getEdition()
+            user.getSubscription().getEdition()
         );
 
-        SubscriptionResponse response = new SubscriptionResponse(subscription, edition);
+        SubscriptionResponse response = new SubscriptionResponse(
+            user.getSubscription(), 
+            edition
+        );
         return ResponseEntity.ok().body(response);
+    };
+
+    @SubscriberOnly
+    @GetMapping("/unsubscribe")
+    public ResponseEntity<SubscriptionResponse> unsubscribe(
+        @AuthenticationPrincipal AuthenticatedUser user
+    ) {
+        subscriptionsService.unsubscribe(user.getUser());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     };
 
     @AuhenticatedOnly
@@ -53,7 +61,7 @@ public class SubscriptionsController {
         PlanEdition edition = plansEditionService.findAvailableById(id);
 
         subscriptionsService.subscribe(
-            user.getUser(),
+            user,
             edition
         );
 

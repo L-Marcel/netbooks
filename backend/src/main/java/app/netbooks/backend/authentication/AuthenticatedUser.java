@@ -7,7 +7,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import app.netbooks.backend.models.PlanEdition;
 import app.netbooks.backend.models.Role;
+import app.netbooks.backend.models.Subscription;
 import app.netbooks.backend.models.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +19,8 @@ import lombok.Getter;
 public class AuthenticatedUser implements UserDetails {
     private User user;
     private List<Role> roles;
+    private Subscription subscription;
+    private PlanEdition edition;
 
     @Override
     public List<? extends GrantedAuthority> getAuthorities() {

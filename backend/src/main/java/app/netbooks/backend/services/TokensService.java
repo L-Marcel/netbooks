@@ -6,22 +6,24 @@ import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 
 @Service
 public class TokensService {
     private static final long EXPIRATION_TIME = 24 * 60 * 60 * 1000;
-    private static final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+
+    @Autowired
+    private SecretKey key;
 
     public Optional<UUID> validate(String token) {
         try {
             Claims claims = Jwts.parserBuilder()
-                .setSigningKey(TokensService.key)
+                .setSigningKey(this.key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -44,7 +46,7 @@ public class TokensService {
             .setSubject(uuid.toString())
             .setIssuedAt(currentDate)
             .setExpiration(expirationDate)
-            .signWith(TokensService.key, SignatureAlgorithm.HS512)
+            .signWith(this.key, SignatureAlgorithm.HS512)
             .compact();
     };
 };
