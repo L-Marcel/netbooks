@@ -17,4 +17,5 @@ public class PlanEdition {
     private BigDecimal price;
     private Date startedIn;
     private Date closedIn;
+    private Boolean available;
 };

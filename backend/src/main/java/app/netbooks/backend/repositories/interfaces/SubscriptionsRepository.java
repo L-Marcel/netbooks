@@ -7,6 +7,6 @@ import app.netbooks.backend.models.Subscription;
 
 public interface SubscriptionsRepository {
     public Optional<Subscription> findBySubscriber(UUID subscriber);
-    public void create(Subscription subscription);
-    public void update(Subscription subscription);
+    public void subscribe(UUID subscriber, Integer edition);
+    public void unsubscribe(UUID subscriber);
 };

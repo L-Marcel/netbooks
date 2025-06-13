@@ -22,6 +22,7 @@ public class PlanEditionResponse {
     private BigDecimal price;
     private Date startedIn;
     private Date closedIn;
+    private Boolean available;
 
     public PlanEditionResponse(PlanEdition edition) {
         this.id = edition.getId();
@@ -30,6 +31,7 @@ public class PlanEditionResponse {
         this.price = edition.getPrice();
         this.startedIn = edition.getStartedIn();
         this.closedIn = edition.getClosedIn();
+        this.available = edition.getAvailable();
     };
 
     public static List<PlanEditionResponse> fromList(List<PlanEdition> list) {

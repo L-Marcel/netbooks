@@ -1,7 +1,12 @@
-import { addHours, Duration, formatDuration, intervalToDuration } from "date-fns";
+import {
+  addHours,
+  Duration,
+  formatDuration,
+  intervalToDuration,
+} from "date-fns";
 import { Benefit, BenefitData, benefitToText, PlanBenefit } from "./benefit";
 import { PlanEdition, PlanEditionData } from "./plan_edition";
-import { ptBR } from 'date-fns/locale';
+import { ptBR } from "date-fns/locale";
 import Decimal from "decimal.js";
 
 export type PlanData = {
@@ -31,7 +36,7 @@ export class Plan {
 
     this.duration = intervalToDuration({
       start: new Date(),
-      end: addHours(new Date(), data.duration)
+      end: addHours(new Date(), data.duration),
     });
 
     this.benefits = [
@@ -64,21 +69,23 @@ export class Plan {
 
   public getCheapestEndDate(): Date | undefined {
     const promotial = this.getCheapestEdition();
-    return promotial? promotial.closedIn : undefined;
+    return promotial ? promotial.closedIn : undefined;
   }
 
   public getDurationText(): string {
-    console.log(formatDuration(this.duration, {
-      format: ["years", "months", "days"],
-      zero: false,
-      locale: ptBR,
-    }));
+    console.log(
+      formatDuration(this.duration, {
+        format: ["years", "months", "days"],
+        zero: false,
+        locale: ptBR,
+      })
+    );
     return formatDuration(this.duration, {
       format: ["years", "months", "days"],
       zero: false,
       locale: ptBR,
-    })
-  };
+    });
+  }
 
   public getScore(): Decimal {
     return this.getCheapestPrice()

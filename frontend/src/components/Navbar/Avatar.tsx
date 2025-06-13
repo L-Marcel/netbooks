@@ -2,6 +2,7 @@ import { logout } from "@services/user";
 import useUser from "@stores/useUser";
 import { useState } from "react";
 import { FaEdit, FaRegCreditCard, FaSignOutAlt } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
 
 export default function Avatar() {
   const [imageError, setImageError] = useState(false);
@@ -40,15 +41,31 @@ export default function Avatar() {
         className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
       >
         <li>
-          <button type="button">
+          <NavLink
+            className={({ isActive }) =>
+              "text-base-content no-underline hover:underline font-bold transition" +
+              (isActive ? " text-primary" : "")
+            }
+            to="/profile"
+          >
             <FaEdit /> Editar perfil
-          </button>
+          </NavLink>
           {user?.isSubscriber() && (
-            <button type="button">
+            <NavLink
+              className={({ isActive }) =>
+                "text-base-content no-underline hover:underline font-bold transition" +
+                (isActive ? " text-primary" : "")
+              }
+              to="/subscribe"
+            >
               <FaRegCreditCard /> Gerenciar assinatura
-            </button>
+            </NavLink>
           )}
-          <button type="button" onClick={logout}>
+          <button
+            className="text-base-content no-underline hover:underline font-bold transition"
+            type="button"
+            onClick={logout}
+          >
             <FaSignOutAlt /> Sair
           </button>
         </li>

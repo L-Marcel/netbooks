@@ -70,7 +70,9 @@ public class BooksAuthorsRepositoryImpl extends BaseRepository implements BooksA
                 while(result.next()) {
                     Integer authorId = result.getInt("author");
                     String name = result.getString("name");
+                    
                     Author author = new Author(authorId, name);
+
                     authors.add(author);
                 };
             };
