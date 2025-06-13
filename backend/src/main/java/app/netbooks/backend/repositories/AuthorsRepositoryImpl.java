@@ -28,7 +28,7 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorRepos
               "SELECT * FROM author WHERE id = ?;"  
             );
         ) {
-            statement.setString(1, String.valueOf(id));
+            statement.setInt(1, id);
             try (
                 ResultSet result = statement.executeQuery();
             ) {
@@ -96,7 +96,7 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorRepos
                 "DELETE FROM author WHERE id = ?;"
             )
         ) {
-            statement.setString(1, String.valueOf(id));
+            statement.setInt(1, id);
             statement.executeUpdate();            
         } catch (SQLException e) {
             throw new InternalServerError();

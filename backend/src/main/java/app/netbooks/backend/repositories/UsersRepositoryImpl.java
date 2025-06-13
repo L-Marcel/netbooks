@@ -44,7 +44,9 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 String email = result.getString("email");
                 String name = result.getString("name");
                 String password = result.getString("password");
+
                 User person = new User(uuid, name, null, email, password);
+                
                 persons.add(person);
             };
         } catch (SQLException e) {
@@ -71,7 +73,9 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                     String name = result.getString("name");
                     String email = result.getString("email");
                     String password = result.getString("password");
+
                     User user = new User(uuid, name, null, email, password);
+
                     userFound = Optional.of(user);
                 };
 
@@ -99,7 +103,9 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                     UUID uuid = UUID.fromString(result.getString("uuid"));
                     String name = result.getString("name");
                     String password = result.getString("password");
+
                     User user = new User(uuid, name, null, email, password);
+
                     userFound = Optional.of(user);
                 };
 

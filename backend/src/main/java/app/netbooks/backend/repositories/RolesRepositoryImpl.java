@@ -38,6 +38,7 @@ public class RolesRepositoryImpl extends BaseRepository implements RolesReposito
             while(result.next()) {
                 UUID user = UUID.fromString(result.getString("uuid"));
                 Role role = Role.fromString(result.getString("role"));
+                
                 rolesMap.computeIfAbsent(
                     user,
                     v -> new ArrayList<Role>()

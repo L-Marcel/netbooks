@@ -13,6 +13,8 @@
   "dependencies": {
     "@mutoe/stylelint-config": "^2.1.0",
     "axios": "^1.9.0",
+    "date-fns": "^4.1.0",
+    "decimal.js": "^10.5.0",
     "postcss-import": "^16.1.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

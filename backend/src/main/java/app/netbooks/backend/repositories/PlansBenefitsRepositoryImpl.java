@@ -31,7 +31,7 @@ public class PlansBenefitsRepositoryImpl extends BaseRepository implements Plans
             Connection connection = this.database.getConnection();
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(
-                "SELECT DISTINCT plan, benefit FROM plans_editions WHERE closed_in IS NULL AND benefit IS NOT NULL;"
+                "SELECT * FROM plan_benefits WHERE available;"
             );
         ) {
             while(result.next()) {

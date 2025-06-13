@@ -18,16 +18,20 @@ import lombok.Setter;
 public class PlanEditionResponse {
     private Integer id;
     private Integer plan;
+    private Integer numSubscribers;
     private BigDecimal price;
     private Date startedIn;
     private Date closedIn;
+    private Boolean available;
 
     public PlanEditionResponse(PlanEdition edition) {
         this.id = edition.getId();
         this.plan = edition.getPlan();
+        this.numSubscribers = edition.getNumSubscribers();
         this.price = edition.getPrice();
         this.startedIn = edition.getStartedIn();
         this.closedIn = edition.getClosedIn();
+        this.available = edition.getAvailable();
     };
 
     public static List<PlanEditionResponse> fromList(List<PlanEdition> list) {

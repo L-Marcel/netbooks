@@ -17,17 +17,17 @@ import app.netbooks.backend.validation.Validator;
 @Service
 public class UsersService {
     @Autowired
-    private UsersRepository usersRepository;
+    private UsersRepository repository;
 
     @Autowired
     private BCryptPasswordEncoder encoder;
 
     public List<User> findAll() {
-        return this.usersRepository.findAll();
+        return this.repository.findAll();
     }; 
 
     public User findById(UUID uuid) throws UserNotFound {
-        return this.usersRepository.findById(uuid).orElseThrow(
+        return this.repository.findById(uuid).orElseThrow(
             () -> new UserNotFound()
         );
     }; 
@@ -36,7 +36,7 @@ public class UsersService {
         String email, 
         String password
     ) throws UserNotFound {
-        User user = this.usersRepository.findByEmail(email).orElseThrow(
+        User user = this.repository.findByEmail(email).orElseThrow(
             () -> new UserNotFound()
         );
 
@@ -64,7 +64,7 @@ public class UsersService {
             .email("Formato válido!", "Fomato inválido!")
             .min(6, "Tem mais de 5 caracteres!", "Tem menos de 6 caracteres!")
             .max(120, "Tem menos de 121 caracteres!", "Tem mais de 120 caracteres!")
-            .verify(!this.usersRepository.findByEmail(email).isPresent(), "Disponível para uso!", "Já se encontra em uso!");
+            .verify(!this.repository.findByEmail(email).isPresent(), "Disponível para uso!", "Já se encontra em uso!");
 
         validator.validate("password", password)
             .min(8, "Tem mais de 7 caracteres!", "Tem menos de 8 caracteres!")
@@ -84,7 +84,7 @@ public class UsersService {
         validator.run();
         
         User user = new User(name, avatar, email, encoder.encode(password));
-        this.usersRepository.create(user);
+        this.repository.create(user);
     };
 
     public void update(
@@ -101,7 +101,7 @@ public class UsersService {
             .max(120, "Tem menos de 121 caracteres!", "Tem mais de 120 caracteres!")
             .pattern("^[A-Za-zÀ-ÿ ]*$", "Sem caracteres especiais!", "Caracteres especiais detectados!");
     
-        Optional<User> candidate = this.usersRepository.findByEmail(email);
+        Optional<User> candidate = this.repository.findByEmail(email);
         validator.validate("email", email)
             .email("Formato válido!", "Fomato inválido!")
             .min(6, "Tem mais de 5 caracteres!", "Tem menos de 6 caracteres!")
@@ -127,6 +127,6 @@ public class UsersService {
         user.setEmail(email);
         user.setPassword(encoder.encode(password));
         
-        this.usersRepository.update(user);
+        this.repository.update(user);
     };
 };

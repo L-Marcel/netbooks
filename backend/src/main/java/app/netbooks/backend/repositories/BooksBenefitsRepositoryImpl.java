@@ -68,7 +68,9 @@ public class BooksBenefitsRepositoryImpl extends BaseRepository implements Books
             ) {
                 while(result.next()) {
                     String benefitName = result.getString("benefit");
+                    
                     Benefit benefit = new Benefit(benefitName);
+
                     benefits.add(benefit);
                 };
             };

@@ -34,9 +34,10 @@ public class PublishersRepositoryImpl extends BaseRepository implements Publishe
         ) {
             while (result.next()) {
                 String name = result.getString("name");
-                Publisher publisher = new Publisher(name);
-                publishers.add(publisher);
 
+                Publisher publisher = new Publisher(name);
+
+                publishers.add(publisher);
             }
         } catch (SQLException e) {
             throw new InternalServerError();
@@ -59,7 +60,9 @@ public class PublishersRepositoryImpl extends BaseRepository implements Publishe
                 Optional<Publisher> publisherFound = Optional.empty();
                 if (result.next()) {
                     String resultName = result.getString("name");
+
                     Publisher publisher = new Publisher(resultName);
+
                     publisherFound = Optional.of(publisher);
                 }
                 
