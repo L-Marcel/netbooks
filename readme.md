@@ -96,11 +96,23 @@ Para que possa realizar os testes, aplique o `database -> synchronize model` do 
 
 > Observação: repare que nosso modelo relacional já acompanha as restrições desejadas e não é composto apenas pelas relações (tabelas).
 
+Uma vez sincronizado tudo, tem dois queries que você deve executar no _schema_ `netbooks` que estão na pasta `database/queries`:
+- `reset.sql`: para resetar as tabelas;
+- `populate.sql`: para popular o banco de dados.
+
+Uma vez populado, a aplicação já vai estar com quatro usuários cadastrados:
+- Administrador (`admin@gmail.com` / `admin`);
+- Marcel (`marcel@gmail.com` / `marcel`);
+- Marcela (`marcela@gmail.com` / `marcela`);
+- Eric (`eric@gmail.com` / `eric`).
+
+Cada um está com um plano inicial diferente.
+
 # Instruções para devs (frontend)
 
 O gerenciador de pacotes utilizado no _frontend_ é o [pnpm](https://pnpm.io/pt/installation). Portanto, o instale. Talvez seja necessário instalar o [node](https://nodejs.org/pt) (v22.14.0 - LTS) antes também.
 
-Deixo como recomendação de extensões: [SCSS Intellisense](https://marketplace.visualstudio.com/items/?itemName=mrmlnc.vscode-scss) e [Tailwind CSS Intellisense](https://marketplace.visualstudio.com/items/?itemName=bradlc.vscode-tailwindcss).
+Deixo como recomendação de extensões: [Tailwind CSS Intellisense](https://marketplace.visualstudio.com/items/?itemName=bradlc.vscode-tailwindcss).
 
 Um vez que tenha instalado tudo, execute os seguintes comandos dentro da raíz do projeto clonado:
 
