@@ -27,7 +27,7 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
                 "SELECT * FROM subscription_with_state \n" +
-                "WHERE subscriber = ? LIMIT 1;"
+                "WHERE actived AND subscriber = ? LIMIT 1;"
             );
         ) {
             statement.setString(1, subscriber.toString());

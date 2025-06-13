@@ -2,21 +2,21 @@ import PlanCard from "@components/Plan/PlanCard";
 import { Plan } from "@models/plan";
 import { PlanEdition } from "@models/plan_edition";
 import { fetchAvailablePlans } from "@services/plans";
-import { fetchUserPlanEdition } from "@services/plans_editions";
+import { fetchSubscription } from "@services/subscriptions";
 import { useEffect, useMemo, useState } from "react";
 
 export default function Subscribe() {
-  const [userPlanEdition, setUserPlanEdition] = useState<PlanEdition | undefined>(undefined);
+  const [userPlanEdition, setUserPlanEdition] = useState<
+    PlanEdition | undefined
+  >(undefined);
   const [plans, setPlans] = useState<Plan[]>([]);
 
   useEffect(() => {
-    fetchUserPlanEdition().then((userPlanEdition) => {
-      setUserPlanEdition(userPlanEdition);
+    fetchSubscription().then((subscription) => {
+      setUserPlanEdition(subscription.edition);
     });
     fetchAvailablePlans().then((plans) => {
-      setPlans(plans.sort(
-        (a, b) => a.benefits.length - b.benefits.length
-      ));
+      setPlans(plans.sort((a, b) => a.benefits.length - b.benefits.length));
     });
   }, []);
 
@@ -26,13 +26,15 @@ export default function Subscribe() {
         let mostPopular = prev?.mostPopular ?? curr;
         let mostEconomic = prev?.mostEconomic ?? curr;
 
-        if (mostPopular && mostPopular?.numSubscribers >= curr.numSubscribers)
-          mostPopular = curr;
+        if (
+          mostPopular && 
+          mostPopular?.numSubscribers <= curr.numSubscribers
+        ) mostPopular = curr;
+
         if (
           mostEconomic &&
           mostEconomic?.getScore().lessThanOrEqualTo(curr.getScore())
-        )
-          mostEconomic = curr;
+        ) mostEconomic = curr;
 
         return {
           mostPopular,
@@ -55,6 +57,9 @@ export default function Subscribe() {
           userPlanEdition={userPlanEdition}
           mostPopular={mostPopular && mostPopular?.id === plan.id}
           mostEconomic={mostEconomic && mostEconomic?.id === plan.id}
+          onSubscribe={() => {}}
+          onUnsubscribe={() => {}}
+          onRenew={() => {}}
         />
       ))}
     </main>

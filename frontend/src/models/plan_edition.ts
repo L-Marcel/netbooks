@@ -6,7 +6,8 @@ export type PlanEditionData = {
   numSubscribers: number;
   price: number;
   startedIn: number;
-  closedIn: number;
+  closedIn?: number;
+  available: boolean;
 };
 
 export class PlanEdition {
@@ -16,6 +17,7 @@ export class PlanEdition {
   readonly price: Decimal;
   readonly startedIn: Date;
   readonly closedIn?: Date;
+  readonly available: boolean;
 
   constructor(data: PlanEditionData) {
     this.id = data.id;
@@ -24,5 +26,6 @@ export class PlanEdition {
     this.price = new Decimal(data.price);
     this.startedIn = new Date(data.startedIn);
     if (data.closedIn) this.closedIn = new Date(data.closedIn);
+    this.available = data.available;
   }
 }

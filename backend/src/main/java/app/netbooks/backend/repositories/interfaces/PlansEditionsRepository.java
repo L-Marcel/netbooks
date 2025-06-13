@@ -11,6 +11,5 @@ public interface PlansEditionsRepository {
     public List<PlanEdition> findAll();
     public Map<Integer, List<PlanEdition>> mapAllByPlan();
     public Map<Integer, List<PlanEdition>> mapAllAvailableByPlan();
-    public Optional<PlanEdition> findBySubscriber(UUID subscriber);
     public Optional<PlanEdition> findById(Integer id);
 };

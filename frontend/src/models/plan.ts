@@ -89,7 +89,7 @@ export class Plan {
 
   public getScore(): Decimal {
     return this.getCheapestPrice()
-      .mul(this.duration.hours ?? 1)
+      .div(this.duration.hours ?? 1)
       .mul(this.benefits.length);
   }
 

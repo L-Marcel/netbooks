@@ -12,7 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
@@ -136,45 +135,6 @@ public class PlansEditionsRepositoryImpl extends BaseRepository implements Plans
         };
 
         return editions;
-    }
-
-    @Override
-    public Optional<PlanEdition> findBySubscriber(UUID subscriber) {
-        try (
-            Connection connection = this.database.getConnection();
-            PreparedStatement statement = connection.prepareStatement(
-                "SELECT edt.* FROM plan_edition_with_subscribers AS edt, \n" +
-                "subscription_with_state AS sub\n" +
-                "WHERE edt.id = sub.edition AND sub.actived AND sub.subscriber = ? LIMIT 1;"
-            );
-        ) {
-            statement.setString(1, subscriber.toString());
-
-            try (ResultSet result = statement.executeQuery();) {
-                Optional<PlanEdition> planEditionFoumd = Optional.empty();
-
-                if(result.next()) {
-                    Integer id = result.getInt("id");
-                    Integer plan = result.getInt("plan");
-                    Integer numSubscribers = result.getInt("num_subscribers");
-                    BigDecimal price = result.getBigDecimal("price");
-                    Date startedIn = result.getDate("started_in");
-                    Date closedIn = result.getDate("closed_in");
-                    Boolean available = result.getBoolean("available");
-
-                    PlanEdition plan_edition = new PlanEdition(
-                        id, plan, numSubscribers, price, 
-                        startedIn, closedIn, available
-                    );
-
-                    planEditionFoumd = Optional.of(plan_edition);
-                };
-
-                return planEditionFoumd;
-            }
-        } catch (SQLException e) {
-            return Optional.empty();
-        }
     }
 
     @Override

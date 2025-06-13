@@ -2,7 +2,6 @@ package app.netbooks.backend.services;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,16 +28,13 @@ public class PlansEditionsService {
         return this.repository.mapAllAvailableByPlan();
     };
 
-    public PlanEdition findBySubscriber(UUID subscriber) {
-        PlanEdition edition = this.repository.findBySubscriber(subscriber)
+    public PlanEdition findById(Integer id) {
+        return this.repository.findById(id)
             .orElseThrow(PlanEditionNotFound::new);
-        
-        return edition;
     };
 
     public PlanEdition findAvailableById(Integer id) {
-        PlanEdition edition = this.repository.findById(id)
-            .orElseThrow(PlanEditionNotFound::new);
+        PlanEdition edition = this.findById(id);
 
         if(!edition.getAvailable()) throw new PlanEditionNotAvailable();
         

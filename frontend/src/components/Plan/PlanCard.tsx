@@ -3,20 +3,33 @@ import { FaBullhorn, FaFireAlt, FaPiggyBank } from "react-icons/fa";
 import PlanTags, { PlanTag } from "./PlanTags";
 import { format } from "date-fns";
 import { PlanEdition } from "@models/plan_edition";
-import { subscribe } from "@services/plans_editions";
+import { subscribe } from "@services/subscriptions";
+import Decimal from "decimal.js";
 
 interface Props {
   plan: Plan;
   userPlanEdition?: PlanEdition;
   mostPopular?: boolean;
   mostEconomic?: boolean;
+  onSubscribe: () => void;
+  onUnsubscribe: () => void;
+  onRenew: () => void;
 }
 
-export default function PlanCard({ plan, userPlanEdition, mostPopular, mostEconomic }: Props) {
+export default function PlanCard({
+  plan,
+  userPlanEdition,
+  mostPopular,
+  mostEconomic,
+}: Props) {
   const isUserPlan = userPlanEdition && plan.id === userPlanEdition?.plan;
-  const promotional: boolean = !plan
-    .getCheapestPrice()
-    .equals(plan.getMostExpensivePrice());
+  
+  const currentEdition = isUserPlan && userPlanEdition? 
+    userPlanEdition:plan.getCheapestEdition();
+
+  const currentPrice = currentEdition?.price ?? new Decimal(1);
+
+  const promotional: boolean = !currentPrice.equals(plan.getMostExpensivePrice());
   const tags: PlanTag[] = [];
 
   if (mostPopular)
@@ -54,7 +67,7 @@ export default function PlanCard({ plan, userPlanEdition, mostPopular, mostEcono
               </p>
             )}
             <p className="text-xl h-min flex">
-              R$ {plan.getCheapestPrice().toFixed(2)} / {plan.getDurationText()}
+              R$ {currentPrice.toFixed(2)} / {plan.getDurationText()}
             </p>
           </div>
         </div>
@@ -94,11 +107,33 @@ export default function PlanCard({ plan, userPlanEdition, mostPopular, mostEcono
                 : "por tempo indeterminado"}
             </p>
           )}
-          {isUserPlan? <button type="button" className="btn btn-error btn-block">
-            Cancelar
-          </button>:<button onClick={() => subscribe(plan.getCheapestEdition()?.id)} type="button" className="btn btn-primary btn-block">
-            Inscreve-se
-          </button>}
+          {isUserPlan && !currentEdition?.closedIn ? (
+            <button type="button" className="btn btn-error btn-block">
+              Cancelar
+            </button>
+          ) : isUserPlan && currentEdition?.closedIn && currentEdition.available? (
+            <button
+              onClick={() => {
+                if(isUserPlan)
+                subscribe(plan.getCheapestEdition()?.id)
+              }}
+              type="button"
+              className="btn btn-primary btn-block"
+            >
+              Renovar
+            </button>
+          ):(
+            <button
+              onClick={() => {
+                if(isUserPlan)
+                subscribe(plan.getCheapestEdition()?.id)
+              }}
+              type="button"
+              className="btn btn-primary btn-block"
+            >
+              Inscreve-se
+            </button>
+          )}
         </div>
       </div>
     </div>
