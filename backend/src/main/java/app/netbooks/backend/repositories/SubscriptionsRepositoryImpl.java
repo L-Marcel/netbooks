@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -85,26 +86,51 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
                 statement.executeUpdate();
             };
 
+            Long previous = null;
+
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "UPDATE subscription\n" +
-                    "SET closed_in = CURRENT_DATE,\n" +
-                    "automatic_billing = 0\n" +
-                    "WHERE subscriber = ?;"
+                    "SELECT id FROM subscription_with_state\n" +
+                    "WHERE (NOT actived) AND subscriber = ?\n" +
+                    "ORDER BY started_in DESC, (closed_in IS NULL) DESC\n" +
+                    "LIMIT 1;"
                 );
             ) {
                 statement.setString(1, subscriber.toString());
-                statement.executeUpdate();
+            
+                try (
+                    ResultSet result = statement.executeQuery();
+                ) {
+                    if(result.next()) {
+                        previous = result.getLong("id");
+                    };
+                };
+            };
+
+            if(previous != null) {
+                try (
+                    PreparedStatement statement = connection.prepareStatement(
+                        "UPDATE subscription\n" +
+                        "SET closed_in = COALESCE(closed_in, CURRENT_DATE), \n" +
+                        "automatic_billing = 0\n" +
+                        "WHERE id = ?;"
+                    );
+                ) {
+                    statement.setLong(1, previous);
+                    statement.executeUpdate();
+                };
             };
 
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO subscription (edition, subscriber) VALUES \n" +
-                    "  (?, ?);"
+                    "INSERT INTO subscription (edition, subscriber, previous) VALUES \n" +
+                    "  (?, ?, ?);"
                 );
             ) {
                 statement.setInt(1, edition);
                 statement.setString(2, subscriber.toString());
+                if(previous != null) statement.setLong(3, previous);
+                else statement.setNull(3, Types.BIGINT);
                 statement.executeUpdate();
             };
             
@@ -116,7 +142,100 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
 
     @Override
     public void unsubscribe(UUID subscriber) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'unsubscribe'");
+    }
+
+    @Override
+    public void upgrade(UUID subscriber, Long subscription, Integer newEdition) {
+        try (
+            Connection connection = this.database.getConnection();
+        ) {
+            connection.setAutoCommit(false);
+
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE subscription\n" +
+                    "SET closed_in = CURRENT_DATE, \n" +
+                    "automatic_billing = 0\n" +
+                    "WHERE id = ?;"
+                );
+            ) {
+                statement.setLong(1, subscription);
+                statement.executeUpdate();
+            };
+
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    "INSERT INTO subscription (edition, subscriber, previous) VALUES \n" +
+                    "  (?, ?, ?);"
+                );
+            ) {
+                statement.setInt(1, newEdition);
+                statement.setString(2, subscriber.toString());
+                statement.setLong(3, subscription);
+                statement.executeUpdate();
+            };
+
+            connection.commit();
+        } catch (SQLException e) {
+            throw new InternalServerError();
+        }
+    }
+
+    @Override
+    public void downgrade(UUID subscriber, Long subscription, Integer newEdition) {
+        try (
+            Connection connection = this.database.getConnection();
+        ) {
+            connection.setAutoCommit(false);
+
+            Date dueDate = null;
+
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    "CALL get_due_date(?);"
+                );
+            ) {
+                statement.setLong(1, subscription);
+            
+                try (
+                    ResultSet result = statement.executeQuery();
+                ) {
+                    result.next();
+                    dueDate = result.getDate("due_date");
+                };
+            };
+
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE subscription\n" +
+                    "SET closed_in = ?, \n" +
+                    "automatic_billing = 0\n" +
+                    "WHERE id = ?;"
+                );
+            ) {
+                statement.setDate(1, dueDate);
+                statement.setLong(2, subscription);
+                statement.executeUpdate();
+            };
+
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    "INSERT INTO subscription (edition, subscriber, started_in, num_payments, previous) VALUES \n" +
+                    "  (?, ?, ?, ?, ?);"
+                );
+            ) {
+                statement.setInt(1, newEdition);
+                statement.setString(2, subscriber.toString());
+                statement.setDate(3, dueDate);
+                statement.setInt(4, 0);
+                statement.setLong(5, subscription);
+                statement.executeUpdate();
+            };
+
+            connection.commit();
+        } catch (SQLException e) {
+            throw new InternalServerError();
+        }
     };
 };

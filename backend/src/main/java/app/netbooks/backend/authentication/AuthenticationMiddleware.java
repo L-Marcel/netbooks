@@ -77,14 +77,14 @@ public class AuthenticationMiddleware extends OncePerRequestFilter  {
                 AuthenticatedUser authenticatedUser = new AuthenticatedUser(
                     user,
                     roles,
-                    subscription.get(),
-                    edition.get()
+                    subscription.orElse(null),
+                    edition.orElse(null)
                 );
 
                 UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
                         authenticatedUser, 
-                        subscription.get(), 
+                        null, 
                         authenticatedUser.getAuthorities()
                     );
 

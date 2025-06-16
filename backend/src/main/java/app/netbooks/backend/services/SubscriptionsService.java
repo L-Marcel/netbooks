@@ -42,11 +42,10 @@ public class SubscriptionsService {
         if(subscriber.getEdition() != null) {
             Integer oldPlan = subscriber.getEdition().getPlan();
             Integer newPlan = edition.getPlan();
+            Integer oldEdition = subscriber.getEdition().getId();
+            Integer newEdition = edition.getId();
 
             if(oldPlan.equals(newPlan)) {
-                Integer oldEdition = subscriber.getEdition().getId();
-                Integer newEdition = edition.getId();
-
                 if(
                     oldEdition.equals(newEdition) && 
                     !subscriber.getSubscription().getAutomaticBilling()
@@ -59,13 +58,24 @@ public class SubscriptionsService {
                 Integer newBenefits = counter.getOrDefault(newPlan, 0);
 
                 if(oldBenefits <= newBenefits) {
-                    // upgrade
+                    this.subscriptionsRepository.upgrade(
+                        user.getUuid(), 
+                        subscriber.getSubscription().getId(),
+                        newEdition
+                    );
                 } else {
-                    // downgrade
+                    this.subscriptionsRepository.downgrade(
+                        user.getUuid(), 
+                        subscriber.getSubscription().getId(),
+                        newEdition
+                    );
                 }; 
             };
         } else {
-            this.subscriptionsRepository.subscribe(user.getUuid(), edition.getId());
+            this.subscriptionsRepository.subscribe(
+                user.getUuid(), 
+                edition.getId()
+            );
         };
     };
 
