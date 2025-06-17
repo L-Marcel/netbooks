@@ -5,9 +5,7 @@ import { create } from "zustand";
 import { disconnect } from "@services/socket";
 
 export type Participant = {
-    uuid: UUID;
-    user?: User;
-    //nickname: string;
+    user: User;
     room: string;
     bookChoices?: string[] 
 }
@@ -34,7 +32,7 @@ const useRoom = create<RoomStore>((set, get) => ({
 
         const { participant } = get();
         if(participant) {
-            const updated = room?.participants.find(p => p.uuid === participant.uuid);
+            const updated = room?.participants.find(p => p.user === participant.user);
             if(updated) {
                 set({ participant: updated });
             } else {
