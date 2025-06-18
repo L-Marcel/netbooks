@@ -1,5 +1,5 @@
 import {
-  addHours,
+  addDays,
   Duration,
   formatDuration,
   intervalToDuration,
@@ -36,7 +36,7 @@ export class Plan {
 
     this.duration = intervalToDuration({
       start: new Date(),
-      end: addHours(new Date(), data.duration),
+      end: addDays(new Date(), data.duration),
     });
 
     this.benefits = [
@@ -89,7 +89,7 @@ export class Plan {
 
   public getScore(): Decimal {
     return this.getCheapestPrice()
-      .div(this.duration.hours ?? 1)
+      .div(this.duration.days ?? 1)
       .mul(this.benefits.length);
   }
 

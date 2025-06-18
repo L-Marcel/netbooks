@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
@@ -30,25 +30,24 @@ public abstract class UsersRepositoryTests extends BaseTests {
     public UsersRepository repository;
 
     @BeforeAll
-    public static void clear(@Autowired Database database) {
-        try (
-            Connection connection = database.getConnection();
-            Statement statement = connection.createStatement();
-        ) {
-            statement.executeUpdate(
-                "DELETE FROM user WHERE true;"
-            );
-            statement.executeUpdate(
-                "INSERT IGNORE INTO user (uuid, name, email, password) VALUES\n" +
-                "  ('3e78b287-399b-11f0-a0a8-7605c53cdf13', 'Administrador', 'admin@gmail.com', '$2a$10$iszhyLRMNIYy04weFz8dReJh3GxRsDv7hQYUBzaAAdn5WFc2csLXS');"
-            );
-            statement.executeUpdate(
-                "INSERT IGNORE INTO admin (uuid) VALUES\n" +
-                "  ('3e78b287-399b-11f0-a0a8-7605c53cdf13');"
-            );
-        } catch (SQLException e) {
-            e.printStackTrace();
-        };
+    public static void clear(@Autowired Database database) throws SQLException {
+        database.execute((connection) -> {
+            try (
+                Statement statement = connection.createStatement();
+            ) {
+                statement.executeUpdate(
+                    "DELETE FROM user WHERE true;"
+                );
+                statement.executeUpdate(
+                    "INSERT IGNORE INTO user (uuid, name, email, password) VALUES\n" +
+                    "  ('3e78b287-399b-11f0-a0a8-7605c53cdf13', 'Administrador', 'admin@gmail.com', '$2a$10$iszhyLRMNIYy04weFz8dReJh3GxRsDv7hQYUBzaAAdn5WFc2csLXS');"
+                );
+                statement.executeUpdate(
+                    "INSERT IGNORE INTO admin (uuid) VALUES\n" +
+                    "  ('3e78b287-399b-11f0-a0a8-7605c53cdf13');"
+                );
+            };
+        });
     };
 
     @Test
@@ -213,9 +212,16 @@ public abstract class UsersRepositoryTests extends BaseTests {
         });
 
         Database database = mock(Database.class);
-        when(database.getConnection()).thenThrow(
+
+        doThrow(
             new SQLException("Erro simulado de conexão!")
-        );
+        ).when(database)
+        .query(any());
+
+        doThrow(
+            new SQLException("Erro simulado de conexão!")
+        ).when(database)
+        .execute(any());
 
         assertDoesNotThrow(() -> {
             UsersRepositoryImpl usersRepositoryImpl = new UsersRepositoryImpl(database);

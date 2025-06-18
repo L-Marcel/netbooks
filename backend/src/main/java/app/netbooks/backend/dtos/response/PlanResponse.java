@@ -31,7 +31,7 @@ public class PlanResponse {
         this.name = plan.getName();
         this.description = plan.getDescription();
         this.numSubscribers = plan.getNumSubscribers();
-        this.duration = plan.getDuration().toHours();
+        this.duration = plan.getDuration().toDays();
         this.benefits = BenefitResponse.fromList(benefits);
         this.editions = PlanEditionResponse.fromList(editions);
     };

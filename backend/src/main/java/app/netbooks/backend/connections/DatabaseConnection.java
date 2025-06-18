@@ -1,6 +1,5 @@
 package app.netbooks.backend.connections;
 
-import java.lang.Thread.State;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

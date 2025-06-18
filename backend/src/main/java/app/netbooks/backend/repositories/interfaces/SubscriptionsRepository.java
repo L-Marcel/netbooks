@@ -1,7 +1,5 @@
 package app.netbooks.backend.repositories.interfaces;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 

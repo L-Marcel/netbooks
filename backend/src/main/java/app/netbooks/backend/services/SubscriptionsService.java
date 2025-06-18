@@ -1,7 +1,5 @@
 package app.netbooks.backend.services;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.Optional;
 import java.util.UUID;
 

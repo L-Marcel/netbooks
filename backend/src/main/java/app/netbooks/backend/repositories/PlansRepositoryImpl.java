@@ -38,7 +38,7 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
                     String name = result.getString("name");
                     String description = result.getString("description");
                     Integer numSubscribers = result.getInt("num_subscribers");
-                    Duration duration = Duration.ofHours(result.getLong("duration"));
+                    Duration duration = Duration.ofDays(result.getLong("duration"));
                     
                     Plan plan = new Plan(
                         id, name, description, 
@@ -69,7 +69,7 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
                     String name = result.getString("name");
                     String description = result.getString("description");
                     Integer numSubscribers = result.getInt("num_subscribers");
-                    Duration duration = Duration.ofHours(result.getLong("duration"));
+                    Duration duration = Duration.ofDays(result.getLong("duration"));
                     
                     Plan plan = new Plan(
                         id, name, description, 
@@ -100,7 +100,7 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
                         String name = result.getString("name");
                         String description = result.getString("description");
                         Integer numSubscribers = result.getInt("num_subscribers");
-                        Duration duration = Duration.ofHours(result.getLong("duration"));
+                        Duration duration = Duration.ofDays(result.getLong("duration"));
                         
                         Plan plan = new Plan(
                             id, name, description, 
@@ -126,7 +126,7 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
             ) {
                 statement.setString(1, plan.getName());
                 statement.setString(2, plan.getDescription());
-                statement.setLong(3, plan.getDuration().toHours());
+                statement.setLong(3, plan.getDuration().toDays());
                 statement.executeUpdate();
             };
         });
@@ -146,7 +146,7 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
             ) {
                 statement.setString(1, plan.getName());
                 statement.setString(2, plan.getDescription());
-                statement.setLong(3, plan.getDuration().toHours());
+                statement.setLong(3, plan.getDuration().toDays());
                 statement.setInt(4, plan.getId());
                 statement.executeUpdate();
             };

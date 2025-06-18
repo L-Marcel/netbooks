@@ -1,6 +1,5 @@
 package app.netbooks.backend.repositories;
 
-import java.sql.SQLException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -26,11 +25,11 @@ public abstract class BaseRepository {
 
     public <T> T query(
         QueryFunction<T> query,
-        Function<SQLException, T> expcetion
+        Function<Exception, T> expcetion
     ) {
         try {
             return this.database.query(query);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             return expcetion.apply(e);
         }
     };
@@ -44,7 +43,7 @@ public abstract class BaseRepository {
 
     public <T> T query(
         QueryFunction<T> query
-    ) throws InternalServerError {
+    ) {
         return this.query(query, (e) -> {
             throw new InternalServerError();
         });
@@ -52,18 +51,18 @@ public abstract class BaseRepository {
 
     public void execute(
         OperationFunction operation,
-        Consumer<SQLException> expcetion
+        Consumer<Exception> expcetion
     ) {
         try {
             this.database.execute(operation);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             expcetion.accept(e);
         }
     };
 
     public void execute(
         OperationFunction operation
-    ) throws InternalServerError {
+    ) {
         this.execute(operation, (e) -> {
             throw new InternalServerError();
         });

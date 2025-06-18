@@ -3,7 +3,6 @@ package app.netbooks.backend.configurations;
 import java.util.List;
 
 import javax.crypto.SecretKey;
-import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,9 +15,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 
 import app.netbooks.backend.authentication.RestAuthenticationEntryPoint;
 import io.jsonwebtoken.io.Decoders;

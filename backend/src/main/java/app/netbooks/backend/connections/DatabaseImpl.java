@@ -50,7 +50,7 @@ public class DatabaseImpl implements Database {
     @Override
     public <T> T query(
         QueryFunction<T> query
-    ) throws SQLException {
+    ) throws SQLException, InternalServerError {
         if(connections.haveTransactionRunning()) {
             DatabaseConnection connection = new DatabaseConnection(
                 connections.getTransactionConnection()
@@ -75,7 +75,13 @@ public class DatabaseImpl implements Database {
         OperationFunction operation
     ) throws SQLException {
         this.query((connection) -> {
-            operation.apply(connection);
+            try {
+                operation.apply(connection);
+            } catch (InternalServerError e) {
+                if(e.getSqlException() instanceof SQLException)
+                    throw e.getSqlException();
+            };
+
             return null;
         });
     };

@@ -4,8 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -28,7 +29,7 @@ public abstract class TagsRepositoryTests extends BaseTests {
     private TagsRepository repository;
 
     @BeforeAll
-    public static void clear(@Autowired Database database) {
+    public static void clear(@Autowired Database database) throws SQLException {
         BaseTests.clear(database, "tag");
     };
 
@@ -91,9 +92,16 @@ public abstract class TagsRepositoryTests extends BaseTests {
         });
 
         Database database = mock(Database.class);
-        when(database.getConnection()).thenThrow(
+        
+        doThrow(
             new SQLException("Erro simulado de conexão!")
-        );
+        ).when(database)
+        .query(any());
+
+        doThrow(
+            new SQLException("Erro simulado de conexão!")
+        ).when(database)
+        .execute(any());
 
         assertDoesNotThrow(() -> {
             TagsRepositoryImpl tagsRepositoryImpl = new TagsRepositoryImpl(database);
