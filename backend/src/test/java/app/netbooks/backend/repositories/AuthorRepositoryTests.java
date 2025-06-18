@@ -18,14 +18,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import app.netbooks.backend.BaseTests;
-import app.netbooks.backend.connections.Database;
+import app.netbooks.backend.connections.interfaces.Database;
 import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.models.Author;
-import app.netbooks.backend.repositories.interfaces.AuthorRepository;
+import app.netbooks.backend.repositories.interfaces.AuthorsRepository;
 
 public class AuthorRepositoryTests extends BaseTests {
     @Autowired
-    private AuthorRepository repository;
+    private AuthorsRepository repository;
 
     private Author testAuthor;
 

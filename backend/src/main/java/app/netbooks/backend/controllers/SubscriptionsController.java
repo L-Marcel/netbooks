@@ -15,6 +15,7 @@ import app.netbooks.backend.annotations.SubscriberOnly;
 import app.netbooks.backend.authentication.AuthenticatedUser;
 import app.netbooks.backend.dtos.response.SubscriptionResponse;
 import app.netbooks.backend.models.PlanEdition;
+import app.netbooks.backend.models.Subscription;
 import app.netbooks.backend.services.PlansEditionsService;
 import app.netbooks.backend.services.SubscriptionsService;
 
@@ -32,12 +33,16 @@ public class SubscriptionsController {
     public ResponseEntity<SubscriptionResponse> findAvailableById(
         @AuthenticationPrincipal AuthenticatedUser user
     ) {
+        Subscription subscription = subscriptionsService.findBySubscriber(
+            user.getUser().getUuid()
+        );
+
         PlanEdition edition = plansEditionService.findById(
-            user.getSubscription().getEdition()
+            subscription.getEdition()
         );
 
         SubscriptionResponse response = new SubscriptionResponse(
-            user.getSubscription(), 
+            subscription, 
             edition
         );
         return ResponseEntity.ok().body(response);
@@ -61,7 +66,7 @@ public class SubscriptionsController {
         PlanEdition edition = plansEditionService.findAvailableById(id);
 
         subscriptionsService.subscribe(
-            user,
+            user.getUser(),
             edition
         );
 

@@ -12,13 +12,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import app.netbooks.backend.models.PlanEdition;
 import app.netbooks.backend.models.Role;
-import app.netbooks.backend.models.Subscription;
 import app.netbooks.backend.models.User;
-import app.netbooks.backend.services.PlansEditionsService;
 import app.netbooks.backend.services.RolesService;
-import app.netbooks.backend.services.SubscriptionsService;
 import app.netbooks.backend.services.TokensService;
 import app.netbooks.backend.services.UsersService;
 import jakarta.servlet.FilterChain;
@@ -36,12 +32,6 @@ public class AuthenticationMiddleware extends OncePerRequestFilter  {
 
     @Autowired
     private RolesService rolesService;
-
-    @Autowired
-    private SubscriptionsService subscriptionsService;
-
-    @Autowired
-    private PlansEditionsService plansEditionsService;
 
     @Override
     @SuppressWarnings("null")
@@ -61,24 +51,10 @@ public class AuthenticationMiddleware extends OncePerRequestFilter  {
             try {
                 User user = usersService.findById(uuid);
                 List<Role> roles = rolesService.findAllByUser(uuid);
-                Optional<Subscription> subscription = Optional.empty();
-                Optional<PlanEdition> edition = Optional.empty();
-
-                if(roles.contains(Role.SUBSCRIBER)) {
-                    subscription = Optional.of(subscriptionsService.findBySubscriber(
-                        user.getUuid()
-                    ));
-
-                    edition = Optional.of(plansEditionsService.findById(
-                        subscription.get().getEdition()
-                    ));
-                };
 
                 AuthenticatedUser authenticatedUser = new AuthenticatedUser(
                     user,
-                    roles,
-                    subscription.orElse(null),
-                    edition.orElse(null)
+                    roles
                 );
 
                 UsernamePasswordAuthenticationToken authentication =

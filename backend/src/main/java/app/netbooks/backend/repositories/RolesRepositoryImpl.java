@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
-import app.netbooks.backend.connections.Database;
+import app.netbooks.backend.connections.interfaces.Database;
 import app.netbooks.backend.models.Role;
 import app.netbooks.backend.repositories.interfaces.RolesRepository;
 
@@ -26,55 +26,53 @@ public class RolesRepositoryImpl extends BaseRepository implements RolesReposito
 
     @Override
     public Map<UUID, List<Role>> mapAllByUser() {
-        Map<UUID, List<Role>> rolesMap = new LinkedHashMap<>();
+        return this.queryOrDefault((connection) -> {
+            Map<UUID, List<Role>> rolesMap = new LinkedHashMap<>();
 
-        try (
-            Connection connection = this.database.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery(
-                "SELECT * FROM user_roles;"
-            );
-        ) {
-            while(result.next()) {
-                UUID user = UUID.fromString(result.getString("uuid"));
-                Role role = Role.fromString(result.getString("role"));
-                
-                rolesMap.computeIfAbsent(
-                    user,
-                    v -> new ArrayList<Role>()
-                ).add(role);
+            try (
+                Statement statement = connection.createStatement();
+                ResultSet result = statement.executeQuery(
+                    "SELECT * FROM user_roles;"
+                );
+            ) {
+                while(result.next()) {
+                    UUID user = UUID.fromString(result.getString("uuid"));
+                    Role role = Role.fromString(result.getString("role"));
+                    
+                    rolesMap.computeIfAbsent(
+                        user,
+                        v -> new ArrayList<Role>()
+                    ).add(role);
+                };
             };
-        } catch (SQLException e) {
-            e.printStackTrace();
-        };
 
-        return rolesMap;
+            return rolesMap;
+        }, new LinkedHashMap<>());
     };
 
     @Override
     public List<Role> findAllByUser(UUID user) {
-        List<Role> roles = new LinkedList<>();
+        return this.queryOrDefault((connection) -> {
+            List<Role> roles = new LinkedList<>();
 
-        try (
-            Connection connection = this.database.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT role FROM user_roles WHERE uuid = ?;"
-            );
-        ) {
-            preparedStatement.setString(1, user.toString());
-            
             try (
-                ResultSet result = preparedStatement.executeQuery();
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT role FROM user_roles WHERE uuid = ?;"
+                );
             ) {
-                while(result.next()) {
-                    Role role = Role.fromString(result.getString("role"));
-                    roles.add(role);
+                preparedStatement.setString(1, user.toString());
+                
+                try (
+                    ResultSet result = preparedStatement.executeQuery();
+                ) {
+                    while(result.next()) {
+                        Role role = Role.fromString(result.getString("role"));
+                        roles.add(role);
+                    };
                 };
             };
-        } catch (SQLException e) {
-            e.printStackTrace();
-        };
 
-        return roles;
+            return roles;
+        }, new LinkedList<>());
     };
 };

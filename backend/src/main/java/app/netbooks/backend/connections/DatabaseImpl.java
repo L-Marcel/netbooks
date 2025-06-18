@@ -2,20 +2,81 @@ package app.netbooks.backend.connections;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.SQLTimeoutException;
-
-import javax.sql.DataSource;
+import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import app.netbooks.backend.connections.interfaces.Database;
+import app.netbooks.backend.connections.interfaces.OperationFunction;
+import app.netbooks.backend.connections.interfaces.QueryFunction;
+import app.netbooks.backend.errors.InternalServerError;
+
 @Component
 public class DatabaseImpl implements Database {
     @Autowired
-    private DataSource dataSource;
+    private Connections connections;
+
+    @Override
+    public <T> T transaction(
+        int isolationLevel,
+        Supplier<T> operations,
+        Runnable onRollback
+    ) throws InternalServerError {
+        try {
+            Connection connection = connections.getTransactionConnection();
+            connection.setTransactionIsolation(isolationLevel);
+            connection.setAutoCommit(false);
+            T result = operations.get();
+            connection.commit();
+            connection.close();
+            connections.clearTransactionConnection();
+            return result;
+        } catch (Exception e) {
+            try {
+                Connection connection = connections.getTransactionConnection();
+                connection.rollback();
+                connection.close();
+                connections.clearTransactionConnection();
+                onRollback.run();
+            } catch (SQLException e2) {
+                connections.clearTransactionConnection();
+            };
+
+            throw new InternalServerError();
+        }
+    };
     
     @Override
-    public Connection getConnection() throws SQLException, SQLTimeoutException {
-        return this.dataSource.getConnection();
+    public <T> T query(
+        QueryFunction<T> query
+    ) throws SQLException {
+        if(connections.haveTransactionRunning()) {
+            DatabaseConnection connection = new DatabaseConnection(
+                connections.getTransactionConnection()
+            );
+
+            return query.apply(connection);
+        } else {
+            try (
+                DatabaseConnection connection = new DatabaseConnection(
+                    connections.getConnection()
+                );
+            ) {
+                return query.apply(connection);
+            } catch (SQLException e) {
+                throw new InternalServerError();
+            }
+        }
+    };
+
+    @Override
+    public void execute(
+        OperationFunction operation
+    ) throws SQLException {
+        this.query((connection) -> {
+            operation.apply(connection);
+            return null;
+        });
     };
 };

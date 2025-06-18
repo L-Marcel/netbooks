@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import app.netbooks.backend.BaseTests;
-import app.netbooks.backend.connections.Database;
+import app.netbooks.backend.connections.interfaces.Database;
 import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.models.Plan;
 import app.netbooks.backend.repositories.interfaces.PlansRepository;

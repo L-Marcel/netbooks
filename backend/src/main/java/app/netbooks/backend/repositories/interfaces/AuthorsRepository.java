@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import app.netbooks.backend.models.Author;
 
-public interface AuthorRepository {
+public interface AuthorsRepository {
     public Optional<Author> findById(Integer id);
     public List<Author> searchByName(String name);
     public void create(Author author);
