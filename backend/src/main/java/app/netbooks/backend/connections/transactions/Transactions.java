@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import app.netbooks.backend.connections.interfaces.Database;
-import app.netbooks.backend.errors.InternalServerError;
+import app.netbooks.backend.errors.HttpError;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,7 +22,7 @@ public class Transactions {
     public <T> T run(
         Supplier<T> operations,
         Runnable onRollback
-    ) throws InternalServerError {
+    ) throws HttpError {
         return this.database.transaction(
             this.isolationLevel.getValue(), 
             operations,
@@ -32,14 +32,14 @@ public class Transactions {
 
     public <T> T run(
         Supplier<T> operations
-    ) throws InternalServerError {
+    ) throws HttpError {
         return this.run(operations, () -> {});
     };
 
     public <T> T run(
         Runnable operations,
         Runnable onRollback
-    ) throws InternalServerError {
+    ) throws HttpError {
         return this.run(
             () -> {
                 operations.run();
@@ -51,7 +51,7 @@ public class Transactions {
 
     public <T> T run(
         Runnable operations
-    ) throws InternalServerError {
+    ) throws HttpError {
         return this.run(operations, () -> {});
     };
 };

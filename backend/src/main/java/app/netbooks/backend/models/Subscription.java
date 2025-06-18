@@ -18,4 +18,9 @@ public class Subscription {
     private Date closedIn;
     private Boolean automaticBilling;
     private Boolean actived;
+
+    public Subscription(UUID subscriber, Integer edition) {
+        this.subscriber = subscriber;
+        this.edition = edition;
+    };
 };

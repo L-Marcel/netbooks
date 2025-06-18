@@ -19,5 +19,25 @@ public class Payment {
     private Date dueDate;
     private Timestamp createdAt;
     private PaymentStatus status;
-};
 
+    public Payment(
+        Long subscription,
+        BigDecimal price,
+        Date dueDate
+    ) {
+        this.subscription = subscription;
+        this.price = price;
+        this.payDate = Date.valueOf(dueDate.toLocalDate().minusDays(7l));
+        this.dueDate = dueDate;
+        this.status = PaymentStatus.SCHEDULED;
+    };
+
+    public Payment(
+        Long subscription,
+        BigDecimal price
+    ) {
+        this.subscription = subscription;
+        this.price = price;
+        this.status = PaymentStatus.SCHEDULED;
+    };
+};

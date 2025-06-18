@@ -27,8 +27,11 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
 
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "SELECT * FROM subscription_with_state \n" +
-                    "WHERE actived AND subscriber = ? LIMIT 1;"
+                    // language=sql
+                    """
+                    SELECT * FROM subscription_with_state
+                    WHERE actived AND subscriber = ? LIMIT 1;
+                    """
                 );
             ) {
                 statement.setString(1, subscriber.toString());
@@ -62,168 +65,143 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
     };
 
     @Override
-    public Long subscribe(
-        UUID subscriber,
-        Integer edition
-    ) {
+    public Long subscribe(Subscription subscription) {
         return this.query((connection) -> {
+            Long id = null;
+
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO subscription (edition, subscriber) VALUES (?, ?);",
+                    // language=sql
+                    """
+                    INSERT IGNORE INTO subscriber (uuid) VALUES (?);
+                    """
+                );
+            ) {
+                statement.setString(1, subscription.getSubscriber().toString());
+                statement.executeUpdate();
+            }; 
+
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    INSERT INTO subscription (edition, subscriber) VALUES (?, ?);        
+                    """,
                     true
                 );
             ) {
-                statement.setInt(1, edition);
-                statement.setString(2, subscriber.toString());
+                statement.setInt(1, subscription.getEdition());
+                statement.setString(2, subscription.getSubscriber().toString());
                 
-                try (
-                    ResultSet result = statement.getGeneratedKeys()
-                ) {
+                try (ResultSet result = statement.getGeneratedKeys()) {
                     result.next();
-                    return result.getLong(1);
-                }
-            }
-        });
-    };
-
-    @Override
-    public void createSubscriberIfNotExists(
-        UUID subscriber
-    ) {
-        this.execute((connection) -> {
-            try (
-                PreparedStatement statement = connection.prepareStatement(
-                    "INSERT IGNORE INTO subscriber (uuid) VALUES (?);"
-                );
-            ) {
-                statement.setString(1, subscriber.toString());
-                statement.executeUpdate();
-            }; 
-        });
-    };
-
-    @Override
-    public void closeOldSubscriptions(
-        UUID subscriber
-    ) {
-        this.execute((connection) -> {
-            try (
-                PreparedStatement statement = connection.prepareStatement(
-                    "UPDATE subscription\n" +
-                    "SET closed_in = COALESCE(closed_in, CURRENT_DATE), \n" +
-                    "automatic_billing = 0\n" +
-                    "WHERE subscriber = ?;"
-                );
-            ) {
-                statement.setString(1, subscriber.toString());
-                statement.executeUpdate();
-            };
-
-            try (
-                PreparedStatement statement = connection.prepareStatement(
-                    "UPDATE payment AS pay\n" +
-                    "JOIN subscription AS sub\n" +
-                    "SET pay.status = 'CANCELED'\n" +
-                    "WHERE pay.status = 'SCHEDULED'\n" +
-                    "AND pay.subscription = sub.id\n" +
-                    "AND sub.subscriber = ?;"
-                );
-            ) {
-                statement.setString(1, subscriber.toString());
-                statement.executeUpdate();
-            };
-        });
-    };
-
-    @Override
-    public void upgrade( 
-        UUID subscriber, 
-        Long subscription, 
-        Integer newEdition
-    ) {
-        this.execute((connection) -> {
-            try (
-                PreparedStatement statement = connection.prepareStatement(
-                    "UPDATE subscription\n" +
-                    "SET closed_in = CURRENT_DATE, \n" +
-                    "automatic_billing = 0\n" +
-                    "WHERE id = ?;"
-                );
-            ) {
-                statement.setLong(1, subscription);
-                statement.executeUpdate();
-            };
-
-            try (
-                PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO subscription (edition, subscriber, previous) VALUES \n" +
-                    "  (?, ?, ?);"
-                );
-            ) {
-                statement.setInt(1, newEdition);
-                statement.setString(2, subscriber.toString());
-                statement.setLong(3, subscription);
-                statement.executeUpdate();
-            };
-        });
-    };
-
-    @Override
-    public void downgrade(
-        UUID subscriber, 
-        Long subscription,
-        Integer newEdition
-    ) {
-        this.execute((connection) -> {
-            Date dueDate = null;
-
-            try (
-                PreparedStatement statement = connection.prepareStatement(
-                    "CALL get_due_date(?);"
-                );
-            ) {
-                statement.setLong(1, subscription);
-            
-                try (
-                    ResultSet result = statement.executeQuery();
-                ) {
-                    result.next();
-                    dueDate = result.getDate("due_date");
+                    id = result.getLong(1);
                 };
             };
 
-            try (
-                PreparedStatement statement = connection.prepareStatement(
-                    "UPDATE subscription\n" +
-                    "SET closed_in = ?, \n" +
-                    "automatic_billing = 0\n" +
-                    "WHERE id = ?;"
-                );
-            ) {
-                statement.setDate(1, dueDate);
-                statement.setLong(2, subscription);
-                statement.executeUpdate();
-            };
+            return id;
+        });
+    };
 
+    @Override
+    public void closeById(Long id) {
+        this.execute((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO subscription (edition, subscriber, started_in, num_payments, previous) VALUES \n" +
-                    "  (?, ?, ?, ?, ?);"
+                    // language=sql
+                    """
+                    UPDATE subscription
+                    SET closed_in = CURRENT_DATE,
+                    automatic_billing = 0
+                    WHERE id = ?;
+                    """
                 );
             ) {
-                statement.setInt(1, newEdition);
-                statement.setString(2, subscriber.toString());
-                statement.setDate(3, dueDate);
-                statement.setInt(4, 0);
-                statement.setLong(5, subscription);
+                statement.setLong(1, id);
                 statement.executeUpdate();
             };
         });
     };
 
     @Override
-    public void unsubscribe(UUID subscriber) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'unsubscribe'");
+    public void closeById(Long id, Date closeDate) {
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    UPDATE subscription
+                    SET closed_in = ?,
+                    automatic_billing = 0
+                    WHERE id = ?;
+                    """
+                );
+            ) {
+                statement.setDate(1, closeDate);
+                statement.setLong(2, id);
+                statement.executeUpdate();
+            };
+        });
+    };
+
+    // @Override
+    // public void closeBySubscriber(UUID subscriber) {
+    //     this.execute((connection) -> {
+    //         try (
+    //             PreparedStatement statement = connection.prepareStatement(
+    //                 // language=sql
+    //                 """
+    //                 UPDATE subscription  
+    //                 SET closed_in = CURRENT_DATE,
+    //                 automatic_billing = 0
+    //                 WHERE subscriber = ?;
+    //                 """
+    //             );
+    //         ) {
+    //             statement.setString(1, subscriber.toString());
+    //             statement.executeUpdate();
+    //         };
+    //     });
+    // };
+
+    // @Override
+    // public void closeBySubscriber(UUID subscriber, Date closeDate) {
+    //     this.execute((connection) -> {
+    //         try (
+    //             PreparedStatement statement = connection.prepareStatement(
+    //                 // language=sql
+    //                 """
+    //                 UPDATE subscription  
+    //                 SET closed_in = ?,
+    //                 automatic_billing = 0
+    //                 WHERE subscriber = ?;
+    //                 """
+    //             );
+    //         ) {
+    //             statement.setDate(1, closeDate);
+    //             statement.setString(2, subscriber.toString());
+    //             statement.executeUpdate();
+    //         };
+    //     });
+    // };
+
+    @Override
+    public void closeNotClosedBySubscriber(UUID subscriber) {
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    UPDATE subscription  
+                    SET closed_in = COALESCE(closed_in, CURRENT_DATE),
+                    automatic_billing = 0
+                    WHERE subscriber = ?;
+                    """
+                );
+            ) {
+                statement.setString(1, subscriber.toString());
+                statement.executeUpdate();
+            };
+        });
     };
 };

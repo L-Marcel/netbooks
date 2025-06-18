@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import app.netbooks.backend.connections.interfaces.Database;
 import app.netbooks.backend.connections.interfaces.OperationFunction;
 import app.netbooks.backend.connections.interfaces.QueryFunction;
+import app.netbooks.backend.errors.HttpError;
 import app.netbooks.backend.errors.InternalServerError;
 
 @Component
@@ -22,7 +23,7 @@ public class DatabaseImpl implements Database {
         int isolationLevel,
         Supplier<T> operations,
         Runnable onRollback
-    ) throws InternalServerError {
+    ) throws HttpError {
         try {
             Connection connection = connections.getTransactionConnection();
             connection.setTransactionIsolation(isolationLevel);
@@ -50,7 +51,7 @@ public class DatabaseImpl implements Database {
     @Override
     public <T> T query(
         QueryFunction<T> query
-    ) throws SQLException, InternalServerError {
+    ) throws SQLException, HttpError {
         if(connections.haveTransactionRunning()) {
             DatabaseConnection connection = new DatabaseConnection(
                 connections.getTransactionConnection()
