@@ -1,4 +1,4 @@
-package app.netbooks.backend.dtos;
+package app.netbooks.backend.dtos.response;
 
 import java.util.List;
 import java.util.UUID;

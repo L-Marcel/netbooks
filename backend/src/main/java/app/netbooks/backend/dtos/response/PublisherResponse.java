@@ -1,9 +1,9 @@
-package app.netbooks.backend.dtos;
+package app.netbooks.backend.dtos.response;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import app.netbooks.backend.models.Tag;
+import app.netbooks.backend.models.Publisher;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,16 +13,16 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TagResponse {
+public class PublisherResponse {
     private String name;
 
-    public TagResponse(Tag tag) {
-        this.name = tag.getName();
+    public PublisherResponse(Publisher publisher) {
+        this.name = publisher.getName();
     };
 
-    public static List<TagResponse> fromList(List<Tag> list) {
+    public static List<PublisherResponse> fromList(List<Publisher> list) {
         return list.stream()
-            .map(TagResponse::new)
+            .map(PublisherResponse::new)
             .collect(Collectors.toList());
     };
 };

@@ -1,4 +1,4 @@
-package app.netbooks.backend.dtos;
+package app.netbooks.backend.dtos.response;
 
 import java.sql.Date;
 import java.util.List;

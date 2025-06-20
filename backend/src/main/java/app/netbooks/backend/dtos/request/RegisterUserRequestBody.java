@@ -1,4 +1,4 @@
-package app.netbooks.backend.dtos;
+package app.netbooks.backend.dtos.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,9 +9,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateUserRequestBody {
+public class RegisterUserRequestBody {
     private String name;
     private String avatar;
     private String email;
     private String password;
+    private String passwordConfirmation;
 };

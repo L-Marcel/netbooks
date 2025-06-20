@@ -1,4 +1,4 @@
-package app.netbooks.backend.dtos;
+package app.netbooks.backend.dtos.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
