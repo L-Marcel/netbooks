@@ -1,16 +1,17 @@
 import useRoom, { Participant, Room } from "@stores/useRoom";
-import { randomUUID, UUID } from "crypto";
 import api from "./axios";
 import { connect, disconnect } from "./socket";
+import { User } from "@models/user";
 
-// arrumar
-export async function join(uuid: UUID, code?: string): Promise<void> {
+export async function join(userName: string, code?: string): Promise<void> {
     const { setParticipant } = useRoom.getState();
 
     return await api
-    .post<Participant>(`rooms/${code}/join`)
+    .post<Participant>(`rooms/${code}/join`, 
+      {userName},
+    )
     .then((response) => {
-      connect(response.data.room, response.data.uuid);
+      connect(response.data.room, response.data.user.uuid);
       setParticipant(response.data);
     });;
 }
@@ -22,8 +23,7 @@ export async function close(): Promise<void> {
 }
 
 export async function create(): Promise<string> {
-    const roomCode = randomUUID();
-    return await api.post<Room>("rooms", {roomCode} ).then((response) => {
+    return await api.post<Room>("rooms",).then((response) => {
         return response.data.code;
     });
 }
