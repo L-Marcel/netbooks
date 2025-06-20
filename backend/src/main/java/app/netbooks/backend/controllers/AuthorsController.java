@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.netbooks.backend.dtos.AuthorResponse;
+import app.netbooks.backend.dtos.response.AuthorResponse;
 import app.netbooks.backend.models.Author;
 import app.netbooks.backend.services.AuthorsService;
 

@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.netbooks.backend.annotations.AdministratorOnly;
 import app.netbooks.backend.annotations.AuhenticatedOnly;
-import app.netbooks.backend.dtos.LoginRequestBody;
-import app.netbooks.backend.dtos.RegisterUserRequestBody;
-import app.netbooks.backend.dtos.UpdateUserRequestBody;
-import app.netbooks.backend.dtos.UserResponse;
+import app.netbooks.backend.dtos.request.LoginRequestBody;
+import app.netbooks.backend.dtos.request.RegisterUserRequestBody;
+import app.netbooks.backend.dtos.request.UpdateUserRequestBody;
+import app.netbooks.backend.dtos.response.UserResponse;
 import app.netbooks.backend.models.User;
 import app.netbooks.backend.services.TokensService;
 import app.netbooks.backend.services.UsersService;

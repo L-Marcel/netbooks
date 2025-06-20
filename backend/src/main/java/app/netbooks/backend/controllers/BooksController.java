@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.netbooks.backend.dtos.BookResponse;
+import app.netbooks.backend.dtos.response.BookResponse;
 import app.netbooks.backend.models.Book;
 import app.netbooks.backend.services.BooksService;
 

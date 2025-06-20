@@ -20,10 +20,10 @@ import org.springframework.http.ResponseEntity;
 
 import app.netbooks.backend.BaseTests;
 import app.netbooks.backend.TestImages;
-import app.netbooks.backend.dtos.LoginRequestBody;
-import app.netbooks.backend.dtos.RegisterUserRequestBody;
-import app.netbooks.backend.dtos.UpdateUserRequestBody;
-import app.netbooks.backend.dtos.UserResponse;
+import app.netbooks.backend.dtos.request.LoginRequestBody;
+import app.netbooks.backend.dtos.request.RegisterUserRequestBody;
+import app.netbooks.backend.dtos.request.UpdateUserRequestBody;
+import app.netbooks.backend.dtos.response.UserResponse;
 import app.netbooks.backend.models.Role;
 import app.netbooks.backend.services.TokensService;
 
