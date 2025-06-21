@@ -3,7 +3,7 @@ import api from "./axios";
 import { connect, disconnect } from "./socket";
 import { User } from "@models/user";
 
-export async function join(userName: string, code?: string): Promise<void> {
+export async function join(userName: string, code?: string, isOwner?: Boolean): Promise<void> {
     const { setParticipant } = useRoom.getState();
 
     return await api
@@ -11,7 +11,11 @@ export async function join(userName: string, code?: string): Promise<void> {
       {userName},
     )
     .then((response) => {
-      connect(response.data.room, response.data.user.uuid);
+      if(isOwner){
+        connect(response.data.room, response.data.user, true);
+      } else{
+        connect(response.data.room, response.data.user);
+      }
       setParticipant(response.data);
     });;
 }

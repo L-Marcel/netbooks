@@ -37,7 +37,7 @@ export function connect(
             );
 
             client.subscribe(
-                "/channel/events/rooms/" + code + "/participants/match",
+                "/channel/events/rooms/" + code + "/participants/result",
                 (message) => {
                     // recebimento do resultado
                 }

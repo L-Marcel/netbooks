@@ -20,12 +20,12 @@ function CopyLinkButton(
     };
 
     return (
-        <div style={{ position: 'relative', display: 'inline-block' }}>
+        <div className='absolute right-5 top-5'>
         <button
             onClick={copyLink}
             className='btn btn-block'
         >
-            <FaLink /> Copiar Link
+            <FaLink />
         </button>
 
         {copied && (

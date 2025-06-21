@@ -1,8 +1,9 @@
-import CopyLinkButton from "@components/Button/CopyLinkButton";
 import AuthGuard from "@components/Guards/AuthGuard";
 import SubscriberGuard from "@components/Guards/SubscriberGuard";
-import { close, getRoom } from "@services/room";
-import useRoom from "@stores/useRoom";
+import { create, getOpenRoom, join } from "@services/room";
+import useUser from "@stores/useUser";
+import { useState } from "react";
+import { FaArrowRight } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 export default function Match() {
@@ -16,42 +17,68 @@ export default function Match() {
 }
 
 function Page(){
-    const { room, participant } = useRoom.getState();
-    const roomCode = "12345";
-
-    const isOwner = (room?.owner === participant?.uuid);
-
-    /*
     const navigate = useNavigate();
-    const onClose = () => {
-        close().then(() => {
-        navigate("/home");
-        });
-    };
-    */
-   
-    return(
-        <main className="flex flex-col w-full h-ful items-center bg-base-100">
-            <button
-                className="btn btn-error absolute left-5 top-5"
-                //onClick={{isOwner ? onClose : onExit}}
-            >
-                {isOwner ? "Fechar sala" : "Sair"}
-            </button>
-            <div className="flex flex-col items-center justify-center w-full h-screen bg-base-100 gap-10">
-                <CopyLinkButton code={roomCode}/>
+    const user = useUser((state) => state.user);
+    const [roomCode, setRoomCode] = useState("");
 
-                {isOwner ? (
+    const createRoom = async () => {
+        try {
+        const room = await getOpenRoom();
+        navigate("/match/" + room.code);
+        } catch (error) {
+        create().then((code) => {
+            {user && 
+            join(user?.name, code, true);
+            navigate("/match/" + code);
+            }
+        });
+        }
+    };
+   
+    const enterRoom = async () => {
+        if (!roomCode) return;
+        try {
+            {user &&
+                await join(user.name, roomCode);
+                navigate("/match/" + roomCode);
+            }
+        } catch (error) {
+            console.error("Erro ao entrar na sala:", error);
+        }
+    };
+
+    return(
+        <main className="flex flex-col w-full h-full items-center bg-base-100" style={{ height: "calc(100vh - 70px)" }}>
+            <div className="flex flex-col items-center justify-center w-md h-screen bg-base-100 gap-10">
+                <button 
+                    className="btn btn-primary w-md"
+                    onClick={createRoom}
+                >
+                    Criar Sala
+                </button>
+
+                <hr className="w-md border-gray-700"/>
+
+                <div className="flex">
+                    <input 
+                        type="text" 
+                        name="code" 
+                        id="code" 
+                        placeholder="Código da Sala"
+                        autoComplete="false"
+                        value={roomCode}
+                        onChange={(e) => setRoomCode(e.target.value)}
+                        className="input text-lg w-[400px]"
+                    />
                     <button
-                        className="btn btn-primary"
-                        //onClick={}
+                        className="btn w-[50px]"
+                        onClick={enterRoom}
                     >
-                        Iniciar
+                        <FaArrowRight/>
                     </button>
-                 ) : (
-                    <p className="text-lg text-gray-500 mt-4">Aguardando...</p>
-                 )}
+                </div>
             </div>
+            
         </main>
     );
 }

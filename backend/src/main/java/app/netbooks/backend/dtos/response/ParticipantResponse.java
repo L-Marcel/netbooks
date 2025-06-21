@@ -10,10 +10,12 @@ import lombok.Setter;
 @Setter
 public class ParticipantResponse {
     private UUID user;
+    private String name;
     private String room;
 
     public ParticipantResponse(Participant participant) {
-        this.room = participant.getRoom().getCode();
         this.user = participant.getUser().getUuid();
+        this.name = participant.getUser().getName();
+        this.room = participant.getRoom().getCode();
     };
 };

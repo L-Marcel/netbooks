@@ -5,9 +5,9 @@ import { create } from "zustand";
 import { disconnect } from "@services/socket";
 
 export type Participant = {
-    user: User;
+    user: UUID;
+    name: string;
     room: string;
-    bookChoices?: string[] 
 }
 
 export type Room = {
