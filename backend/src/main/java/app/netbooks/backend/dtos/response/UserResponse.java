@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import app.netbooks.backend.authentication.AuthenticatedUser;
+
 import app.netbooks.backend.models.Role;
 import app.netbooks.backend.models.User;
 import lombok.AllArgsConstructor;

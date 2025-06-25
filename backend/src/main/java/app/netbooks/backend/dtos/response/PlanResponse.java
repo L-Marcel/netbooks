@@ -21,6 +21,7 @@ public class PlanResponse {
     private Integer id;
     private String name;
     private String description;
+    private Integer numSubscribers;
     private Long duration;
     private List<BenefitResponse> benefits;
     private List<PlanEditionResponse> editions;
@@ -29,7 +30,8 @@ public class PlanResponse {
         this.id = plan.getId();
         this.name = plan.getName();
         this.description = plan.getDescription();
-        this.duration = plan.getDuration().toMillis();
+        this.numSubscribers = plan.getNumSubscribers();
+        this.duration = plan.getDuration().toDays();
         this.benefits = BenefitResponse.fromList(benefits);
         this.editions = PlanEditionResponse.fromList(editions);
     };

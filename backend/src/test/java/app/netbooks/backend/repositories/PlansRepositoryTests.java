@@ -4,8 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.sql.SQLException;
 import java.time.Duration;
@@ -20,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import app.netbooks.backend.BaseTests;
-import app.netbooks.backend.connections.Database;
+import app.netbooks.backend.connections.interfaces.Database;
 import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.models.Plan;
 import app.netbooks.backend.repositories.interfaces.PlansRepository;
@@ -30,7 +31,7 @@ public abstract class PlansRepositoryTests extends BaseTests {
     public PlansRepository repository;
 
     @BeforeAll
-    public static void clear(@Autowired Database database) {
+    public static void clear(@Autowired Database database) throws SQLException {
         BaseTests.clear(database, "plan");
     };
 
@@ -81,10 +82,10 @@ public abstract class PlansRepositoryTests extends BaseTests {
             Optional<Plan> planFound = repository.findById(plan.getId());
             assertEquals("Plano", planFound.get().getName());
             
-            plan.setDuration(Duration.ofSeconds(30));
+            plan.setDuration(Duration.ofDays(1));
             repository.update(plan);
             planFound = repository.findById(plan.getId());
-            assertEquals(30, planFound.get().getDuration().toSeconds());
+            assertEquals(1, planFound.get().getDuration().toDays());
         });
     };
 
@@ -141,9 +142,16 @@ public abstract class PlansRepositoryTests extends BaseTests {
         });
 
         Database database = mock(Database.class);
-        when(database.getConnection()).thenThrow(
+        
+        doThrow(
             new SQLException("Erro simulado de conexão!")
-        );
+        ).when(database)
+        .query(any());
+
+        doThrow(
+            new SQLException("Erro simulado de conexão!")
+        ).when(database)
+        .execute(any());
 
         assertDoesNotThrow(() -> {
             PlansRepositoryImpl plansRepository = new PlansRepositoryImpl(database);

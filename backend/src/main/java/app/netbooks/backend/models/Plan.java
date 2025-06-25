@@ -13,7 +13,9 @@ public class Plan {
     private Integer id;
     private String name;
     private String description;
+    private Integer numSubscribers;
     private Duration duration;
+    private Boolean available;
 
     public Plan(String name, String description, Duration duration) {
         this.name = name;

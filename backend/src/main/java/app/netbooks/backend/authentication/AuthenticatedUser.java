@@ -21,8 +21,8 @@ public class AuthenticatedUser implements UserDetails {
     @Override
     public List<? extends GrantedAuthority> getAuthorities() {
         return this.getRoles().stream()
-            .filter((Role role) -> role != Role.UNKNOWN)
-            .map((Role role) -> new SimpleGrantedAuthority("ROLE_" + role.toString()))
+            .filter((role) -> role != Role.UNKNOWN)
+            .map((role) -> new SimpleGrantedAuthority("ROLE_" + role.toString()))
             .collect(Collectors.toList());
     };
 
