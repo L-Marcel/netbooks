@@ -1,9 +1,7 @@
 package app.netbooks.backend.repositories;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -13,7 +11,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
-import app.netbooks.backend.connections.Database;
+import app.netbooks.backend.connections.interfaces.Database;
 import app.netbooks.backend.models.Benefit;
 import app.netbooks.backend.repositories.interfaces.BooksBenefitsRepository;
 
@@ -25,59 +23,61 @@ public class BooksBenefitsRepositoryImpl extends BaseRepository implements Books
 
     @Override
     public Map<Long, List<Benefit>> mapAllByBook() {
-        Map<Long, List<Benefit>> benefitsMap = new LinkedHashMap<>();
+        return this.queryOrDefault((connection) -> {
+            Map<Long, List<Benefit>> benefitsMap = new LinkedHashMap<>();
 
-        try (
-            Connection connection = this.database.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery(
-                "SELECT * FROM book_benefit;"
-            );
-        ) {
-            while(result.next()) {
-                Long book = result.getLong("book");
-                String benefitName = result.getString("benefit");
-                Benefit benefit = new Benefit(benefitName);
+            try (
+                Statement statement = connection.createStatement();
+                ResultSet result = statement.executeQuery(
+                    // language=sql
+                    """
+                    SELECT * FROM book_benefit;
+                    """
+                );
+            ) {
+                while(result.next()) {
+                    Long book = result.getLong("book");
+                    String benefitName = result.getString("benefit");
+                    Benefit benefit = new Benefit(benefitName);
 
-                benefitsMap.computeIfAbsent(
-                    book,
-                    v -> new ArrayList<Benefit>()
-                ).add(benefit);
-            };
-        } catch (SQLException e) {
-            e.printStackTrace();
-        };
+                    benefitsMap.computeIfAbsent(
+                        book,
+                        v -> new ArrayList<Benefit>()
+                    ).add(benefit);
+                };
+            }
 
-        return benefitsMap;
+            return benefitsMap;
+        }, new LinkedHashMap<>());
     };
 
     @Override
     public List<Benefit> findAllByBook(Long id) {
-        List<Benefit> benefits = new LinkedList<>();
+        return this.queryOrDefault((connection) -> {
+            List<Benefit> benefits = new LinkedList<>();
 
-        try (
-            Connection connection = this.database.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT benefit FROM book_benefit WHERE book = ?;"
-            );
-        ) {
-            preparedStatement.setLong(1, id);
-            
             try (
-                ResultSet result = preparedStatement.executeQuery();
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    SELECT benefit FROM book_benefit WHERE book = ?;
+                    """
+                );
             ) {
-                while(result.next()) {
-                    String benefitName = result.getString("benefit");
-                    
-                    Benefit benefit = new Benefit(benefitName);
+                preparedStatement.setLong(1, id);
+                
+                try (ResultSet result = preparedStatement.executeQuery()) {
+                    while(result.next()) {
+                        String benefitName = result.getString("benefit");
+                        
+                        Benefit benefit = new Benefit(benefitName);
 
-                    benefits.add(benefit);
+                        benefits.add(benefit);
+                    };
                 };
-            };
-        } catch (SQLException e) {
-            e.printStackTrace();
-        };
+            }
 
-        return benefits;
+            return benefits;
+        }, new LinkedList<>());
     };
 };

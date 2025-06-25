@@ -20,9 +20,6 @@ public class SubscriptionResponse {
     private PlanEditionResponse edition;
     private Date startedIn;
     private Date closedIn;
-    private Date dueDate;
-    private Date payDate;
-    private Integer numPayments;
     private Boolean automaticBilling;
     private Boolean actived;
 
@@ -32,9 +29,6 @@ public class SubscriptionResponse {
         this.edition = new PlanEditionResponse(edition);
         this.startedIn = subscription.getStartedIn();
         this.closedIn = subscription.getClosedIn();
-        this.dueDate = subscription.getDueDate();
-        this.payDate = subscription.getPayDate();
-        this.numPayments = subscription.getNumPayments();
         this.automaticBilling = subscription.getAutomaticBilling();
         this.actived = subscription.getActived();
     };

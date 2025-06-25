@@ -26,7 +26,7 @@ public class ValidationsError extends RuntimeException {
         Map<String, Object> error = new LinkedHashMap<>();
         List<Map<String, Object>> errors = this.errors
             .stream()
-            .map((ValidationFieldError validationError) -> 
+            .map((validationError) -> 
                 validationError.getError()
             ).collect(Collectors.toList());
         

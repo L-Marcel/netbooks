@@ -1,9 +1,7 @@
 package app.netbooks.backend.repositories;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +9,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
-import app.netbooks.backend.connections.Database;
-import app.netbooks.backend.errors.InternalServerError;
+import app.netbooks.backend.connections.interfaces.Database;
 import app.netbooks.backend.models.Tag;
 import app.netbooks.backend.repositories.interfaces.TagsRepository;
 
@@ -24,78 +21,86 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
 
     @Override
     public List<Tag> findAll() {
-        List<Tag> tags = new ArrayList<Tag>();
+        return this.queryOrDefault((connection) -> {
+            List<Tag> tags = new ArrayList<>();
 
-        try (
-            Connection connection = this.database.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery(
-                "SELECT * FROM tag;"
-            ); 
-        ) {
-            while (result.next()) {
-                String name = result.getString("name");
-                Tag tag = new Tag(name);
-                tags.add(tag);
+            try (
+                Statement statement = connection.createStatement();
+                ResultSet result = statement.executeQuery(
+                    // language=sql
+                    """
+                    SELECT * FROM tag;
+                    """
+                ); 
+            ) {
+                while(result.next()) {
+                    String name = result.getString("name");
+                    Tag tag = new Tag(name);
+                    tags.add(tag);
+                };
             };
-        } catch (SQLException e) {};
 
-        return tags;
+            return tags;
+        }, new ArrayList<>());
     };
 
     @Override
     public Optional<Tag> findByName(String name) {
-        try (
-            Connection connection = this.database.getConnection();
-            PreparedStatement statement = connection.prepareStatement(
-                "SELECT * FROM tag WHERE name = ?;"
-            );
-        ) {
-            statement.setString(1, name);
-            try (
-                ResultSet result = statement.executeQuery();
-            ) {
-                Optional<Tag> tagFound = Optional.empty();
-                
-                if (result.next()) {
-                    Tag tag = new Tag(name);
-                    tagFound = Optional.of(tag);
-                };
+        return this.queryOrDefault((connection) -> {
+            Optional<Tag> tagFound = Optional.empty();
 
-                return tagFound;
-            }
-        } catch (SQLException e) {
-            return Optional.empty();
-        }
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    SELECT * FROM tag WHERE name = ?;
+                    """
+                );
+            ) {
+                statement.setString(1, name);
+                try (ResultSet result = statement.executeQuery()) {
+                    if(result.next()) {
+                        Tag tag = new Tag(name);
+                        tagFound = Optional.of(tag);
+                    };
+                };
+            };
+
+            return tagFound;
+        }, Optional.empty());
     };
 
     @Override
     public void create(Tag tag) {
-        try (
-            Connection connection = this.database.getConnection();
-            PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO tag (name) values (?);"
-            );
-        ) {
-            statement.setString(1, tag.getName());
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new InternalServerError();
-        }
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    INSERT INTO tag (name) values (?);
+                    """
+                );
+            ) {
+                statement.setString(1, tag.getName());
+                statement.executeUpdate();
+            };
+        });
     };
 
     @Override
     public void deleteByName(String name) {
-        try (
-            Connection connection = this.database.getConnection();
-            PreparedStatement statement = connection.prepareStatement(
-                "DELETE FROM tag WHERE name = ?;"
-            );
-        ) {
-            statement.setString(1, name);
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new InternalServerError();
-        }
+        this.execute((connection) -> {
+           try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    DELETE FROM tag WHERE name = ?;
+                    """
+                );
+            ) {
+                statement.setString(1, name);
+                statement.executeUpdate();
+            }; 
+        });
     };
 };

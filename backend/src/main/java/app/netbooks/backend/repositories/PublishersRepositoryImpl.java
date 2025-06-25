@@ -1,18 +1,16 @@
 package app.netbooks.backend.repositories;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
-import app.netbooks.backend.connections.Database;
-import app.netbooks.backend.errors.InternalServerError;
+import app.netbooks.backend.connections.interfaces.Database;
 import app.netbooks.backend.models.Publisher;
 import app.netbooks.backend.repositories.interfaces.PublishersRepository;
 
@@ -24,83 +22,91 @@ public class PublishersRepositoryImpl extends BaseRepository implements Publishe
 
     @Override
     public List<Publisher> findAll() {
-        List<Publisher> publishers = new ArrayList<Publisher>();
-        try (
-            Connection connection = this.database.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery(
-                "SELECT * FROM publisher;"
-            );
-        ) {
-            while (result.next()) {
-                String name = result.getString("name");
+        return this.queryOrDefault((connection) -> {
+            List<Publisher> publishers = new ArrayList<>();
 
-                Publisher publisher = new Publisher(name);
+            try (
+                Statement statement = connection.createStatement();
+                ResultSet result = statement.executeQuery(
+                    // language=sql
+                    """
+                    SELECT * FROM publisher;
+                    """
+                );
+            ) {
+                while(result.next()) {
+                    String name = result.getString("name");
 
-                publishers.add(publisher);
-            }
-        } catch (SQLException e) {
-            throw new InternalServerError();
-        }
-        return publishers;
-    }
+                    Publisher publisher = new Publisher(name);
+
+                    publishers.add(publisher);
+                };
+            };
+            
+            return publishers;
+        }, new ArrayList<>());
+    };
 
     @Override
     public Optional<Publisher> findByName(String name) {
-        try (
-            Connection connection = this.database.getConnection();
-            PreparedStatement statement = connection.prepareStatement(
-                "SELECT * FROM publisher WHERE name = ?;"
-            )
-        ) {
-            statement.setString(1, name);
+        return this.queryOrDefault((connection) -> {
+            Optional<Publisher> publisherFound = Optional.empty();
+
             try (
-                ResultSet result = statement.executeQuery();
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    SELECT * FROM publisher WHERE name = ?;
+                    """
+                );
             ) {
-                Optional<Publisher> publisherFound = Optional.empty();
-                if (result.next()) {
-                    String resultName = result.getString("name");
+                statement.setString(1, name);
+                try (ResultSet result = statement.executeQuery()) {
+                    if(result.next()) {
+                        String resultName = result.getString("name");
 
-                    Publisher publisher = new Publisher(resultName);
+                        Publisher publisher = new Publisher(resultName);
 
-                    publisherFound = Optional.of(publisher);
-                }
-                
-                return publisherFound;
-            }
-        } catch (SQLException e) {
-            throw new InternalServerError();
-        }
-    }
+                        publisherFound = Optional.of(publisher);
+                    };
+                };
+            };
+
+            return publisherFound;
+        }, Optional.empty());
+    };
 
     @Override
     public void create(Publisher publisher) {
-        try (
-            Connection connection = this.database.getConnection();
-            PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO publisher (name) VALUES (?);"
-            )
-        ) {
-            statement.setString(1, publisher.getName());
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new InternalServerError();
-        }
-    }
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    INSERT INTO publisher (name) VALUES (?);
+                    """
+                );
+            ) {
+                statement.setString(1, publisher.getName());
+                statement.executeUpdate();
+            };
+        });
+    };
 
     @Override
     public void deleteByName(String name) {
-        try (
-            Connection connection = this.database.getConnection();
-            PreparedStatement statement = connection.prepareStatement(
-                "DELETE FROM publisher WHERE name = ?;"
-            )
-        ) {
-            statement.setString(1, name);
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new InternalServerError();
-        }
-    }
-    
-}
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    DELETE FROM publisher WHERE name = ?;
+                    """
+                );
+            ) {
+                statement.setString(1, name);
+                statement.executeUpdate();
+            };
+        });
+    };
+};

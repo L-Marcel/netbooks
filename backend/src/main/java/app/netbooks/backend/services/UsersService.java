@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import app.netbooks.backend.connections.transactions.Transactions;
 import app.netbooks.backend.errors.UserNotFound;
 import app.netbooks.backend.errors.ValidationsError;
+import app.netbooks.backend.images.UserAvatarStorage;
 import app.netbooks.backend.models.User;
 import app.netbooks.backend.repositories.interfaces.UsersRepository;
 import app.netbooks.backend.validation.Validator;
@@ -21,6 +23,12 @@ public class UsersService {
 
     @Autowired
     private BCryptPasswordEncoder encoder;
+
+    @Autowired
+    private UserAvatarStorage avatarStorage;
+
+    @Autowired
+    private Transactions transactions;
 
     public List<User> findAll() {
         return this.repository.findAll();
@@ -84,7 +92,15 @@ public class UsersService {
         validator.run();
         
         User user = new User(name, avatar, email, encoder.encode(password));
-        this.repository.create(user);
+
+        this.transactions.run(() -> {
+            this.repository.create(user);
+            if(user.getAvatar() != null) {
+                avatarStorage.storeAvatar(user.getUuid(), user.getAvatar());
+            };
+        }, () -> {
+            avatarStorage.deleteAvatar(user.getUuid());
+        });
     };
 
     public void update(
@@ -127,6 +143,13 @@ public class UsersService {
         user.setEmail(email);
         user.setPassword(encoder.encode(password));
         
-        this.repository.update(user);
+        this.transactions.run(() -> {
+            this.repository.update(user);
+            if(user.getAvatar() != null) {
+                avatarStorage.storeAvatar(user.getUuid(), user.getAvatar());
+            } else {
+                avatarStorage.deleteAvatar(user.getUuid());
+            };
+        });
     };
 };

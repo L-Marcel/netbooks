@@ -1,6 +1,5 @@
 package app.netbooks.backend;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -9,11 +8,12 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import app.netbooks.backend.connections.Database;
+import app.netbooks.backend.connections.interfaces.Database;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, 
@@ -23,15 +23,17 @@ import app.netbooks.backend.connections.Database;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
-public abstract class BaseTests  {
-    public static void clear(Database database, String table) {
-        try (
-            Connection connection = database.getConnection();
-            Statement statement = connection.createStatement();
-        ) {
-            statement.executeUpdate("DELETE FROM " + table + ";");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        };
+public abstract class BaseTests {
+    @Autowired
+    protected Database database;
+
+    public static void clear(Database database, String table) throws SQLException {
+        database.execute((connection) -> {
+              try (
+                Statement statement = connection.createStatement();
+            ) {
+                statement.executeUpdate("DELETE FROM " + table + ";");
+            };
+        });
     };
 };

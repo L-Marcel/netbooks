@@ -128,10 +128,10 @@ INSERT IGNORE INTO book_tag (book, tag) VALUES
 SELECT * FROM book_tag;
 
 INSERT IGNORE INTO plan (id, name, description, duration) VALUES 
-  (1, 'Básico', 'Desfrute dos benefícios básicos da plataforma.', 720),
-  (2, 'Super', 'Tenha acesso a todos os livros e mais!', 720),
-  (3, 'Mega', 'Tenha acesso a todos os benefícios da plataforma!', 8766),
-  (4, 'Plenjado', 'Este plano está em fase de planejamento!', 720);
+  (1, 'Básico', 'Desfrute dos benefícios básicos da plataforma.', 30),
+  (2, 'Super', 'Tenha acesso a todos os livros e mais!', 30),
+  (3, 'Mega', 'Tenha acesso a todos os benefícios da plataforma!', 365),
+  (4, 'Plenjado', 'Este plano está em fase de planejamento!', 30);
 SELECT * FROM plan;
 
 INSERT IGNORE INTO plan_benefit (plan, benefit) VALUES 
@@ -158,12 +158,17 @@ INSERT IGNORE INTO user (uuid, name, email, password) VALUES
   ('e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e', 'Eric Eduardo', 'eric@gmail.com', '$2a$10$IKVfl9fl/o6auLT00ArvMOPN9pObm7y0DI1Xwu6gbtlcVbHzSwTnC');
 INSERT IGNORE INTO admin (uuid) VALUES
   ('3e78b287-399b-11f0-a0a8-7605c53cdf13');
-
 SELECT * FROM user;
 # Senha 'admin' foi criptografada para: $2a$10$iszhyLRMNIYy04weFz8dReJh3GxRsDv7hQYUBzaAAdn5WFc2csLXS
 # Senha 'marcel' foi criptografada para: $2a$10$Jop9tiqQd5PCuzOpF8MiVOTi/fuJ98PxBRrycvdi5Gt8/t2wOpqHm
 # Senha 'marcela' foi criptografada para: $2a$10$q1OKZbV/C9oJIXiep/ketei0dVYuQaEl2FvdQ9Dxf.YAh1oId1MO.
 # Senha 'eric' foi criptografada para: $2a$10$IKVfl9fl/o6auLT00ArvMOPN9pObm7y0DI1Xwu6gbtlcVbHzSwTnC
+
+INSERT IGNORE INTO payment_status (name) VALUES
+  ('SCHEDULED'),
+  ('PAID'),
+  ('CANCELED');
+SELECT * FROM payment_status;
 
 INSERT IGNORE INTO subscriber (uuid) VALUES 
   ('a1b2c3d4-e5f6-7890-1234-56789abcdef0');
@@ -171,17 +176,25 @@ INSERT IGNORE INTO subscriber (uuid) VALUES
   ('09876543-2109-fedc-ba98-7654321fedcb');
 INSERT IGNORE INTO subscriber (uuid) VALUES 
   ('e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e');
-
 SELECT * FROM subscriber;
 
-INSERT IGNORE INTO subscription (edition, subscriber) VALUES 
-  (1, 'a1b2c3d4-e5f6-7890-1234-56789abcdef0');
-INSERT IGNORE INTO subscription (edition, subscriber) VALUES 
-  (2, '09876543-2109-fedc-ba98-7654321fedcb');
-INSERT IGNORE INTO subscription (edition, subscriber) VALUES 
-  (4, 'e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e');
+INSERT IGNORE INTO subscription (id, edition, subscriber) VALUES 
+  (1, 1, 'a1b2c3d4-e5f6-7890-1234-56789abcdef0');
+INSERT IGNORE INTO subscription (id, edition, subscriber) VALUES 
+  (2, 2, '09876543-2109-fedc-ba98-7654321fedcb');
+INSERT IGNORE INTO subscription (id, edition, subscriber) VALUES 
+  (3, 4, 'e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e');
 
 SELECT * FROM subscription;
+
+INSERT IGNORE INTO payment (subscription, price, pay_date, due_date, status) VALUES
+  (1, 12.00, CURRENT_DATE, CURRENT_DATE, 'PAID'),
+  (2, 30.00, CURRENT_DATE, CURRENT_DATE, 'PAID'),
+  (3, 300.00, CURRENT_DATE, CURRENT_DATE, 'PAID'),
+  (1, 12.00, DATE_ADD(CURRENT_DATE, INTERVAL 27 DAY), DATE_ADD(CURRENT_DATE, INTERVAL 30 DAY), 'SCHEDULED'),
+  (2, 30.00, DATE_ADD(CURRENT_DATE, INTERVAL 27 DAY), DATE_ADD(CURRENT_DATE, INTERVAL 30 DAY), 'SCHEDULED'),
+  (3, 300.00, DATE_ADD(CURRENT_DATE, INTERVAL 362 DAY), DATE_ADD(CURRENT_DATE, INTERVAL 365 DAY), 'SCHEDULED');
+SELECT * FROM payment;
 
 INSERT IGNORE INTO classification (book, subscriber, value) VALUES
   (1, 'e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e', 10),

@@ -1,9 +1,7 @@
 package app.netbooks.backend.repositories;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -13,7 +11,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
-import app.netbooks.backend.connections.Database;
+import app.netbooks.backend.connections.interfaces.Database;
 import app.netbooks.backend.models.Author;
 import app.netbooks.backend.repositories.interfaces.BooksAuthorsRepository;
 
@@ -25,61 +23,63 @@ public class BooksAuthorsRepositoryImpl extends BaseRepository implements BooksA
 
     @Override
     public Map<Long, List<Author>> mapAllByBook() {
-        Map<Long, List<Author>> authorsMap = new LinkedHashMap<>();
+        return this.queryOrDefault((connection) -> {
+            Map<Long, List<Author>> authorsMap = new LinkedHashMap<>();
 
-        try (
-            Connection connection = this.database.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery(
-                "SELECT * FROM book_authors;"
-            );
-        ) {
-            while(result.next()) {
-                Long book = result.getLong("book");
-                Integer authorId = result.getInt("author");
-                String name = result.getString("name");
-                Author author = new Author(authorId, name);
+            try (
+                Statement statement = connection.createStatement();
+                ResultSet result = statement.executeQuery(
+                    // language=sql
+                    """
+                    SELECT * FROM book_authors;
+                    """
+                );
+            ) {
+                while(result.next()) {
+                    Long book = result.getLong("book");
+                    Integer authorId = result.getInt("author");
+                    String name = result.getString("name");
+                    Author author = new Author(authorId, name);
 
-                authorsMap.computeIfAbsent(
-                    book,
-                    v -> new ArrayList<Author>()
-                ).add(author);
-            };
-        } catch (SQLException e) {
-            e.printStackTrace();
-        };
+                    authorsMap.computeIfAbsent(
+                        book,
+                        v -> new ArrayList<Author>()
+                    ).add(author);
+                };
+            }
 
-        return authorsMap;
+            return authorsMap;
+        }, new LinkedHashMap<>());
     };
 
     @Override
     public List<Author> findAllByBook(Long id) {
-        List<Author> authors = new LinkedList<>();
+        return this.queryOrDefault((connection) -> {
+            List<Author> authors = new LinkedList<>();
 
-        try (
-            Connection connection = this.database.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT tag FROM book_authors WHERE book = ?;"
-            );
-        ) {
-            preparedStatement.setLong(1, id);
-            
             try (
-                ResultSet result = preparedStatement.executeQuery();
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    SELECT tag FROM book_authors WHERE book = ?;
+                    """
+                );
             ) {
-                while(result.next()) {
-                    Integer authorId = result.getInt("author");
-                    String name = result.getString("name");
-                    
-                    Author author = new Author(authorId, name);
+                preparedStatement.setLong(1, id);
+                
+                try (ResultSet result = preparedStatement.executeQuery()) {
+                    while(result.next()) {
+                        Integer authorId = result.getInt("author");
+                        String name = result.getString("name");
+                        
+                        Author author = new Author(authorId, name);
 
-                    authors.add(author);
+                        authors.add(author);
+                    };
                 };
-            };
-        } catch (SQLException e) {
-            e.printStackTrace();
-        };
 
-        return authors;
+                return authors;
+            }
+        }, new LinkedList<>());
     };
 };

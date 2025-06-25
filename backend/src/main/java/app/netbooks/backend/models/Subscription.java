@@ -16,9 +16,11 @@ public class Subscription {
     private Integer edition;
     private Date startedIn;
     private Date closedIn;
-    private Date dueDate;
-    private Date payDate;
-    private Integer numPayments;
     private Boolean automaticBilling;
     private Boolean actived;
+
+    public Subscription(UUID subscriber, Integer edition) {
+        this.subscriber = subscriber;
+        this.edition = edition;
+    };
 };

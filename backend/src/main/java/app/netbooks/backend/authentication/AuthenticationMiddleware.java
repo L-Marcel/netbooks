@@ -51,9 +51,9 @@ public class AuthenticationMiddleware extends OncePerRequestFilter  {
             try {
                 User user = usersService.findById(uuid);
                 List<Role> roles = rolesService.findAllByUser(uuid);
-                
+
                 AuthenticatedUser authenticatedUser = new AuthenticatedUser(
-                    user, 
+                    user,
                     roles
                 );
 
