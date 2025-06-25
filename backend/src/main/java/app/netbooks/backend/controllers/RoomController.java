@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import app.netbooks.backend.annotations.SubscriberOnly;
+import app.netbooks.backend.authentication.AuthenticatedUser;
 import app.netbooks.backend.dtos.response.ParticipantResponse;
 import app.netbooks.backend.dtos.response.RoomResponse;
 import app.netbooks.backend.models.User;
@@ -31,11 +33,17 @@ public class RoomController {
     @Autowired
     private ParticipantService participantService;
 
+    @SubscriberOnly
     @PostMapping
     public ResponseEntity<RoomResponse> createRoom(
-        @AuthenticationPrincipal User user
+        @AuthenticationPrincipal AuthenticatedUser user
     ) {
-        Room createdRoom = roomService.createRoom(user);
+        Room createdRoom = roomService.createRoom(user.getUser());
+        participantService.createParticipant(
+            createdRoom,
+            user.getUser()
+        );
+
         RoomResponse response = new RoomResponse(createdRoom);
 
         return ResponseEntity
@@ -43,11 +51,12 @@ public class RoomController {
             .body(response);
     };
 
+    @SubscriberOnly
     @DeleteMapping
     public ResponseEntity<Void> closeRoom(
-        @AuthenticationPrincipal User user
+        @AuthenticationPrincipal AuthenticatedUser user
     ) {
-        Room room = roomService.findRoomByUser(user);
+        Room room = roomService.findRoomByUser(user.getUser());
         participantService.removeAllByRoom(room);
         roomService.closeRoom(room);
 
@@ -56,11 +65,12 @@ public class RoomController {
             .build();
     };
 
+    @SubscriberOnly
     @GetMapping
     public ResponseEntity<RoomResponse> findRoomByUser(
-        @AuthenticationPrincipal User user
+        @AuthenticationPrincipal AuthenticatedUser user
     ) {
-        Room room = roomService.findRoomByUser(user);
+        Room room = roomService.findRoomByUser(user.getUser());
         RoomResponse response = new RoomResponse(room);
 
         return ResponseEntity.ok(response);
@@ -76,15 +86,16 @@ public class RoomController {
         return ResponseEntity.ok(response);
     };
     
+    @SubscriberOnly
     @PostMapping("/{code}/join")
     public ResponseEntity<ParticipantResponse> joinRoom(
         @PathVariable String code,
-        @AuthenticationPrincipal User user
+        @AuthenticationPrincipal AuthenticatedUser user
     ) {
         Room room = roomService.findRoomByCode(code);
         Participant participant = participantService.createParticipant(
             room,
-            user
+            user.getUser()
         );
 
         ParticipantResponse response = new ParticipantResponse(participant);

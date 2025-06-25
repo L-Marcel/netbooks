@@ -10,7 +10,7 @@ export default function StartRoomButton() {
 
     return(
         <button
-            className="btn btn-primary"
+            className="btn btn-primary w-full"
             onClick={onStart}
         >
             Iniciar

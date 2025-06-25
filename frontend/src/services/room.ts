@@ -2,6 +2,7 @@ import useRoom, { Participant, Room } from "@stores/useRoom";
 import api from "./axios";
 import { connect, disconnect } from "./socket";
 import { User } from "@models/user";
+import useUser from "@stores/useUser";
 
 export async function join(userName: string, code?: string, isOwner?: Boolean): Promise<void> {
     const { setParticipant } = useRoom.getState();
@@ -27,8 +28,10 @@ export async function close(): Promise<void> {
 }
 
 export async function create(): Promise<string> {
-    return await api.post<Room>("rooms",).then((response) => {
-        return response.data.code;
+    return await api.post<Room>("rooms").then((response) => {
+      const { user } = useUser.getState();  
+      connect(response.data.code, user?.uuid, true);
+      return response.data.code;
     });
 }
 

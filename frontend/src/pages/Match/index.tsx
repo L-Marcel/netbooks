@@ -27,10 +27,7 @@ function Page(){
         navigate("/match/" + room.code);
         } catch (error) {
         create().then((code) => {
-            if(user){
-                join(user?.name, code, true);
-                navigate("/match/" + code);
-            }
+            navigate("/match/" + code);
         });
         }
     };
