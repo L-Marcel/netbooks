@@ -24,7 +24,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer{
     public void configureMessageBroker(
         @SuppressWarnings("null") MessageBrokerRegistry registry
     ){
-        registry.enableSimpleBroker("/channel/events/match");
-        registry.setApplicationDestinationPrefixes("channel/triggers/match");
+        registry.enableSimpleBroker("/channel/events/rooms");
+        registry.setApplicationDestinationPrefixes("/channel/triggers/rooms");
     };
 }
