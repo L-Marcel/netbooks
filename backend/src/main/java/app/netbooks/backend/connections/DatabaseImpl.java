@@ -24,27 +24,31 @@ public class DatabaseImpl implements Database {
         Supplier<T> operations,
         Runnable onRollback
     ) throws HttpError {
-        try {
-            Connection connection = connections.getTransactionConnection();
-            connection.setTransactionIsolation(isolationLevel);
-            connection.setAutoCommit(false);
-            T result = operations.get();
-            connection.commit();
-            connection.close();
-            connections.clearTransactionConnection();
-            return result;
-        } catch (Exception e) {
+        if(connections.haveTransactionRunning()) {
+            return operations.get();
+        } else {
             try {
                 Connection connection = connections.getTransactionConnection();
-                connection.rollback();
+                connection.setTransactionIsolation(isolationLevel);
+                connection.setAutoCommit(false);
+                T result = operations.get();
+                connection.commit();
                 connection.close();
                 connections.clearTransactionConnection();
-                onRollback.run();
-            } catch (SQLException e2) {
-                connections.clearTransactionConnection();
-            };
+                return result;
+            } catch (Exception e) {
+                try {
+                    Connection connection = connections.getTransactionConnection();
+                    connection.rollback();
+                    connection.close();
+                    connections.clearTransactionConnection();
+                    onRollback.run();
+                } catch (SQLException e2) {
+                    connections.clearTransactionConnection();
+                };
 
-            throw new InternalServerError();
+                throw new InternalServerError();
+            }
         }
     };
     
