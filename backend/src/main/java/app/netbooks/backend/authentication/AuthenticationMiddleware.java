@@ -1,6 +1,7 @@
 package app.netbooks.backend.authentication;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,7 +12,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import app.netbooks.backend.models.Role;
 import app.netbooks.backend.models.User;
+import app.netbooks.backend.services.RolesService;
 import app.netbooks.backend.services.TokensService;
 import app.netbooks.backend.services.UsersService;
 import jakarta.servlet.FilterChain;
@@ -26,6 +29,9 @@ public class AuthenticationMiddleware extends OncePerRequestFilter  {
 
     @Autowired
     private UsersService usersService;
+
+    @Autowired
+    private RolesService rolesService;
 
     @Override
     @SuppressWarnings("null")
@@ -44,10 +50,23 @@ public class AuthenticationMiddleware extends OncePerRequestFilter  {
 
             try {
                 User user = usersService.findById(uuid);
-                UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                List<Role> roles = rolesService.findAllByUser(uuid);
+                
+                AuthenticatedUser authenticatedUser = new AuthenticatedUser(
+                    user, 
+                    roles
+                );
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                        authenticatedUser, 
+                        null, 
+                        authenticatedUser.getAuthorities()
+                    );
+
+                SecurityContextHolder.getContext().setAuthentication(
+                    authentication
+                );
             } catch (Exception e) {
                 throw new BadCredentialsException("Acesso negado!");
             };

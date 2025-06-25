@@ -21,6 +21,7 @@ import app.netbooks.backend.BaseTests;
 import app.netbooks.backend.connections.Database;
 import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.models.Author;
+import app.netbooks.backend.repositories.interfaces.AuthorRepository;
 
 public class AuthorRepositoryTests extends BaseTests {
     @Autowired

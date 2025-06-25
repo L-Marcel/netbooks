@@ -12,13 +12,13 @@ import org.springframework.stereotype.Repository;
 import app.netbooks.backend.connections.Database;
 import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.models.Author;
+import app.netbooks.backend.repositories.interfaces.AuthorRepository;
 
 @Repository
-public class AuthorRepositoryImpl extends BaseRepository implements AuthorRepository{
-
-    public AuthorRepositoryImpl(Database database) {
+public class AuthorsRepositoryImpl extends BaseRepository implements AuthorRepository {
+    public AuthorsRepositoryImpl(Database database) {
         super(database);
-    }
+    };
 
     @Override
     public Optional<Author> findById(Integer id) {
@@ -28,7 +28,7 @@ public class AuthorRepositoryImpl extends BaseRepository implements AuthorReposi
               "SELECT * FROM author WHERE id = ?;"  
             );
         ) {
-            statement.setString(1, String.valueOf(id));
+            statement.setInt(1, id);
             try (
                 ResultSet result = statement.executeQuery();
             ) {
@@ -96,7 +96,7 @@ public class AuthorRepositoryImpl extends BaseRepository implements AuthorReposi
                 "DELETE FROM author WHERE id = ?;"
             )
         ) {
-            statement.setString(1, String.valueOf(id));
+            statement.setInt(1, id);
             statement.executeUpdate();            
         } catch (SQLException e) {
             throw new InternalServerError();

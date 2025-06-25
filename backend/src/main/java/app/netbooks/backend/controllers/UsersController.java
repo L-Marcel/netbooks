@@ -1,6 +1,8 @@
 package app.netbooks.backend.controllers;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,11 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.netbooks.backend.annotations.AdministratorOnly;
 import app.netbooks.backend.annotations.AuhenticatedOnly;
+import app.netbooks.backend.authentication.AuthenticatedUser;
 import app.netbooks.backend.dtos.request.LoginRequestBody;
 import app.netbooks.backend.dtos.request.RegisterUserRequestBody;
 import app.netbooks.backend.dtos.request.UpdateUserRequestBody;
 import app.netbooks.backend.dtos.response.UserResponse;
+import app.netbooks.backend.models.Role;
 import app.netbooks.backend.models.User;
+import app.netbooks.backend.services.RolesService;
 import app.netbooks.backend.services.TokensService;
 import app.netbooks.backend.services.UsersService;
 
@@ -30,20 +35,25 @@ public class UsersController {
     private UsersService usersService;
 
     @Autowired
+    private RolesService rolesService;
+
+    @Autowired
     private TokensService tokensService;
 
     @AdministratorOnly
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAll() {
         List<User> users = this.usersService.findAll();
-        List<UserResponse> response = UserResponse.fromList(users);
+        Map<UUID, List<Role>> roles = this.rolesService.mapAllByUser();
+        
+        List<UserResponse> response = UserResponse.fromList(users, roles);
         return ResponseEntity.ok().body(response);
     };
 
     @AuhenticatedOnly
     @GetMapping("/me")
     public ResponseEntity<UserResponse> get(
-        @AuthenticationPrincipal User user
+        @AuthenticationPrincipal AuthenticatedUser user
     ) {
         UserResponse response = new UserResponse(user);
         return ResponseEntity.ok().body(response);
@@ -87,11 +97,11 @@ public class UsersController {
     @AuhenticatedOnly
     @PutMapping
     public ResponseEntity<UserResponse> update(
-        @AuthenticationPrincipal User user,
+        @AuthenticationPrincipal AuthenticatedUser user,
         @RequestBody UpdateUserRequestBody body
     ) {
         usersService.update(
-            user,
+            user.getUser(),
             body.getName(),
             body.getAvatar(),
             body.getEmail(),

@@ -14,13 +14,13 @@ import org.springframework.stereotype.Repository;
 import app.netbooks.backend.connections.Database;
 import app.netbooks.backend.errors.InternalServerError;
 import app.netbooks.backend.models.Publisher;
+import app.netbooks.backend.repositories.interfaces.PublishersRepository;
 
 @Repository
-public class PublisherRepositoryImpl extends BaseRepository implements PublisherRepository{
-
-    public PublisherRepositoryImpl(Database database) {
+public class PublishersRepositoryImpl extends BaseRepository implements PublishersRepository {
+    public PublishersRepositoryImpl(Database database) {
         super(database);
-    }
+    };
 
     @Override
     public List<Publisher> findAll() {
@@ -34,9 +34,10 @@ public class PublisherRepositoryImpl extends BaseRepository implements Publisher
         ) {
             while (result.next()) {
                 String name = result.getString("name");
-                Publisher publisher = new Publisher(name);
-                publishers.add(publisher);
 
+                Publisher publisher = new Publisher(name);
+
+                publishers.add(publisher);
             }
         } catch (SQLException e) {
             throw new InternalServerError();
@@ -45,7 +46,7 @@ public class PublisherRepositoryImpl extends BaseRepository implements Publisher
     }
 
     @Override
-    public Optional<Publisher> find(String name) {
+    public Optional<Publisher> findByName(String name) {
         try (
             Connection connection = this.database.getConnection();
             PreparedStatement statement = connection.prepareStatement(
@@ -59,7 +60,9 @@ public class PublisherRepositoryImpl extends BaseRepository implements Publisher
                 Optional<Publisher> publisherFound = Optional.empty();
                 if (result.next()) {
                     String resultName = result.getString("name");
+
                     Publisher publisher = new Publisher(resultName);
+
                     publisherFound = Optional.of(publisher);
                 }
                 

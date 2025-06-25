@@ -105,7 +105,7 @@ public abstract class UsersControllerTests extends BaseTests {
     };
 
     @Test
-    @Order(2)
+    @Order(3)
     @DisplayName("Unauthorized")
     public void mustThrowUnauthorized() {
         HttpHeaders headers = new HttpHeaders();
@@ -154,7 +154,7 @@ public abstract class UsersControllerTests extends BaseTests {
     };
 
     @Test
-    @Order(3)
+    @Order(4)
     @DisplayName("Validate token")
     public void mustValidateToken() {
         HttpHeaders headers = new HttpHeaders();
@@ -177,7 +177,7 @@ public abstract class UsersControllerTests extends BaseTests {
     };
 
     @Test
-    @Order(4)
+    @Order(5)
     @DisplayName("Register")
     public void mustRegister() {
         RegisterUserRequestBody body = new RegisterUserRequestBody(
@@ -216,7 +216,7 @@ public abstract class UsersControllerTests extends BaseTests {
     };
 
     @Test
-    @Order(5)
+    @Order(6)
     @DisplayName("Update")
     public void mustUpdate() {
         LoginRequestBody body = new LoginRequestBody(
