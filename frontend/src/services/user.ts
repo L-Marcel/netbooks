@@ -26,17 +26,17 @@ export async function login(data: UserLoginData) {
   });
 }
 
-export async function register(data: UserRegisterData) {
-  return api.post<void>("/users", {
-    ...data,
-    avatar: data.avatar?.base64,
-  });
-}
-
 export async function logout() {
   const { setToken, setUser } = useAuth.getState();
   setToken(undefined);
   setUser(undefined);
+}
+
+export async function registerUser(data: UserRegisterData) {
+  return api.post<void>("/users", {
+    ...data,
+    avatar: data.avatar?.base64,
+  });
 }
 
 export async function fetchUser(token: string): Promise<User> {

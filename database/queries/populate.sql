@@ -49,13 +49,12 @@ INSERT IGNORE INTO author (id, name) VALUES
 SELECT * FROM author;
 
 INSERT IGNORE INTO benefit (name) VALUES
-  ('CAN_READ_BASIC_BOOKS'),
   ('CAN_READ_ALL_BOOKS'),
   ('CAN_EXPLORE_IN_GROUP'),
   ('CAN_DOWNLOAD_BOOKS');
+
 SELECT * FROM benefit;
 
-# DELETE FROM book WHERE id >= 1 AND id <= 15;
 INSERT IGNORE INTO book (id, isbn, title, description, num_pages, published_in, publisher) VALUES
   (1, 9780747532743, 'Harry Potter e a Pedra Filosofal', 'Primeiro livro da série Harry Potter.', 223, '1997-06-26', 'Bloomsbury'),
   (2, 9780261103573, 'A Sociedade do Anel', 'Primeiro volume de O Senhor dos Anéis.', 423, '1954-07-29', 'Allen & Unwin'),
@@ -131,7 +130,8 @@ SELECT * FROM book_tag;
 INSERT IGNORE INTO plan (id, name, description, duration) VALUES 
   (1, 'Básico', 'Desfrute dos benefícios básicos da plataforma.', 720),
   (2, 'Super', 'Tenha acesso a todos os livros e mais!', 720),
-  (3, 'Mega', 'Tenha acesso a todos os benefícios da plataforma!', 8766);
+  (3, 'Mega', 'Tenha acesso a todos os benefícios da plataforma!', 8766),
+  (4, 'Plenjado', 'Este plano está em fase de planejamento!', 720);
 SELECT * FROM plan;
 
 INSERT IGNORE INTO plan_benefit (plan, benefit) VALUES 
@@ -142,38 +142,56 @@ INSERT IGNORE INTO plan_benefit (plan, benefit) VALUES
   (3, 'CAN_DOWNLOAD_BOOKS');
 SELECT * FROM plan_benefit;
 
-INSERT IGNORE INTO plan_edition (id, started_in, price, plan) VALUES 
-  (1, NOW(), 12.00, 1),
-  (2, NOW(), 30.00, 2),
-  (3, NOW(), 330.00, 3);
+INSERT IGNORE INTO plan_edition (id, started_in, closed_in, price, plan) VALUES 
+  (1, CURRENT_DATE, NULL, 12.00, 1),
+  (2, CURRENT_DATE, NULL, 30.00, 2),
+  (3, CURRENT_DATE, NULL, 20.00, 2),
+  (4, DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY), DATE_SUB(CURRENT_DATE, INTERVAL 10 DAY), 100.00, 3),
+  (5, DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY), DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY), 300.00, 3),
+  (6, CURRENT_DATE, NULL, 330.00, 3);
 SELECT * FROM plan_edition;
 
-# DELETE FROM user WHERE email = 'marcel@gmail.com';
 INSERT IGNORE INTO user (uuid, name, email, password) VALUES
+  ('3e78b287-399b-11f0-a0a8-7605c53cdf13', 'Administrador', 'admin@gmail.com', '$2a$10$iszhyLRMNIYy04weFz8dReJh3GxRsDv7hQYUBzaAAdn5WFc2csLXS'),
   ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'Lucas Marcel', 'marcel@gmail.com', '$2a$10$Jop9tiqQd5PCuzOpF8MiVOTi/fuJ98PxBRrycvdi5Gt8/t2wOpqHm'),
   ('09876543-2109-fedc-ba98-7654321fedcb', 'Marcela Silva', 'marcela@gmail.com', '$2a$10$q1OKZbV/C9oJIXiep/ketei0dVYuQaEl2FvdQ9Dxf.YAh1oId1MO.'),
   ('e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e', 'Eric Eduardo', 'eric@gmail.com', '$2a$10$IKVfl9fl/o6auLT00ArvMOPN9pObm7y0DI1Xwu6gbtlcVbHzSwTnC');
-SELECT * FROM user;
-# Senha 'marcel' criptografada: $2a$10$Jop9tiqQd5PCuzOpF8MiVOTi/fuJ98PxBRrycvdi5Gt8/t2wOpqHm
-# Senha 'marcela' criptografada: $2a$10$q1OKZbV/C9oJIXiep/ketei0dVYuQaEl2FvdQ9Dxf.YAh1oId1MO.
-# Senha 'eric' criptografada: $2a$10$IKVfl9fl/o6auLT00ArvMOPN9pObm7y0DI1Xwu6gbtlcVbHzSwTnC
+INSERT IGNORE INTO admin (uuid) VALUES
+  ('3e78b287-399b-11f0-a0a8-7605c53cdf13');
 
-INSERT INTO classification (book, subscriber, value) VALUES
+SELECT * FROM user;
+# Senha 'admin' foi criptografada para: $2a$10$iszhyLRMNIYy04weFz8dReJh3GxRsDv7hQYUBzaAAdn5WFc2csLXS
+# Senha 'marcel' foi criptografada para: $2a$10$Jop9tiqQd5PCuzOpF8MiVOTi/fuJ98PxBRrycvdi5Gt8/t2wOpqHm
+# Senha 'marcela' foi criptografada para: $2a$10$q1OKZbV/C9oJIXiep/ketei0dVYuQaEl2FvdQ9Dxf.YAh1oId1MO.
+# Senha 'eric' foi criptografada para: $2a$10$IKVfl9fl/o6auLT00ArvMOPN9pObm7y0DI1Xwu6gbtlcVbHzSwTnC
+
+INSERT IGNORE INTO subscriber (uuid) VALUES 
+  ('a1b2c3d4-e5f6-7890-1234-56789abcdef0');
+INSERT IGNORE INTO subscriber (uuid) VALUES 
+  ('09876543-2109-fedc-ba98-7654321fedcb');
+INSERT IGNORE INTO subscriber (uuid) VALUES 
+  ('e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e');
+
+SELECT * FROM subscriber;
+
+INSERT IGNORE INTO subscription (edition, subscriber) VALUES 
+  (1, 'a1b2c3d4-e5f6-7890-1234-56789abcdef0');
+INSERT IGNORE INTO subscription (edition, subscriber) VALUES 
+  (2, '09876543-2109-fedc-ba98-7654321fedcb');
+INSERT IGNORE INTO subscription (edition, subscriber) VALUES 
+  (4, 'e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e');
+
+SELECT * FROM subscription;
+
+INSERT IGNORE INTO classification (book, subscriber, value) VALUES
   (1, 'e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e', 10),
   (2, 'e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e', 8),
   (1, '09876543-2109-fedc-ba98-7654321fedcb', 8),
   (2, 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 6);
 SELECT * FROM classification;
 
-INSERT INTO reading (id, book, subscriber, current_page, finished, started_in, stopped_in) VALUES
-  (1, 1, 'e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e', 10, false, NOW(), NOW()),
-  (2, 2, '09876543-2109-fedc-ba98-7654321fedcb', 20, false, NOW(), NOW()),
-  (3, 1, '09876543-2109-fedc-ba98-7654321fedcb', 223, true, NOW(), NOW());
+INSERT IGNORE INTO reading (id, book, subscriber, current_page, finished, started_in, stopped_in) VALUES
+  (1, 1, 'e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e', 10, false, CURRENT_DATE, CURRENT_DATE),
+  (2, 2, '09876543-2109-fedc-ba98-7654321fedcb', 20, false, CURRENT_DATE, CURRENT_DATE),
+  (3, 1, '09876543-2109-fedc-ba98-7654321fedcb', 223, true, CURRENT_DATE, CURRENT_DATE);
 SELECT * FROM reading;
-
-CALL subscribe(1, 'a1b2c3d4-e5f6-7890-1234-56789abcdef0');
-CALL subscribe(2, '09876543-2109-fedc-ba98-7654321fedcb');
-CALL subscribe(3, 'e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e');
-
-SELECT * FROM subscription;
-SELECT * FROM subscriber;

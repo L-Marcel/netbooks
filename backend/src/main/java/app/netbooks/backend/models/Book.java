@@ -1,7 +1,6 @@
 package app.netbooks.backend.models;
 
 import java.sql.Date;
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +18,4 @@ public class Book {
     private Integer numPages;
     private Date publishedIn;
     private Publisher publisher;
-    private List<Author> authors;
-    private List<Tag> tags;
 };

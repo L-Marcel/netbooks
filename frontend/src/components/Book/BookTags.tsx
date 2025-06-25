@@ -23,7 +23,6 @@ export default function BookTag({ tags = DEFAULT_TAGS }: Props) {
           {tag.name}
         </div>
       ))}
-
       {extraTagsCount > 0 && (
         <div
           className="badge badge-outline badge-secondary tooltip tooltip-secondary tooltip-bottom lg:tooltip-right"

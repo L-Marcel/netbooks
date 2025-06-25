@@ -1,4 +1,4 @@
-package app.netbooks.backend.repositories;
+package app.netbooks.backend.repositories.interfaces;
 
 import java.util.List;
 import java.util.Optional;
