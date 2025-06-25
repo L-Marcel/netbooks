@@ -65,6 +65,52 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
     };
 
     @Override
+    public Optional<Subscription> findById(
+        Long id
+    ) {
+        return this.queryOrDefault((connection) -> {
+            Optional<Subscription> subscriptionFound = Optional.empty();
+
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    SELECT * FROM subscription_with_state
+                    WHERE actived AND id = ?;
+                    """
+                );
+            ) {
+                statement.setLong(1, id);
+
+                try (ResultSet result = statement.executeQuery()) {
+                    if(result.next()) {
+                        UUID subscriber = UUID.fromString(result.getString("subscriber"));
+                        Integer edition = result.getInt("edition");
+                        Date startedIn = result.getDate("started_in");
+                        Date closedIn = result.getDate("closed_in");
+                        Boolean automaticBilling = result.getBoolean("automatic_billing");
+                        Boolean actived = result.getBoolean("actived");
+                        
+                        Subscription user = new Subscription(
+                            id,
+                            subscriber,
+                            edition,
+                            startedIn,
+                            closedIn,
+                            automaticBilling,
+                            actived
+                        );
+
+                        subscriptionFound = Optional.of(user);
+                    };
+                };
+            };
+
+            return subscriptionFound;
+        }, Optional.empty());
+    };
+
+    @Override
     public Long subscribe(Subscription subscription) {
         return this.query((connection) -> {
             Long id = null;

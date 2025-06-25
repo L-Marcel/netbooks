@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,8 +23,10 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
     };
 
     @Override
-    public void create(Payment payment) {
-        this.execute((connection) -> {
+    public Long create(Payment payment) {
+        return this.query((connection) -> {
+            Long id = null;
+
             try (
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
@@ -39,27 +42,44 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
                 statement.setDate(4, payment.getDueDate());
                 statement.setString(5, payment.getStatus().toString());
                 statement.executeUpdate();
+
+                try (ResultSet result = statement.getGeneratedKeys()) {
+                    result.next();
+                    id = result.getLong(1);
+                };
             };
+
+            return id;
         });
     };
 
     @Override
-    public void createFirst(Payment payment) {
-        this.execute((connection) -> {
+    public Long createFirst(Payment payment) {
+        return this.query((connection) -> {
+            Long id = null;
+
             try (
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
                     INSERT INTO payment (subscription, price, pay_date, due_date, status) 
                     VALUES (?, ?, CURRENT_DATE, CURRENT_DATE, ?);
-                    """
+                    """,
+                    true
                 );
             ) {
                 statement.setLong(1, payment.getSubscription());
                 statement.setBigDecimal(2, payment.getPrice());
                 statement.setString(3, payment.getStatus().toString());
                 statement.executeUpdate();
+
+                try (ResultSet result = statement.getGeneratedKeys()) {
+                    result.next();
+                    id = result.getLong(1);
+                };
             };
+
+            return id;
         });
     };
 
@@ -131,5 +151,10 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
 
             return paymentFound;
         }, Optional.empty());
+    }
+
+    @Override
+    public void payById(Long id) {
+        
     };
 };

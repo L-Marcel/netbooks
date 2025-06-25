@@ -133,6 +133,47 @@ public class PlansEditionsRepositoryImpl extends BaseRepository implements Plans
     };
 
     @Override
+    public Optional<PlanEdition> findBestByPlan(Integer plan) {
+        return this.queryOrDefault((connection) -> {
+            Optional<PlanEdition> planEditionFoumd = Optional.empty();
+
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    SELECT * FROM plan_edition_with_subscribers
+                    WHERE plan = ?
+                    ORDER BY available DESC, price ASC
+                    LIMIT 1;
+                    """
+                );
+            ) {
+                statement.setInt(1, plan);
+
+                try(ResultSet result = statement.executeQuery()) {
+                    if(result.next()) {
+                        Integer id = result.getInt("id");
+                        Integer numSubscribers = result.getInt("num_subscribers");
+                        BigDecimal price = result.getBigDecimal("price");
+                        Date startedIn = result.getDate("started_in");
+                        Date closedIn = result.getDate("closed_in");
+                        Boolean available = result.getBoolean("available");
+
+                        PlanEdition plan_edition = new PlanEdition(
+                            id, plan, numSubscribers, price, 
+                            startedIn, closedIn, available
+                        );
+
+                        planEditionFoumd = Optional.of(plan_edition);
+                    };
+                };
+            };
+
+            return planEditionFoumd;
+        }, Optional.empty());
+    };
+
+    @Override
     public Optional<PlanEdition> findById(Integer id) {
         return this.queryOrDefault((connection) -> {
             Optional<PlanEdition> planEditionFoumd = Optional.empty();
@@ -161,9 +202,7 @@ public class PlansEditionsRepositoryImpl extends BaseRepository implements Plans
 
                         planEditionFoumd = Optional.of(plan_edition);
                     };
-
-                    
-                }
+                };
             };
 
             return planEditionFoumd;

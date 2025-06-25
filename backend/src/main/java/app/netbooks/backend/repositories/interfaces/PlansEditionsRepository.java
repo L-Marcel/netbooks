@@ -10,5 +10,6 @@ public interface PlansEditionsRepository {
     public List<PlanEdition> findAll();
     public Map<Integer, List<PlanEdition>> mapAllByPlan();
     public Map<Integer, List<PlanEdition>> mapAllAvailableByPlan();
+    public Optional<PlanEdition> findBestByPlan(Integer plan);
     public Optional<PlanEdition> findById(Integer id);
 };

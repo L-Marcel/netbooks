@@ -57,21 +57,22 @@ public class SubscriptionsService {
     };
 
     public void subscribe(
-        User subscriber,
+        UUID subscriber,
         PlanEdition newEdition
     ) throws SubscriptionAlreadyExists {
         transactions.run(() -> {
-            Optional<Subscription> subscription = this.searchBySubscriber(subscriber.getUuid());
+            Optional<Subscription> subscription = this.searchBySubscriber(subscriber);
 
             Plan newPlan = plansRepository.findById(newEdition.getPlan())
                 .orElseThrow(PlanNotFound::new);
 
-            this.subscriptionsRepository.closeNotClosedBySubscriber(subscriber.getUuid());
-            this.paymentsRepository.cancelScheduledPaymentsBySubscriber(subscriber.getUuid());
+            this.subscriptionsRepository.closeNotClosedBySubscriber(subscriber);
+            this.paymentsRepository.cancelScheduledPaymentsBySubscriber(subscriber);
+
+            Integer newEditionId = newEdition.getId();
 
             if(subscription.isPresent()) {
                 Integer oldEditionId = subscription.get().getEdition();
-                Integer newEditionId = newEdition.getId();
 
                 PlanEdition oldPlanEdition = this.plansEditionsRepository.findById(oldEditionId)
                     .orElseThrow(PlanEditionNotFound::new);
@@ -82,10 +83,17 @@ public class SubscriptionsService {
                 Integer oldPlanId = oldPlan.getId();
                 Integer newPlanId = newPlan.getId();
                 
-                Payment lastPayment = this.findLastPaymentBySubscriber(subscriber.getUuid());
+                Payment lastPayment = this.findLastPaymentBySubscriber(subscriber);
 
                 if(oldPlanId.equals(newPlanId)) {
                     // same?
+
+                    // if(
+                    //     oldEdition.equals(newEdition) && 
+                    //     !subscriber.getSubscription().getAutomaticBilling()
+                    // ) {
+                    //     // set automatic billing to true
+                    // } else throw new SubscriptionAlreadyExists();
                 } else {
                     Map<Integer, Integer> counter = plansRepository.compareBenefitsById(oldPlanId, newPlanId);
                     Integer oldBenefits = counter.getOrDefault(oldPlanId, 0);
@@ -93,8 +101,8 @@ public class SubscriptionsService {
                     Boolean isUpgrade = oldBenefits <= newBenefits;
 
                     Subscription newSubscription = new Subscription(
-                        subscriber.getUuid(), 
-                        newEdition.getId()
+                        subscriber, 
+                        newEditionId
                     );
 
                     if(isUpgrade) {
@@ -104,14 +112,14 @@ public class SubscriptionsService {
 
                         this.subscriptionsRepository.subscribe(newSubscription);
 
+                        // tem que rever o preço
                         Payment newPayment = new Payment(
                             newSubscription.getId(), 
                             newEdition.getPrice()
                         );
 
                         this.paymentsRepository.createFirst(newPayment);
-
-                        // pay?
+                        this.pay(newPayment);
                     } else {
                         this.subscriptionsRepository.closeById(
                             subscription.get().getId(), 
@@ -131,8 +139,8 @@ public class SubscriptionsService {
                 };
             } else {
                 Subscription newSubscription = new Subscription(
-                    subscriber.getUuid(), 
-                    newEdition.getId()
+                    subscriber, 
+                    newEditionId
                 );
                 
                 this.subscriptionsRepository.subscribe(newSubscription);
@@ -143,24 +151,9 @@ public class SubscriptionsService {
                 );
                 
                 this.paymentsRepository.createFirst(newPayment);
-
-                // pay?
+                this.pay(newPayment);
             };
         });
-
-        // if(subscriber.getEdition() != null) {
-        
-
-        //     if(oldPlan.equals(newPlan)) {
-        //         if(
-        //             oldEdition.equals(newEdition) && 
-        //             !subscriber.getSubscription().getAutomaticBilling()
-        //         ) {
-        //             // set automatic billing to true
-        //         } else throw new SubscriptionAlreadyExists();
-        //     } else {
-
-        //     };
     };
 
     public void unsubscribe(User subscriber) {
@@ -176,6 +169,54 @@ public class SubscriptionsService {
                 subscription.getId(), 
                 lastPayment.getDueDate()
             );
+        });
+    };
+
+    private void pay(Payment payment) {
+        this.transactions.run(() -> {
+            this.paymentsRepository.payById(payment.getId());
+
+            Subscription subscription = this.subscriptionsRepository.findById(
+                payment.getSubscription()
+            ).orElseThrow(SubscriptionNotFound::new);
+
+            PlanEdition edition = this.plansEditionsRepository.findById(
+                subscription.getEdition()
+            ).orElseThrow(PlanEditionNotFound::new);
+
+            Plan plan = this.plansRepository.findById(
+                edition.getId()
+            ).orElseThrow(PlanNotFound::new);
+
+            if(edition.getAvailable()) {
+                Payment newPayment = new Payment(
+                    subscription.getId(), 
+                    edition.getPrice(),
+                    Date.valueOf(payment.getDueDate().toLocalDate().plusDays(
+                        plan.getDuration().toDays()
+                    ))
+                );
+
+                this.paymentsRepository.create(newPayment);
+            } else if(plan.getAvailable()) {
+                Optional<PlanEdition> newEdition = this.plansEditionsRepository.findBestByPlan(
+                    plan.getId()
+                );
+
+                if(newEdition.isPresent()) {
+                    this.subscribe(
+                        subscription.getSubscriber(),
+                        newEdition.get()
+                    );
+                };
+            };
+        });
+    };
+
+    public void payLastPaymentBySubscriber(UUID subscriber) {
+        this.transactions.run(() -> {
+            Payment lastPayment = this.findLastPaymentBySubscriber(subscriber);
+            this.pay(lastPayment);
         });
     };
 };

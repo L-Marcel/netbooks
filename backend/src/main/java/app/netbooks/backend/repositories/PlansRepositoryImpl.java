@@ -30,7 +30,7 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
-                "SELECT * FROM plan_with_availability WHERE available;"
+                    "SELECT * FROM plan_with_availability WHERE available;"
                 );
             ) {
                 while(result.next()) {
@@ -39,10 +39,12 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
                     String description = result.getString("description");
                     Integer numSubscribers = result.getInt("num_subscribers");
                     Duration duration = Duration.ofDays(result.getLong("duration"));
-                    
+                    Boolean available = result.getBoolean("available");
+
                     Plan plan = new Plan(
                         id, name, description, 
-                        numSubscribers, duration
+                        numSubscribers, duration,
+                        available
                     );
 
                     plans.add(plan);
@@ -70,10 +72,12 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
                     String description = result.getString("description");
                     Integer numSubscribers = result.getInt("num_subscribers");
                     Duration duration = Duration.ofDays(result.getLong("duration"));
-                    
+                    Boolean available = result.getBoolean("available");
+
                     Plan plan = new Plan(
                         id, name, description, 
-                        numSubscribers, duration
+                        numSubscribers, duration,
+                        available
                     );
 
                     plans.add(plan);
@@ -101,10 +105,12 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
                         String description = result.getString("description");
                         Integer numSubscribers = result.getInt("num_subscribers");
                         Duration duration = Duration.ofDays(result.getLong("duration"));
-                        
+                        Boolean available = result.getBoolean("available");
+
                         Plan plan = new Plan(
                             id, name, description, 
-                            numSubscribers, duration
+                            numSubscribers, duration,
+                            available
                         );
                         
                         planFound = Optional.of(plan);

@@ -7,7 +7,8 @@ import app.netbooks.backend.models.Payment;
 
 public interface PaymentsRepository {
     public Optional<Payment> findLastPaymentBySubscriber(UUID subscriber);
-    public void create(Payment payment);
-    public void createFirst(Payment payment);
+    public Long create(Payment payment);
+    public Long createFirst(Payment payment);
     public void cancelScheduledPaymentsBySubscriber(UUID subscriber);
+    public void payById(Long id);
 };

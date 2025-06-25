@@ -66,7 +66,7 @@ public class SubscriptionsController {
         PlanEdition edition = plansEditionService.findAvailableById(id);
 
         subscriptionsService.subscribe(
-            user.getUser(),
+            user.getUser().getUuid(),
             edition
         );
 
