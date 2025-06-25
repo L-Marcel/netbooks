@@ -1,5 +1,7 @@
+import CloseRoomButton from "@components/Button/CloseRoomButton";
 import CopyLinkButton from "@components/Button/CopyLinkButton";
-import { CloseRoomButton, ExitRoomButton, StartRoomButton } from "@components/Button/SocketButtons";
+import ExitRoomButton from "@components/Button/ExitRoomButton";
+import StartRoomButton from "@components/Button/StartRoomButton";
 import ParticipantsMasonryGrid from "@components/Grid/ParticipantsMasonryGrid";
 import AuthGuard from "@components/Guards/AuthGuard";
 import ParticipantGuard from "@components/Guards/ParticipantGuard";

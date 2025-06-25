@@ -27,9 +27,9 @@ function Page(){
         navigate("/match/" + room.code);
         } catch (error) {
         create().then((code) => {
-            {user && 
-            join(user?.name, code, true);
-            navigate("/match/" + code);
+            if(user){
+                join(user?.name, code, true);
+                navigate("/match/" + code);
             }
         });
         }
@@ -38,7 +38,7 @@ function Page(){
     const enterRoom = async () => {
         if (!roomCode) return;
         try {
-            {user &&
+            if(user){
                 await join(user.name, roomCode);
                 navigate("/match/" + roomCode);
             }
