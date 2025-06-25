@@ -22,13 +22,16 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorsRepo
         return this.queryOrDefault((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                "SELECT * FROM author WHERE id = ?;"  
+                    // language=sql
+                    """
+                    SELECT * FROM author WHERE id = ?;
+                    """
                 );
             ) {
                 statement.setInt(1, id);
                 try (ResultSet result = statement.executeQuery()) {
                     Optional<Author> authorFound = Optional.empty();
-                    if (result.next()) {
+                    if(result.next()) {
                         String name = result.getString("name");
                         Author author = new Author(id, name);
                         authorFound = Optional.of(author);
@@ -47,13 +50,16 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorsRepo
 
             try (
                 PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT * FROM author WHERE name LIKE ?;"
+                    // language=sql
+                    """
+                    SELECT * FROM author WHERE name LIKE ?;
+                    """
                 );
             ) {
                 preparedStatement.setString(1, "%" + name + "%");
 
                 try (ResultSet result = preparedStatement.executeQuery()) {
-                    while (result.next()) {
+                    while(result.next()) {
                         Integer id = result.getInt("id");
                         String completeName = result.getString("name");
                         Author author = new Author(id, completeName);
@@ -71,7 +77,10 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorsRepo
         this.execute((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO author (name) VALUES (?);"
+                    // language=sql
+                    """
+                    INSERT INTO author (name) VALUES (?);
+                    """
                 )
             ) {
                 statement.setString(1, author.getName());
@@ -85,7 +94,10 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorsRepo
         this.execute((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "DELETE FROM author WHERE id = ?;"
+                    // language=sql
+                    """
+                    DELETE FROM author WHERE id = ?;
+                    """
                 )
             ) {
                 statement.setInt(1, id);

@@ -157,8 +157,7 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
                     // language=sql
                     """
                     UPDATE subscription
-                    SET closed_in = CURRENT_DATE,
-                    automatic_billing = 0
+                    SET closed_in = CURRENT_DATE
                     WHERE id = ?;
                     """
                 );
@@ -177,8 +176,7 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
                     // language=sql
                     """
                     UPDATE subscription
-                    SET closed_in = ?,
-                    automatic_billing = 0
+                    SET closed_in = ?
                     WHERE id = ?;
                     """
                 );
@@ -190,47 +188,6 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
         });
     };
 
-    // @Override
-    // public void closeBySubscriber(UUID subscriber) {
-    //     this.execute((connection) -> {
-    //         try (
-    //             PreparedStatement statement = connection.prepareStatement(
-    //                 // language=sql
-    //                 """
-    //                 UPDATE subscription  
-    //                 SET closed_in = CURRENT_DATE,
-    //                 automatic_billing = 0
-    //                 WHERE subscriber = ?;
-    //                 """
-    //             );
-    //         ) {
-    //             statement.setString(1, subscriber.toString());
-    //             statement.executeUpdate();
-    //         };
-    //     });
-    // };
-
-    // @Override
-    // public void closeBySubscriber(UUID subscriber, Date closeDate) {
-    //     this.execute((connection) -> {
-    //         try (
-    //             PreparedStatement statement = connection.prepareStatement(
-    //                 // language=sql
-    //                 """
-    //                 UPDATE subscription  
-    //                 SET closed_in = ?,
-    //                 automatic_billing = 0
-    //                 WHERE subscriber = ?;
-    //                 """
-    //             );
-    //         ) {
-    //             statement.setDate(1, closeDate);
-    //             statement.setString(2, subscriber.toString());
-    //             statement.executeUpdate();
-    //         };
-    //     });
-    // };
-
     @Override
     public void closeNotClosedBySubscriber(UUID subscriber) {
         this.execute((connection) -> {
@@ -239,8 +196,7 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
                     // language=sql
                     """
                     UPDATE subscription  
-                    SET closed_in = COALESCE(closed_in, CURRENT_DATE),
-                    automatic_billing = 0
+                    SET closed_in = COALESCE(closed_in, CURRENT_DATE)
                     WHERE subscriber = ?;
                     """
                 );

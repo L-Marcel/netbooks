@@ -30,7 +30,10 @@ public class RolesRepositoryImpl extends BaseRepository implements RolesReposito
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
-                    "SELECT * FROM user_roles;"
+                    // language=sql
+                    """
+                    SELECT * FROM user_roles;
+                    """
                 );
             ) {
                 while(result.next()) {
@@ -55,7 +58,11 @@ public class RolesRepositoryImpl extends BaseRepository implements RolesReposito
 
             try (
                 PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT role FROM user_roles WHERE uuid = ?;"
+                    // language=sql
+                    """
+                    SELECT role FROM user_roles 
+                    WHERE uuid = ?;
+                    """
                 );
             ) {
                 preparedStatement.setString(1, user.toString());

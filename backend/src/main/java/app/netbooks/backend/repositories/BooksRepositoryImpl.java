@@ -29,7 +29,10 @@ public class BooksRepositoryImpl extends BaseRepository implements BooksReposito
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
-                    "SELECT * FROM book_with_stars;"
+                    // language=sql
+                    """
+                    SELECT * FROM book_with_stars;     
+                    """
                 );
             ) {
                 while(result.next()) {
@@ -68,7 +71,10 @@ public class BooksRepositoryImpl extends BaseRepository implements BooksReposito
         return this.queryOrDefault((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "SELECT * FROM book WHERE id = ?;"
+                    // language=sql
+                    """
+                    SELECT * FROM book WHERE id = ?;
+                    """
                 );
             ) {
                 statement.setLong(1, id);

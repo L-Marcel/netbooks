@@ -28,16 +28,19 @@ public class PublishersRepositoryImpl extends BaseRepository implements Publishe
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
-                    "SELECT * FROM publisher;"
+                    // language=sql
+                    """
+                    SELECT * FROM publisher;
+                    """
                 );
             ) {
-                while (result.next()) {
+                while(result.next()) {
                     String name = result.getString("name");
 
                     Publisher publisher = new Publisher(name);
 
                     publishers.add(publisher);
-                }
+                };
             };
             
             return publishers;
@@ -51,12 +54,15 @@ public class PublishersRepositoryImpl extends BaseRepository implements Publishe
 
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "SELECT * FROM publisher WHERE name = ?;"
-                )
+                    // language=sql
+                    """
+                    SELECT * FROM publisher WHERE name = ?;
+                    """
+                );
             ) {
                 statement.setString(1, name);
                 try (ResultSet result = statement.executeQuery()) {
-                    if (result.next()) {
+                    if(result.next()) {
                         String resultName = result.getString("name");
 
                         Publisher publisher = new Publisher(resultName);
@@ -75,8 +81,11 @@ public class PublishersRepositoryImpl extends BaseRepository implements Publishe
         this.execute((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO publisher (name) VALUES (?);"
-                )
+                    // language=sql
+                    """
+                    INSERT INTO publisher (name) VALUES (?);
+                    """
+                );
             ) {
                 statement.setString(1, publisher.getName());
                 statement.executeUpdate();
@@ -89,8 +98,11 @@ public class PublishersRepositoryImpl extends BaseRepository implements Publishe
         this.execute((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "DELETE FROM publisher WHERE name = ?;"
-                )
+                    // language=sql
+                    """
+                    DELETE FROM publisher WHERE name = ?;
+                    """
+                );
             ) {
                 statement.setString(1, name);
                 statement.executeUpdate();

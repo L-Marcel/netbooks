@@ -29,7 +29,10 @@ public class BooksTagsRepositoryImpl extends BaseRepository implements BooksTags
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
-                    "SELECT * FROM book_tag;"
+                    // language=sql
+                    """
+                    SELECT * FROM book_tag;        
+                    """
                 );
             ) {
                 while(result.next()) {
@@ -55,7 +58,10 @@ public class BooksTagsRepositoryImpl extends BaseRepository implements BooksTags
 
             try (
                 PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT tag FROM book_tag WHERE book = ?;"
+                    // language=sql
+                    """
+                    SELECT tag FROM book_tag WHERE book = ?;        
+                    """
                 );
             ) {
                 preparedStatement.setLong(1, id);

@@ -26,13 +26,17 @@ export default function PlanCard({
   onRenew,
 }: Props) {
   const isUserPlan = subscription && plan.id === subscription?.edition.plan;
-  
-  const currentEdition = isUserPlan && subscription? 
-    subscription.edition:plan.getCheapestEdition();
+
+  const currentEdition =
+    isUserPlan && subscription
+      ? subscription.edition
+      : plan.getCheapestEdition();
 
   const currentPrice = currentEdition?.price ?? new Decimal(1);
 
-  const promotional: boolean = !currentPrice.equals(plan.getMostExpensivePrice());
+  const promotional: boolean = !currentPrice.equals(
+    plan.getMostExpensivePrice()
+  );
   const tags: PlanTag[] = [];
 
   if (mostPopular)
@@ -110,21 +114,31 @@ export default function PlanCard({
                 : "por tempo indeterminado"}
             </p>
           )}
-          {isUserPlan && subscription.actived && subscription.automaticBilling? (
-            <button onClick={onUnsubscribe} type="button" className="btn btn-error btn-block">
+          {isUserPlan &&
+          subscription.actived &&
+          subscription.automaticBilling ? (
+            <button
+              onClick={onUnsubscribe}
+              type="button"
+              className="btn btn-error btn-block"
+            >
               Cancelar
             </button>
-          ) : isUserPlan && subscription.actived && !subscription.automaticBilling? (
+          ) : isUserPlan &&
+            subscription.actived &&
+            !subscription.automaticBilling ? (
             <button
               onClick={onRenew}
               type="button"
               className="btn btn-primary btn-block"
             >
-              Ativar renovação automática            
+              Ativar renovação automática
             </button>
-          ):(
+          ) : (
             <button
-              onClick={() => onSubscribe(plan.getCheapestEdition() as PlanEdition)}
+              onClick={() =>
+                onSubscribe(plan.getCheapestEdition() as PlanEdition)
+              }
               type="button"
               className="btn btn-primary btn-block"
             >

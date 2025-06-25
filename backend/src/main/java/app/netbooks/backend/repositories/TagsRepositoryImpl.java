@@ -27,10 +27,13 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
-                    "SELECT * FROM tag;"
+                    // language=sql
+                    """
+                    SELECT * FROM tag;
+                    """
                 ); 
             ) {
-                while (result.next()) {
+                while(result.next()) {
                     String name = result.getString("name");
                     Tag tag = new Tag(name);
                     tags.add(tag);
@@ -48,12 +51,15 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
 
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "SELECT * FROM tag WHERE name = ?;"
+                    // language=sql
+                    """
+                    SELECT * FROM tag WHERE name = ?;
+                    """
                 );
             ) {
                 statement.setString(1, name);
                 try (ResultSet result = statement.executeQuery()) {
-                    if (result.next()) {
+                    if(result.next()) {
                         Tag tag = new Tag(name);
                         tagFound = Optional.of(tag);
                     };
@@ -69,7 +75,10 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
         this.execute((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO tag (name) values (?);"
+                    // language=sql
+                    """
+                    INSERT INTO tag (name) values (?);
+                    """
                 );
             ) {
                 statement.setString(1, tag.getName());
@@ -83,7 +92,10 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
         this.execute((connection) -> {
            try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "DELETE FROM tag WHERE name = ?;"
+                    // language=sql
+                    """
+                    DELETE FROM tag WHERE name = ?;
+                    """
                 );
             ) {
                 statement.setString(1, name);

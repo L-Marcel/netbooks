@@ -28,7 +28,10 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
-                    "SELECT * FROM user;"
+                    // language=sql
+                    """
+                    SELECT * FROM user;
+                    """
                 );
             ) {
                 while(result.next()) {
@@ -54,7 +57,10 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "SELECT * FROM user WHERE uuid = ?;"
+                    // language=sql
+                    """
+                    SELECT * FROM user WHERE uuid = ?;
+                    """
                 );
             ) {
                 statement.setString(1, uuid.toString());
@@ -83,7 +89,10 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
 
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "SELECT * FROM user WHERE email = ?;"
+                    // language=sql
+                    """
+                    SELECT * FROM user WHERE email = ?;
+                    """
                 );
             ) {
                 statement.setString(1, email);
@@ -110,8 +119,11 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         this.execute((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO user (uuid, name, email, password) \n" +
-                    "VALUES (?, ?, ?, ?);"
+                    // language=sql
+                    """
+                    INSERT INTO user (uuid, name, email, password)
+                    VALUES (?, ?, ?, ?);
+                    """
                 );
             ) {
                 statement.setString(1, user.getUuid().toString());
@@ -128,11 +140,14 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         this.execute((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "UPDATE user\n" +
-                    "SET name = ?,\n" +
-                    "    email = ?,\n" +
-                    "    password = ?\n" +
-                    "WHERE uuid = ?;"
+                    // language=sql
+                    """
+                    UPDATE user
+                    SET name = ?,
+                        email = ?,
+                        password = ?
+                    WHERE uuid = ?;
+                    """
                 );
             ) {
                 statement.setString(1, user.getName());
@@ -149,7 +164,10 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
         this.execute((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "DELETE FROM user WHERE uuid = ?;"
+                    // language=sql
+                    """
+                    DELETE FROM user WHERE uuid = ?;
+                    """
                 );
             ) {
                 statement.setString(1, uuid.toString());

@@ -24,7 +24,7 @@ public abstract class ImageStorage {
         Path path = Paths.get("").toAbsolutePath();
 
         String lastSegment = path.getFileName().toString();
-        if (lastSegment.equals("backend") || lastSegment.equals("src")) {
+        if(lastSegment.equals("backend") || lastSegment.equals("src")) {
             path = path.getParent();
         }
     
@@ -80,7 +80,7 @@ public abstract class ImageStorage {
     private void validateBase64Header(
         String base64Header
     ) throws InvalidImageFormat {
-        if (
+        if(
             base64Header.contains("jpeg") || 
             base64Header.contains("jpg") || 
             base64Header.contains("png")

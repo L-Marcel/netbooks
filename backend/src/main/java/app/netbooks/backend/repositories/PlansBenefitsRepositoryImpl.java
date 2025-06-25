@@ -29,7 +29,10 @@ public class PlansBenefitsRepositoryImpl extends BaseRepository implements Plans
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
-                    "SELECT * FROM plan_benefits WHERE available;"
+                    // language=sql
+                    """
+                    SELECT * FROM plan_benefits WHERE available;
+                    """
                 );
             ) {
                 while(result.next()) {
@@ -56,7 +59,10 @@ public class PlansBenefitsRepositoryImpl extends BaseRepository implements Plans
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
-                    "SELECT * FROM plan_benefit;"
+                    // language=sql
+                    """
+                    SELECT * FROM plan_benefit;
+                    """
                 );
             ) {
                 while(result.next()) {
@@ -82,7 +88,10 @@ public class PlansBenefitsRepositoryImpl extends BaseRepository implements Plans
 
             try (
                 PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT benefit FROM plan_benefit WHERE plan = ?;"
+                    // language=sql
+                    """
+                    SELECT benefit FROM plan_benefit WHERE plan = ?;
+                    """
                 );
             ) {
                 preparedStatement.setInt(1, plan);

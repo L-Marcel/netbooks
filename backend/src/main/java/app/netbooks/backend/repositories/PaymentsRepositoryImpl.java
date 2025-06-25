@@ -155,6 +155,6 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
 
     @Override
     public void payById(Long id) {
-        
+        // [TODO]
     };
 };

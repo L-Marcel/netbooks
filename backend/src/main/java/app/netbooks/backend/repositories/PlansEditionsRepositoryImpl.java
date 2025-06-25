@@ -31,9 +31,11 @@ public class PlansEditionsRepositoryImpl extends BaseRepository implements Plans
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
-                    "SELECT * FROM plan_edition_with_subscribers\n" +
-                    "WHERE available\n" +
-                    "ORDER BY price ASC;"
+                    // language=sql
+                    """
+                    SELECT * FROM plan_edition_with_subscribers
+                    WHERE available ORDER BY price ASC;
+                    """
                 );
             ) {
                 while(result.next()) {
@@ -69,8 +71,11 @@ public class PlansEditionsRepositoryImpl extends BaseRepository implements Plans
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
-                    "SELECT * FROM plan_edition_with_subscribers\n" +
-                    "ORDER BY available DESC, price ASC;"
+                    // language=sql
+                    """
+                    SELECT * FROM plan_edition_with_subscribers
+                    ORDER BY available DESC, price ASC;
+                    """
                 );
             ) {
                 while(result.next()) {
@@ -106,8 +111,11 @@ public class PlansEditionsRepositoryImpl extends BaseRepository implements Plans
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
-                    "SELECT * FROM plan_edition_with_subscribers\n" +
-                    "ORDER BY available DESC, price ASC;"
+                    // language=sql
+                    """
+                    SELECT * FROM plan_edition_with_subscribers
+                    ORDER BY available DESC, price ASC;
+                    """
                 );
             ) {
                 while(result.next()) {
@@ -180,8 +188,11 @@ public class PlansEditionsRepositoryImpl extends BaseRepository implements Plans
 
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "SELECT * FROM plan_edition_with_subscribers\n" +
-                    "WHERE id = ?;"
+                    // language=sql
+                    """
+                    SELECT * FROM plan_edition_with_subscribers
+                    WHERE id = ?;
+                    """
                 );
             ) {
                 statement.setInt(1, id);

@@ -30,7 +30,11 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
-                    "SELECT * FROM plan_with_availability WHERE available;"
+                    // language=sql
+                    """
+                    SELECT * FROM plan_with_availability 
+                    WHERE available;
+                    """
                 );
             ) {
                 while(result.next()) {
@@ -63,7 +67,10 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
-                    "SELECT * FROM plan_with_availability;"
+                    // language=sql
+                    """
+                    SELECT * FROM plan_with_availability;
+                    """
                 );
             ) {
                 while(result.next()) {
@@ -95,7 +102,11 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
 
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "SELECT * FROM plan_with_availability WHERE id = ?;"
+                    // language=sql
+                    """
+                    SELECT * FROM plan_with_availability 
+                    WHERE id = ?;
+                    """
                 );
             ) {
                 statement.setInt(1, id);
@@ -127,7 +138,11 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
         this.execute((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO plan (name, description, duration) VALUES (?, ?, ?);"
+                    // language=sql
+                    """
+                    INSERT INTO plan (name, description, duration) 
+                    VALUES (?, ?, ?);
+                    """
                 );
             ) {
                 statement.setString(1, plan.getName());
@@ -143,11 +158,14 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
         this.execute((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "UPDATE plan\n" +
-                    "SET name = ?,\n" +
-                    "    description = ?,\n" +
-                    "    duration = ?\n" +
-                    "WHERE id = ?;"
+                    // language=sql
+                    """
+                    UPDATE plan
+                    SET name = ?,
+                        description = ?,
+                        duration = ?
+                    WHERE id = ?;
+                    """
                 );
             ) {
                 statement.setString(1, plan.getName());
@@ -166,7 +184,15 @@ public class PlansRepositoryImpl extends BaseRepository implements PlansReposito
 
             try (
                 PreparedStatement statement = connection.prepareStatement(
-                    "CALL compare_plans(?, ?)"
+                    // language=sql
+                    """
+                    SELECT pln.id, COUNT(DISTINCT benefit) as amount
+                    FROM plan AS pln
+                    LEFT JOIN plan_benefits AS bnf
+                    ON pln.id = bnf.plan
+                    WHERE pln.id IN (?, ?)
+                    GROUP BY pln.id;
+                    """
                 );
             ) {
                 statement.setInt(1, a);

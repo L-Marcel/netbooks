@@ -29,7 +29,10 @@ public class BooksBenefitsRepositoryImpl extends BaseRepository implements Books
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
-                    "SELECT * FROM book_benefit;"
+                    // language=sql
+                    """
+                    SELECT * FROM book_benefit;
+                    """
                 );
             ) {
                 while(result.next()) {
@@ -55,7 +58,10 @@ public class BooksBenefitsRepositoryImpl extends BaseRepository implements Books
 
             try (
                 PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT benefit FROM book_benefit WHERE book = ?;"
+                    // language=sql
+                    """
+                    SELECT benefit FROM book_benefit WHERE book = ?;
+                    """
                 );
             ) {
                 preparedStatement.setLong(1, id);

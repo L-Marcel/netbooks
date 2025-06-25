@@ -81,17 +81,17 @@ public class Validator {
 
                 if(this.value == null) {
                     throw new ValidationStepError(error);
-                } else if (value instanceof String) {
+                } else if(value instanceof String) {
                     length = ((String) value).length();
-                } else if (value instanceof Collection) {
+                } else if(value instanceof Collection) {
                     length = ((Collection<?>) value).size();
-                } else if (value.getClass().isArray()) {
+                } else if(value.getClass().isArray()) {
                     length = Array.getLength(value);
-                } else if (value instanceof Number) {
+                } else if(value instanceof Number) {
                     length = ((Number) value).intValue();
                 };
 
-                if (length < size)
+                if(length < size)
                     throw new ValidationStepError(error);
             }, message));
 
@@ -104,17 +104,17 @@ public class Validator {
 
                 if(this.value == null) {
                     throw new ValidationStepError(error);
-                } else if (value instanceof String) {
+                } else if(value instanceof String) {
                     length = ((String) value).length();
-                } else if (value instanceof Collection) {
+                } else if(value instanceof Collection) {
                     length = ((Collection<?>) value).size();
-                } else if (value.getClass().isArray()) {
+                } else if(value.getClass().isArray()) {
                     length = Array.getLength(value);
-                } else if (value instanceof Number) {
+                } else if(value instanceof Number) {
                     length = ((Number) value).intValue();
                 };
 
-                if (length > size) 
+                if(length > size) 
                     throw new ValidationStepError(error);
             }, message));
 
@@ -141,12 +141,12 @@ public class Validator {
                 try {
                     Pattern pattern = Pattern.compile(regex);
 
-                    if (!(this.value instanceof CharSequence)) {
+                    if(!(this.value instanceof CharSequence)) {
                         throw new ValidationStepError(error);
                     };
                 
                     CharSequence str = (CharSequence) value;
-                    if (!pattern.matcher(str).matches()) {
+                    if(!pattern.matcher(str).matches()) {
                         throw new ValidationStepError(error);
                     };
                 } catch (PatternSyntaxException e) {

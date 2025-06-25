@@ -29,7 +29,10 @@ public class BooksAuthorsRepositoryImpl extends BaseRepository implements BooksA
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
-                    "SELECT * FROM book_authors;"
+                    // language=sql
+                    """
+                    SELECT * FROM book_authors;
+                    """
                 );
             ) {
                 while(result.next()) {
@@ -56,7 +59,10 @@ public class BooksAuthorsRepositoryImpl extends BaseRepository implements BooksA
 
             try (
                 PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT tag FROM book_authors WHERE book = ?;"
+                    // language=sql
+                    """
+                    SELECT tag FROM book_authors WHERE book = ?;
+                    """
                 );
             ) {
                 preparedStatement.setLong(1, id);
