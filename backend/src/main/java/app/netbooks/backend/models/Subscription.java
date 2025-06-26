@@ -16,11 +16,11 @@ public class Subscription {
     private Integer edition;
     private Date startedIn;
     private Date closedIn;
-    private Boolean automaticBilling;
     private Boolean actived;
-
-    public Subscription(UUID subscriber, Integer edition) {
+    
+    public Subscription(UUID subscriber, Integer edition, Date startedIn) {
         this.subscriber = subscriber;
         this.edition = edition;
+        this.startedIn = startedIn;
     };
 };

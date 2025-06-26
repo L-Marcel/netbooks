@@ -63,12 +63,14 @@ public class BooksRepositoryImpl extends BaseRepository implements BooksReposito
             };
 
             return books;
-        }, new ArrayList<Book>());
+        }, new ArrayList<>());
     };
 
     @Override
     public Optional<Book> findById(Long id) {
         return this.queryOrDefault((connection) -> {
+            Optional<Book> bookFound = Optional.empty();
+
             try (
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
@@ -79,8 +81,6 @@ public class BooksRepositoryImpl extends BaseRepository implements BooksReposito
             ) {
                 statement.setLong(1, id);
                 try(ResultSet result = statement.executeQuery()) {
-                    Optional<Book> bookFound = Optional.empty();
-
                     if(result.next()) {
                         Long isbn = result.getLong("isbn");
                         String title = result.getString("title");
@@ -105,10 +105,10 @@ public class BooksRepositoryImpl extends BaseRepository implements BooksReposito
 
                         bookFound = Optional.of(book);
                     };
-                    
-                    return bookFound;
-                }
-            }
+                };
+            };
+
+            return bookFound;
         }, Optional.empty());
     };
 };

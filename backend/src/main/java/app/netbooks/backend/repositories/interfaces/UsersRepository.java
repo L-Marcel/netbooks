@@ -13,4 +13,5 @@ public interface UsersRepository {
     public void create(User user);
     public void update(User user);
     public void deleteById(UUID uuid);
+    public void switchAutomaticBillingById(UUID uuid);
 };

@@ -20,6 +20,8 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorsRepo
     @Override
     public Optional<Author> findById(Integer id) {
         return this.queryOrDefault((connection) -> {
+            Optional<Author> authorFound = Optional.empty();
+
             try (
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
@@ -30,23 +32,22 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorsRepo
             ) {
                 statement.setInt(1, id);
                 try (ResultSet result = statement.executeQuery()) {
-                    Optional<Author> authorFound = Optional.empty();
                     if(result.next()) {
                         String name = result.getString("name");
                         Author author = new Author(id, name);
                         authorFound = Optional.of(author);
                     };
+                };
+            };
 
-                    return authorFound;
-                }
-            }
+            return authorFound;
         }, Optional.empty());
     };
     
     @Override
     public List<Author> searchByName(String name) {
         return this.queryOrDefault((connection) -> {
-            List<Author> authors = new ArrayList<Author>();
+            List<Author> authors = new ArrayList<>();
 
             try (
                 PreparedStatement preparedStatement = connection.prepareStatement(
@@ -64,13 +65,13 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorsRepo
                         String completeName = result.getString("name");
                         Author author = new Author(id, completeName);
                         authors.add(author);
-                    }
-                }
+                    };
+                };  
+            };
 
-                return authors;
-            }
+            return authors;
         }, new ArrayList<Author>());
-    }
+    };
 
     @Override
     public void create(Author author) {

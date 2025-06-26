@@ -15,5 +15,5 @@ export default function ParticipantGuard({ children }: Props) {
     getParticipant().finally(() => setChecked(true));
   }, [setChecked]);
 
-  return participant ? children : checked ? <Home/> : null;
+  return participant ? children : checked ? <Home /> : null;
 }

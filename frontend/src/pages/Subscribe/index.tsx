@@ -4,26 +4,45 @@ import { Subscription } from "@models/subscription";
 import { fetchAvailablePlans } from "@services/plans";
 import {
   fetchSubscription,
-  renewSubscription,
+  fetchNextSubscription,
+  closeNextSubscriptions,
   subscribe,
-  unsubscribe,
 } from "@services/subscriptions";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function Subscribe() {
+  const [loading, setLoading] = useState(-1);
+
   const [subscription, setSubscription] = useState<Subscription | undefined>(
     undefined
   );
+
+  const [nextSubscription, setNextSubscription] = useState<
+    Subscription | undefined
+  >(undefined);
+
   const [plans, setPlans] = useState<Plan[]>([]);
 
   const update = useCallback(() => {
-    fetchSubscription().then((subscription) => {
-      setSubscription(subscription);
-    });
-    fetchAvailablePlans().then((plans) => {
-      setPlans(plans.sort((a, b) => a.benefits.length - b.benefits.length));
-    });
-  }, [setSubscription, setPlans]);
+    Promise.all([
+      fetchSubscription(),
+      fetchNextSubscription().catch(() => undefined),
+      fetchAvailablePlans(),
+    ])
+      .then(([subscription, nextSubscription, plans]) => {
+        setSubscription(subscription);
+        setNextSubscription(nextSubscription);
+        setPlans(plans.sort((a, b) => a.benefits.length - b.benefits.length));
+      })
+      .catch(() => {
+        setSubscription(undefined);
+        setNextSubscription(undefined);
+        setPlans([]);
+      })
+      .finally(() => {
+        setLoading(-1);
+      });
+  }, [setSubscription, setNextSubscription, setPlans]);
 
   useEffect(() => {
     update();
@@ -57,21 +76,29 @@ export default function Subscribe() {
   }, [plans]);
 
   return (
-    <main className="columns-1 lg:columns-2 xl:columns-3 w-full p-8 gap-8 bg-base-100">
-      {plans.map((plan) => (
-        <PlanCard
-          key={plan.id}
-          plan={plan}
-          subscription={subscription}
-          mostPopular={mostPopular && mostPopular?.id === plan.id}
-          mostEconomic={mostEconomic && mostEconomic?.id === plan.id}
-          onSubscribe={(edition) =>
-            subscribe(edition.id).finally(() => update())
-          }
-          onUnsubscribe={() => unsubscribe().finally(() => update())}
-          onRenew={() => renewSubscription().finally(() => update())}
-        />
-      ))}
+    <main className="p-8 gap-8 bg-base-100">
+      <section className="columns-1 lg:columns-2 xl:columns-3 w-full">
+        {plans.map((plan) => (
+          <PlanCard
+            key={plan.id}
+            plan={plan}
+            disabled={loading !== -1 && loading !== plan.id}
+            isLoading={loading === plan.id}
+            subscription={subscription}
+            nextSubscription={nextSubscription}
+            mostPopular={mostPopular && mostPopular?.id === plan.id}
+            mostEconomic={mostEconomic && mostEconomic?.id === plan.id}
+            onCancelNextSubscriptions={() => {
+              setLoading(plan.id);
+              closeNextSubscriptions().finally(() => update());
+            }}
+            onSubscribe={(edition) => {
+              setLoading(plan.id);
+              subscribe(edition.id).finally(() => update());
+            }}
+          />
+        ))}
+      </section>
     </main>
   );
 }

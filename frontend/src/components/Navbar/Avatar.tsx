@@ -1,7 +1,12 @@
 import { logout } from "@services/user";
 import useUser from "@stores/useUser";
 import { useState } from "react";
-import { FaEdit, FaRegCreditCard, FaSignOutAlt } from "react-icons/fa";
+import {
+  FaEdit,
+  FaFireAlt,
+  FaRegCreditCard,
+  FaSignOutAlt,
+} from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 
 export default function Avatar() {
@@ -50,17 +55,24 @@ export default function Avatar() {
           >
             <FaEdit /> Editar perfil
           </NavLink>
-          {user?.isSubscriber() && (
-            <NavLink
-              className={({ isActive }) =>
-                "text-base-content no-underline hover:underline font-bold transition" +
-                (isActive ? " text-primary" : "")
-              }
-              to="/subscribe"
-            >
-              <FaRegCreditCard /> Gerenciar assinatura
-            </NavLink>
-          )}
+          <NavLink
+            className={({ isActive }) =>
+              "text-base-content no-underline hover:underline font-bold transition" +
+              (isActive ? " text-primary" : "")
+            }
+            to="/subscribe"
+          >
+            <FaFireAlt /> Gerenciar assinatura
+          </NavLink>
+          <NavLink
+            className={({ isActive }) =>
+              "text-base-content no-underline hover:underline font-bold transition" +
+              (isActive ? " text-primary" : "")
+            }
+            to="/billing"
+          >
+            <FaRegCreditCard /> Dados de cobrança
+          </NavLink>
           <button
             className="text-base-content no-underline hover:underline font-bold transition"
             type="button"

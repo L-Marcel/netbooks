@@ -9,6 +9,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import app.netbooks.backend.utils.Server;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -19,6 +20,9 @@ public class TokensService {
 
     @Autowired
     private SecretKey key;
+
+    @Autowired
+    private Server server;
 
     public Optional<UUID> validate(String token) {
         try {
@@ -36,7 +40,7 @@ public class TokensService {
     };
 
     public String generate(UUID uuid) {
-        Date currentDate = new Date();
+        Date currentDate = this.server.getServerCurrentDate();
         Date expirationDate = new Date(
             currentDate.getTime() + EXPIRATION_TIME
         );

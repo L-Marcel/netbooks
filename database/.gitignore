@@ -4,18 +4,4 @@
 *.webp
 !test.*
 
-!data/books/**/1.webp
-!data/books/**/2.webp
-!data/books/**/3.webp
-!data/books/**/4.webp
-!data/books/**/5.webp
-!data/books/**/6.webp
-!data/books/**/7.webp
-!data/books/**/8.webp
-!data/books/**/9.webp
-!data/books/**/10.webp
-!data/books/**/11.webp
-!data/books/**/12.webp
-!data/books/**/13.webp
-!data/books/**/14.webp
-!data/books/**/15.webp
+!**/*.webp

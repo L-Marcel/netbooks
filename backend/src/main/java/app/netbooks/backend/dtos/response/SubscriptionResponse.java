@@ -20,7 +20,6 @@ public class SubscriptionResponse {
     private PlanEditionResponse edition;
     private Date startedIn;
     private Date closedIn;
-    private Boolean automaticBilling;
     private Boolean actived;
 
     public SubscriptionResponse(Subscription subscription, PlanEdition edition) {
@@ -29,7 +28,6 @@ public class SubscriptionResponse {
         this.edition = new PlanEditionResponse(edition);
         this.startedIn = subscription.getStartedIn();
         this.closedIn = subscription.getClosedIn();
-        this.automaticBilling = subscription.getAutomaticBilling();
         this.actived = subscription.getActived();
     };
 };

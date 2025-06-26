@@ -52,7 +52,7 @@ export default function NavbarLinks({ user }: Props) {
               }
               to="/match"
             >
-              <FaCompass /> sortear
+              <FaCompass /> Sortear
             </NavLink>
           </li>
         </>

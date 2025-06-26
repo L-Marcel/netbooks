@@ -1,1 +1,0 @@
-INSERT INTO publisher (name) values (?);

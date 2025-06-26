@@ -17,10 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.netbooks.backend.annotations.AdministratorOnly;
 import app.netbooks.backend.annotations.AuhenticatedOnly;
+import app.netbooks.backend.annotations.SubscriberOnly;
 import app.netbooks.backend.authentication.AuthenticatedUser;
 import app.netbooks.backend.dtos.request.LoginRequestBody;
 import app.netbooks.backend.dtos.request.RegisterUserRequestBody;
 import app.netbooks.backend.dtos.request.UpdateUserRequestBody;
+import app.netbooks.backend.dtos.response.SubscriptionResponse;
 import app.netbooks.backend.dtos.response.UserResponse;
 import app.netbooks.backend.models.Role;
 import app.netbooks.backend.models.User;
@@ -111,5 +113,17 @@ public class UsersController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .build();
+    };
+
+    @SubscriberOnly
+    @GetMapping("/switch-automatic-billing")
+    public ResponseEntity<SubscriptionResponse> switchAutomaticBilling(
+        @AuthenticationPrincipal AuthenticatedUser user
+    ) {
+        this.usersService.switchAutomaticBillingById(
+            user.getUser().getUuid()
+        );
+        
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     };
 };

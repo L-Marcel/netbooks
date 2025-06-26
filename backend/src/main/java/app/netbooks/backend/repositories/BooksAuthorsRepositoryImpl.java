@@ -46,7 +46,7 @@ public class BooksAuthorsRepositoryImpl extends BaseRepository implements BooksA
                         v -> new ArrayList<Author>()
                     ).add(author);
                 };
-            }
+            };
 
             return authorsMap;
         }, new LinkedHashMap<>());
@@ -76,10 +76,10 @@ public class BooksAuthorsRepositoryImpl extends BaseRepository implements BooksA
 
                         authors.add(author);
                     };
-                };
+                };    
+            };
 
-                return authors;
-            }
+            return authors;
         }, new LinkedList<>());
     };
 };
