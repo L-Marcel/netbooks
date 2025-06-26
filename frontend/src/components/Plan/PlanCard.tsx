@@ -1,5 +1,11 @@
 import { Plan } from "@models/plan";
-import { FaBullhorn, FaFireAlt, FaPiggyBank } from "react-icons/fa";
+import {
+  FaBullhorn,
+  FaFireAlt,
+  FaPiggyBank,
+  FaRegCalendarCheck,
+  FaRegCalendarTimes,
+} from "react-icons/fa";
 import PlanTags, { PlanTag } from "./PlanTags";
 import { format } from "date-fns";
 import Decimal from "decimal.js";
@@ -8,28 +14,37 @@ import { PlanEdition } from "@models/plan_edition";
 
 interface Props {
   plan: Plan;
+  isLoading: boolean;
+  disabled: boolean;
   subscription?: Subscription;
+  nextSubscription?: Subscription;
   mostPopular?: boolean;
   mostEconomic?: boolean;
   onSubscribe: (edition: PlanEdition) => void;
-  onUnsubscribe: () => void;
-  onRenew: () => void;
+  onCancelNextSubscriptions: () => void;
 }
 
 export default function PlanCard({
   plan,
   subscription,
+  nextSubscription,
   mostPopular,
   mostEconomic,
+  isLoading,
+  disabled,
   onSubscribe,
-  onUnsubscribe,
-  onRenew,
+  onCancelNextSubscriptions,
 }: Props) {
   const isUserPlan = subscription && plan.id === subscription?.edition.plan;
+  const isNextUserPlan =
+    !isUserPlan &&
+    nextSubscription &&
+    plan.id === nextSubscription?.edition.plan;
 
-  const currentEdition =
-    isUserPlan && subscription
-      ? subscription.edition
+  const currentEdition = isUserPlan
+    ? subscription.edition
+    : isNextUserPlan
+      ? nextSubscription.edition
       : plan.getCheapestEdition();
 
   const currentPrice = currentEdition?.price ?? new Decimal(1);
@@ -37,6 +52,7 @@ export default function PlanCard({
   const promotional: boolean = !currentPrice.equals(
     plan.getMostExpensivePrice()
   );
+
   const tags: PlanTag[] = [];
 
   if (mostPopular)
@@ -114,25 +130,17 @@ export default function PlanCard({
                 : "por tempo indeterminado"}
             </p>
           )}
-          {isUserPlan &&
-          subscription.actived &&
-          subscription.automaticBilling ? (
+          {isNextUserPlan ? (
             <button
-              onClick={onUnsubscribe}
+              onClick={onCancelNextSubscriptions}
               type="button"
               className="btn btn-error btn-block"
+              disabled={isUserPlan || disabled || isLoading}
             >
-              Cancelar
-            </button>
-          ) : isUserPlan &&
-            subscription.actived &&
-            !subscription.automaticBilling ? (
-            <button
-              onClick={onRenew}
-              type="button"
-              className="btn btn-primary btn-block"
-            >
-              Ativar renovação automática
+              {isLoading && !disabled && (
+                <span className="loading loading-spinner" />
+              )}
+              {isLoading ? "Interrompendo mudança..." : "Interromper Mudança"}
             </button>
           ) : (
             <button
@@ -141,9 +149,29 @@ export default function PlanCard({
               }
               type="button"
               className="btn btn-primary btn-block"
+              disabled={isUserPlan || disabled || isLoading}
             >
-              Inscreve-se
+              {isLoading && !disabled && (
+                <span className="loading loading-spinner" />
+              )}
+              {isUserPlan
+                ? "Inscrito"
+                : isLoading
+                  ? "Inscrevendo-se..."
+                  : "Inscreve-se"}
             </button>
+          )}
+          {isUserPlan && subscription?.closedIn && (
+            <p className="ml-0.5 mt-4 text-xs flex flex-row items-center gap-2 font-light">
+              <FaRegCalendarTimes className="size-5" /> Cancelamento programando
+              para {format(subscription?.closedIn, "dd/MM/yyyy")}
+            </p>
+          )}
+          {isNextUserPlan && (
+            <p className="ml-0.5 mt-4 text-xs flex flex-row items-center gap-2 font-light">
+              <FaRegCalendarCheck className="size-5" /> Início programando para{" "}
+              {format(nextSubscription.startedIn, "dd/MM/yyyy")}
+            </p>
           )}
         </div>
       </div>

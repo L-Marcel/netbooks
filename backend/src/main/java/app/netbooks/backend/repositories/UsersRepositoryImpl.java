@@ -23,14 +23,14 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
     @Override
     public List<User> findAll() {
         return this.queryOrDefault((connection) -> {
-            List<User> persons = new ArrayList<>();
+            List<User> users = new ArrayList<>();
 
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
                     // language=sql
                     """
-                    SELECT * FROM user;
+                    SELECT * FROM user_as_subscriber;
                     """
                 );
             ) {
@@ -39,14 +39,22 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                     String email = result.getString("email");
                     String name = result.getString("name");
                     String password = result.getString("password");
+                    Boolean automaticBilling = result.getBoolean("automatic_billing");
 
-                    User person = new User(uuid, name, null, email, password);
+                    User user = new User(
+                        uuid, 
+                        name, 
+                        null, 
+                        email, 
+                        password, 
+                        automaticBilling
+                    );
                     
-                    persons.add(person);
+                    users.add(user);
                 };
             };
 
-            return persons;
+            return users;
         }, new ArrayList<>());
     };
 
@@ -59,7 +67,8 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    SELECT * FROM user WHERE uuid = ?;
+                    SELECT * FROM user_as_subscriber
+                    WHERE uuid = ?;
                     """
                 );
             ) {
@@ -70,8 +79,16 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                         String name = result.getString("name");
                         String email = result.getString("email");
                         String password = result.getString("password");
+                        Boolean automaticBilling = result.getBoolean("automatic_billing");
 
-                        User user = new User(uuid, name, null, email, password);
+                        User user = new User(
+                            uuid, 
+                            name, 
+                            null, 
+                            email, 
+                            password, 
+                            automaticBilling
+                        );
 
                         userFound = Optional.of(user);
                     };  
@@ -91,7 +108,8 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    SELECT * FROM user WHERE email = ?;
+                    SELECT * FROM user_as_subscriber
+                    WHERE email = ?;
                     """
                 );
             ) {
@@ -102,8 +120,16 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                         UUID uuid = UUID.fromString(result.getString("uuid"));
                         String name = result.getString("name");
                         String password = result.getString("password");
+                        Boolean automaticBilling = result.getBoolean("automatic_billing");
 
-                        User user = new User(uuid, name, null, email, password);
+                        User user = new User(
+                            uuid, 
+                            name, 
+                            null, 
+                            email, 
+                            password, 
+                            automaticBilling
+                        );
 
                         userFound = Optional.of(user);
                     };
@@ -167,6 +193,25 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                     // language=sql
                     """
                     DELETE FROM user WHERE uuid = ?;
+                    """
+                );
+            ) {
+                statement.setString(1, uuid.toString());
+                statement.executeUpdate();
+            };
+        });
+    };
+
+    @Override
+    public void switchAutomaticBillingById(UUID uuid) {
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    UPDATE FROM subscriber
+                    SET automatic_billing = NOT automatic_billing
+                    WHERE uuid = ?;
                     """
                 );
             ) {

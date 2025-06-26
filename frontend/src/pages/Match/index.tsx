@@ -7,75 +7,71 @@ import { FaArrowRight } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 export default function Match() {
-    return(
-        <AuthGuard>
-            <SubscriberGuard>
-                <Page />
-            </SubscriberGuard>
-        </AuthGuard>
-    );
+  return (
+    <AuthGuard>
+      <SubscriberGuard>
+        <Page />
+      </SubscriberGuard>
+    </AuthGuard>
+  );
 }
 
-function Page(){
-    const navigate = useNavigate();
-    const user = useUser((state) => state.user);
-    const [roomCode, setRoomCode] = useState("");
+function Page() {
+  const navigate = useNavigate();
+  const user = useUser((state) => state.user);
+  const [roomCode, setRoomCode] = useState("");
 
-    const createRoom = async () => {
-        try {
-        const room = await getOpenRoom();
-        navigate("/match/" + room.code);
-        } catch (error) {
-        create().then((code) => {
-            navigate("/match/" + code);
-        });
-        }
-    };
-   
-    const enterRoom = async () => {
-        if (!roomCode) return;
-        try {
-            if(user){
-                await join(user.name, roomCode);
-                navigate("/match/" + roomCode);
-            }
-        } catch (error) {
-            console.error("Erro ao entrar na sala:", error);
-        }
-    };
+  const createRoom = async () => {
+    try {
+      const room = await getOpenRoom();
+      navigate("/match/" + room.code);
+    } catch (error) {
+      create().then((code) => {
+        navigate("/match/" + code);
+      });
+    }
+  };
 
-    return(
-        <main className="flex flex-col w-full h-full items-center bg-base-100" style={{ height: "calc(100vh - 70px)" }}>
-            <div className="flex flex-col items-center justify-center w-md h-screen bg-base-100 gap-10">
-                <button 
-                    className="btn btn-primary w-md"
-                    onClick={createRoom}
-                >
-                    Criar Sala
-                </button>
+  const enterRoom = async () => {
+    if (!roomCode) return;
+    try {
+      if (user) {
+        await join(user.name, roomCode);
+        navigate("/match/" + roomCode);
+      }
+    } catch (error) {
+      console.error("Erro ao entrar na sala:", error);
+    }
+  };
 
-                <hr className="w-md border-gray-700"/>
+  return (
+    <main
+      className="flex flex-col w-full h-full items-center bg-base-100"
+      style={{ height: "calc(100vh - 70px)" }}
+    >
+      <div className="flex flex-col items-center justify-center w-md h-screen bg-base-100 gap-10">
+        <button className="btn btn-primary w-md" onClick={createRoom}>
+          Criar Sala
+        </button>
 
-                <div className="flex">
-                    <input 
-                        type="text" 
-                        name="code" 
-                        id="code" 
-                        placeholder="Código da Sala"
-                        autoComplete="false"
-                        value={roomCode}
-                        onChange={(e) => setRoomCode(e.target.value)}
-                        className="input text-lg w-[400px]"
-                    />
-                    <button
-                        className="btn w-[50px]"
-                        onClick={enterRoom}
-                    >
-                        <FaArrowRight/>
-                    </button>
-                </div>
-            </div>
-            
-        </main>
-    );
+        <hr className="w-md border-gray-700" />
+
+        <div className="flex">
+          <input
+            type="text"
+            name="code"
+            id="code"
+            placeholder="Código da Sala"
+            autoComplete="false"
+            value={roomCode}
+            onChange={(e) => setRoomCode(e.target.value)}
+            className="input text-lg w-[400px]"
+          />
+          <button className="btn w-[50px]" onClick={enterRoom}>
+            <FaArrowRight />
+          </button>
+        </div>
+      </div>
+    </main>
+  );
 }

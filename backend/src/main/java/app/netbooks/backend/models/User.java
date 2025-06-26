@@ -15,8 +15,9 @@ public class User {
     private String avatar;
     private String email;
     private String password;
+    private Boolean automaticBilling;
 
     public User(String name, String avatar, String email, String password) {
-        this(UUID.randomUUID(), name, avatar, email, password);
+        this(UUID.randomUUID(), name, avatar, email, password, true);
     };
 };

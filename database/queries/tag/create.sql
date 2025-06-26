@@ -1,1 +1,0 @@
-INSERT INTO tag (name) values (?);

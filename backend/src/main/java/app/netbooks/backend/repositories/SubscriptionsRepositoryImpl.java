@@ -42,7 +42,6 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
                         Integer edition = result.getInt("edition");
                         Date startedIn = result.getDate("started_in");
                         Date closedIn = result.getDate("closed_in");
-                        Boolean automaticBilling = result.getBoolean("automatic_billing");
                         Boolean actived = result.getBoolean("actived");
                         
                         Subscription user = new Subscription(
@@ -51,7 +50,54 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
                             edition,
                             startedIn,
                             closedIn,
-                            automaticBilling,
+                            actived
+                        );
+
+                        subscriptionFound = Optional.of(user);
+                    };
+                };
+            };
+
+            return subscriptionFound;
+        }, Optional.empty());
+    };
+    
+    @Override
+    public Optional<Subscription> findNextScheduledBySubscriber(
+        UUID subscriber
+    ) {
+        return this.queryOrDefault((connection) -> {
+            Optional<Subscription> subscriptionFound = Optional.empty();
+
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    SELECT * FROM subscription_with_state
+                    WHERE subscriber = ?
+                    AND NOT actived AND started_in > CURRENT_DATE
+                    AND closed_in IS NULL
+                    ORDER BY started_in ASC
+                    LIMIT 1;
+                    """
+                );
+            ) {
+                statement.setString(1, subscriber.toString());
+
+                try (ResultSet result = statement.executeQuery()) {
+                    if(result.next()) {
+                        Long id = result.getLong("id");
+                        Integer edition = result.getInt("edition");
+                        Date startedIn = result.getDate("started_in");
+                        Date closedIn = result.getDate("closed_in");
+                        Boolean actived = result.getBoolean("actived");
+                        
+                        Subscription user = new Subscription(
+                            id,
+                            subscriber,
+                            edition,
+                            startedIn,
+                            closedIn,
                             actived
                         );
 
@@ -88,7 +134,6 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
                         Integer edition = result.getInt("edition");
                         Date startedIn = result.getDate("started_in");
                         Date closedIn = result.getDate("closed_in");
-                        Boolean automaticBilling = result.getBoolean("automatic_billing");
                         Boolean actived = result.getBoolean("actived");
                         
                         Subscription user = new Subscription(
@@ -97,7 +142,6 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
                             edition,
                             startedIn,
                             closedIn,
-                            automaticBilling,
                             actived
                         );
 
@@ -111,10 +155,8 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
     };
 
     @Override
-    public Long subscribe(Subscription subscription) {
-        return this.query((connection) -> {
-            Long id = null;
-
+    public void subscribe(Subscription subscription) {
+        this.execute((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
@@ -131,21 +173,23 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    INSERT INTO subscription (edition, subscriber) VALUES (?, ?);        
+                    INSERT INTO subscription (edition, subscriber, started_in) 
+                    VALUES (?, ?, ?);        
                     """,
                     true
                 );
             ) {
                 statement.setInt(1, subscription.getEdition());
                 statement.setString(2, subscription.getSubscriber().toString());
+                statement.setDate(3, subscription.getStartedIn());
+                statement.executeUpdate();
                 
                 try (ResultSet result = statement.getGeneratedKeys()) {
                     result.next();
-                    id = result.getLong(1);
+                    Long id = result.getLong(1);
+                    subscription.setId(id);
                 };
             };
-
-            return id;
         });
     };
 
@@ -198,6 +242,27 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
                     UPDATE subscription  
                     SET closed_in = COALESCE(closed_in, CURRENT_DATE)
                     WHERE subscriber = ?;
+                    """
+                );
+            ) {
+                statement.setString(1, subscriber.toString());
+                statement.executeUpdate();
+            };
+        });
+    };
+
+    @Override
+    public void closedScheduledsBySubscriber(UUID subscriber) {
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    UPDATE subscription  
+                    SET closed_in = CURRENT_DATE
+                    WHERE subscriber = ?
+                    AND started_in > CURRENT_DATE
+                    AND closed_in IS NULL;
                     """
                 );
             ) {

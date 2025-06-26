@@ -7,14 +7,18 @@ export async function fetchSubscription(): Promise<Subscription> {
     .then((response) => new Subscription(response.data));
 }
 
+export async function fetchNextSubscription(): Promise<Subscription> {
+  return api
+    .get<SubscriptionData>("/subscriptions/me/next")
+    .then((response) => new Subscription(response.data));
+}
+
+export async function closeNextSubscriptions(): Promise<Subscription> {
+  return api
+    .post<SubscriptionData>("/subscriptions/me/next/cancel")
+    .then((response) => new Subscription(response.data));
+}
+
 export async function subscribe(id: number): Promise<void> {
   return api.post(`/subscriptions/subscribe/${id}`);
-}
-
-export async function unsubscribe(): Promise<void> {
-  return api.post("/subscriptions/unsubscribe");
-}
-
-export async function renewSubscription(): Promise<void> {
-  return api.post("/subscriptions/renew");
 }

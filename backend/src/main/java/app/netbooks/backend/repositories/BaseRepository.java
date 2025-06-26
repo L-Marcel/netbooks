@@ -1,7 +1,11 @@
 package app.netbooks.backend.repositories;
 
+import java.sql.SQLException;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import app.netbooks.backend.connections.interfaces.Database;
 import app.netbooks.backend.connections.interfaces.OperationFunction;
@@ -10,6 +14,8 @@ import app.netbooks.backend.errors.InternalServerError;
 import jakarta.annotation.PostConstruct;
 
 public abstract class BaseRepository {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private Database database;
 
     public BaseRepository(Database database) {
@@ -30,6 +36,7 @@ public abstract class BaseRepository {
         try {
             return this.database.query(query);
         } catch (Exception e) {
+            this.logger.debug(e.getMessage());
             return expcetion.apply(e);
         }
     };
@@ -45,7 +52,10 @@ public abstract class BaseRepository {
         QueryFunction<T> query
     ) {
         return this.query(query, (e) -> {
-            throw new InternalServerError();
+            this.logger.debug(e.getMessage());
+            if(e instanceof SQLException)
+                throw new InternalServerError((SQLException) e);
+            else throw new InternalServerError();
         });
     };
 
@@ -56,6 +66,7 @@ public abstract class BaseRepository {
         try {
             this.database.execute(operation);
         } catch (Exception e) {
+            this.logger.debug(e.getMessage());
             expcetion.accept(e);
         }
     };
@@ -64,7 +75,10 @@ public abstract class BaseRepository {
         OperationFunction operation
     ) {
         this.execute(operation, (e) -> {
-            throw new InternalServerError();
+            this.logger.debug(e.getMessage());
+            if(e instanceof SQLException)
+                throw new InternalServerError((SQLException) e);
+            else throw new InternalServerError();
         });
     };
 };

@@ -12,6 +12,7 @@ import Books from "@pages/Books";
 import Subscribe from "@pages/Subscribe";
 import Match from "@pages/Match";
 import MatchRoom from "@pages/MatchRoom";
+import Billing from "@pages/Billing";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ function App() {
           <Route path="/bookcase" element={<Bookcase />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/subscribe" element={<Subscribe />} />
+          <Route path="/billing" element={<Billing />} />
           <Route path="/books/:id" element={<Books />} />
           <Route path="/match" element={<Match />} />
         </Route>

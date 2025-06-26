@@ -5,6 +5,9 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.time.Duration;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import app.netbooks.backend.connections.interfaces.Database;
 import app.netbooks.backend.models.Payment;
 import app.netbooks.backend.models.PaymentStatus;
+import app.netbooks.backend.models.Product;
 import app.netbooks.backend.repositories.interfaces.PaymentsRepository;
 
 @Repository
@@ -22,17 +26,16 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
     };
 
     @Override
-    public Long create(Payment payment) {
-        return this.query((connection) -> {
-            Long id = null;
-
+    public void create(Payment payment) {
+        this.execute((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
                     INSERT INTO payment (subscription, price, pay_date, due_date, status) 
                     VALUES (?, ?, ?, ?, ?);
-                    """
+                    """,
+                    true
                 );
             ) {
                 statement.setLong(1, payment.getSubscription());
@@ -44,19 +47,16 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
 
                 try (ResultSet result = statement.getGeneratedKeys()) {
                     result.next();
-                    id = result.getLong(1);
+                    Long id = result.getLong(1);
+                    payment.setId(id);
                 };
             };
-
-            return id;
         });
     };
 
     @Override
-    public Long createFirst(Payment payment) {
-        return this.query((connection) -> {
-            Long id = null;
-
+    public void createFirst(Payment payment) {
+        this.execute((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
@@ -74,26 +74,26 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
 
                 try (ResultSet result = statement.getGeneratedKeys()) {
                     result.next();
-                    id = result.getLong(1);
+                    Long id = result.getLong(1);
+                    payment.setId(id);
                 };
             };
-
-            return id;
         });
     };
 
     @Override
-    public void cancelScheduledPaymentsBySubscriber(UUID subscriber) {
+    public void deleteInvisibleScheduledPaymentsBySubscriber(UUID subscriber) {
         this.execute((connection) -> {
            try (
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    UPDATE payment AS pay
+                    DELETE pay FROM payment AS pay
                     JOIN subscription AS sub
-                    SET pay.status = 'CANCELED'
+                    ON pay.subscription = sub.id
                     WHERE pay.status = 'SCHEDULED'
-                    AND pay.subscription = sub.id
+                    AND pay.pay_date > CURRENT_DATE
+                    AND sub.started_in > CURRENT_DATE
                     AND sub.subscriber = ?;
                     """
                 );
@@ -101,6 +101,52 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
                 statement.setString(1, subscriber.toString());
                 statement.executeUpdate();
             }; 
+        });
+    };
+
+    @Override
+    public void cancelVisibleScheduledPaymentsBySubscriber(UUID subscriber) {
+        this.execute((connection) -> {
+           try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    UPDATE payment AS pay
+                    JOIN subscription AS sub
+                    ON pay.subscription = sub.id
+                    SET pay.status = 'CANCELED'
+                    WHERE pay.status = 'SCHEDULED'
+                    AND pay.pay_date <= CURRENT_DATE
+                    AND sub.subscriber = ?;
+                    """
+                );
+            ) {
+                statement.setString(1, subscriber.toString());
+                statement.executeUpdate();
+            };
+        });
+    };
+
+    @Override
+    public void hiddenVisibleScheduledPaymentsBySubscriber(UUID subscriber) {
+        this.execute((connection) -> {
+           try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    UPDATE payment AS pay
+                    JOIN subscription AS sub
+                    ON pay.subscription = sub.id
+                    SET pay.status = 'HIDDEN'
+                    WHERE pay.status = 'SCHEDULED'
+                    AND pay.pay_date > CURRENT_DATE
+                    AND sub.subscriber = ?;
+                    """
+                );
+            ) {
+                statement.setString(1, subscriber.toString());
+                statement.executeUpdate();
+            };
         });
     };
 
@@ -207,7 +253,7 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    UPDATE payments
+                    UPDATE payment
                     SET status = 'PAID'
                     WHERE id = ?
                     """
@@ -217,5 +263,59 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
                 statement.executeUpdate();
             };
         });
+    }
+
+    @Override
+    public List<Payment> findAllBySubscriber(UUID subscriber) {
+        return this.queryOrDefault((connection) -> {
+            List<Payment> payments = new LinkedList<>();
+
+            try (
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    SELECT * FROM subscriber_payments 
+                    WHERE subscriber = ?;
+                    """
+                );
+            ) {
+                preparedStatement.setString(1, subscriber.toString());
+                
+                try (ResultSet result = preparedStatement.executeQuery()) {
+                    while(result.next()) {
+                        Long id = result.getLong("id");
+                        Long subscription = result.getLong("subscription");
+                        BigDecimal price = result.getBigDecimal("price");
+                        Date payDate = result.getDate("pay_date");
+                        Date dueDate = result.getDate("due_date");
+                        Timestamp createdAt = result.getTimestamp("created_at");
+                        PaymentStatus status = PaymentStatus.fromString(result.getString("status"));
+
+                        String productName = result.getString("name");
+                        Duration productDuration = Duration.ofDays(result.getLong("duration"));
+                        
+                        Product product = new Product(
+                            productName,
+                            productDuration
+                        );
+
+                        Payment payment = new Payment(
+                            id,
+                            subscription,
+                            price,
+                            payDate,
+                            dueDate,
+                            createdAt,
+                            status,
+                            product
+                        );
+
+                        payments.add(payment);
+                    };
+                };
+            };
+
+            return payments;
+        }, new LinkedList<>());
     };
 };

@@ -8,9 +8,11 @@ import app.netbooks.backend.models.Subscription;
 
 public interface SubscriptionsRepository {
     public Optional<Subscription> findBySubscriber(UUID subscriber);
+    public Optional<Subscription> findNextScheduledBySubscriber(UUID subscriber);
     public Optional<Subscription> findById(Long id);
-    public Long subscribe(Subscription subscription);
+    public void subscribe(Subscription subscription);
     public void closeById(Long id);
     public void closeById(Long id, Date closeDate);
     public void closeNotClosedBySubscriber(UUID subscriber);
+    public void closedScheduledsBySubscriber(UUID subscriber);;
 };

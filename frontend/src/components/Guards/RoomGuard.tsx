@@ -14,7 +14,7 @@ export default function RoomGuard({ children }: Props) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(!room) {
+    if (!room) {
       getRoom(code).catch(() => {
         navigate("/home");
       });

@@ -45,7 +45,7 @@ public class BooksBenefitsRepositoryImpl extends BaseRepository implements Books
                         v -> new ArrayList<Benefit>()
                     ).add(benefit);
                 };
-            }
+            };
 
             return benefitsMap;
         }, new LinkedHashMap<>());
@@ -75,7 +75,7 @@ public class BooksBenefitsRepositoryImpl extends BaseRepository implements Books
                         benefits.add(benefit);
                     };
                 };
-            }
+            };
 
             return benefits;
         }, new LinkedList<>());

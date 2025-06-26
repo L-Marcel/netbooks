@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.function.Supplier;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +17,8 @@ import app.netbooks.backend.errors.InternalServerError;
 
 @Component
 public class DatabaseImpl implements Database {
+    private static Logger logger = LoggerFactory.getLogger(Database.class);
+
     @Autowired
     private Connections connections;
 
@@ -47,7 +51,19 @@ public class DatabaseImpl implements Database {
                     connections.clearTransactionConnection();
                 };
 
-                throw new InternalServerError();
+                if(e instanceof InternalServerError) {
+                    InternalServerError e2 = (InternalServerError) e;
+                    if(e2.getSqlException() != null)
+                        DatabaseImpl.logger.debug(e2.getSqlException().getMessage());
+                    
+                    throw (InternalServerError) e2;
+                } else if(e instanceof HttpError) {
+                    DatabaseImpl.logger.debug(e.getMessage());
+                    throw (HttpError) e;
+                } else {
+                    DatabaseImpl.logger.debug(e.getMessage());
+                    throw new InternalServerError();
+                }
             }
         }
     };
@@ -70,7 +86,7 @@ public class DatabaseImpl implements Database {
             ) {
                 return query.apply(connection);
             } catch (SQLException e) {
-                throw new InternalServerError();
+                throw new InternalServerError(e);
             }
         }
     };
@@ -83,8 +99,10 @@ public class DatabaseImpl implements Database {
             try {
                 operation.apply(connection);
             } catch (InternalServerError e) {
-                if(e.getSqlException() instanceof SQLException)
+                if(e.getSqlException() != null) {
+                    DatabaseImpl.logger.debug(e.getSqlException().getMessage());
                     throw e.getSqlException();
+                };
             };
 
             return null;
