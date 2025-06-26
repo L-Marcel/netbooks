@@ -15,3 +15,5 @@ DELETE FROM reading WHERE true;
 DELETE FROM admin WHERE true;
 DELETE FROM subscriber WHERE true;
 DELETE FROM subscription WHERE true;
+
+SET time_zone = '-03:00';

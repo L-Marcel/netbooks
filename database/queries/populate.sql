@@ -208,3 +208,5 @@ INSERT IGNORE INTO reading (id, book, subscriber, current_page, finished, starte
   (2, 2, '09876543-2109-fedc-ba98-7654321fedcb', 20, false, CURRENT_DATE, CURRENT_DATE),
   (3, 1, '09876543-2109-fedc-ba98-7654321fedcb', 223, true, CURRENT_DATE, CURRENT_DATE);
 SELECT * FROM reading;
+
+SET time_zone = '-03:00';

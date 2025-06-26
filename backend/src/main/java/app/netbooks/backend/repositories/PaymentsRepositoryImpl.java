@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.UUID;
@@ -151,10 +150,72 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
 
             return paymentFound;
         }, Optional.empty());
-    }
+    };
+
+    @Override
+    public Optional<Payment> findLastPaidPaymentBySubscriber(UUID subscriber) {
+        return this.queryOrDefault((connection) -> {
+            Optional<Payment> paymentFound = Optional.empty();
+
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    SELECT DISTINCT pay.* FROM payment AS pay
+                    JOIN subscription AS sub
+                    ON pay.subscription = sub.id
+                    WHERE sub.subscriber = ? AND pay.status = 'PAID'
+                    ORDER BY pay.created_at DESC, pay.id DESC
+                    LIMIT 1;
+                    """
+                );
+            ) {
+                statement.setString(1, subscriber.toString());
+                try (ResultSet result = statement.executeQuery()) {
+                    if(result.next()) {
+                        Long id = result.getLong("id");
+                        Long subscription = result.getLong("subscription");
+                        BigDecimal price = result.getBigDecimal("price");
+                        Date payDate = result.getDate("pay_date");
+                        Date dueDate = result.getDate("due_date");
+                        Timestamp createdAt = result.getTimestamp("created_at");
+                        PaymentStatus status = PaymentStatus.fromString(result.getString("status"));
+
+                        Payment payment = new Payment(
+                            id,
+                            subscription,
+                            price,
+                            payDate,
+                            dueDate,
+                            createdAt,
+                            status
+                        );
+
+                        paymentFound = Optional.of(payment);
+                    };
+                };
+            };
+
+            return paymentFound;
+        }, Optional.empty());
+    };
 
     @Override
     public void payById(Long id) {
-        // [TODO]
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    UPDATE payments
+                    SET status = 'PAID'
+                    WHERE id = ?
+                    """
+                );
+            ) {
+                statement.setLong(1, id);
+                statement.executeUpdate();
+            };
+        });
     };
 };

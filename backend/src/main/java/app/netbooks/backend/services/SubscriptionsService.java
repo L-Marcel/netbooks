@@ -1,6 +1,9 @@
 package app.netbooks.backend.services;
 
+import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -8,6 +11,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import app.netbooks.backend.connections.Timezone;
 import app.netbooks.backend.connections.transactions.Transactions;
 import app.netbooks.backend.errors.PaymentNotFound;
 import app.netbooks.backend.errors.PlanEditionNotFound;
@@ -30,6 +34,9 @@ public class SubscriptionsService {
     private Transactions transactions;
 
     @Autowired
+    private Timezone timezone;
+
+    @Autowired
     private SubscriptionsRepository subscriptionsRepository;
 
     @Autowired
@@ -46,8 +53,14 @@ public class SubscriptionsService {
             .orElseThrow(SubscriptionNotFound::new);
     };
 
-    public Payment findLastPaymentBySubscriber(UUID subscriber) {
+    private Payment findLastPaymentBySubscriber(UUID subscriber) {
         return this.paymentsRepository.findLastPaymentBySubscriber(
+            subscriber
+        ).orElseThrow(PaymentNotFound::new);
+    };
+
+    private Payment findLastPaidPaymentBySubscriber(UUID subscriber) {
+        return this.paymentsRepository.findLastPaidPaymentBySubscriber(
             subscriber
         ).orElseThrow(PaymentNotFound::new);
     };
@@ -84,58 +97,82 @@ public class SubscriptionsService {
                 Integer newPlanId = newPlan.getId();
                 
                 Payment lastPayment = this.findLastPaymentBySubscriber(subscriber);
-
-                if(oldPlanId.equals(newPlanId)) {
-                    // same?
-
-                    // if(
-                    //     oldEdition.equals(newEdition) && 
-                    //     !subscriber.getSubscription().getAutomaticBilling()
-                    // ) {
-                    //     // set automatic billing to true
-                    // } else throw new SubscriptionAlreadyExists();
-                } else {
+                Boolean isSamePlan = oldPlanId.equals(newPlanId);
+                Boolean hasSubscriptionConflit = isSamePlan &&
+                    oldEditionId.equals(newEditionId);
+                
+                if(hasSubscriptionConflit) throw new SubscriptionAlreadyExists();
+                
+                Boolean isUpgrade = !isSamePlan;
+                if(isSamePlan) {
                     Map<Integer, Integer> counter = plansRepository.compareBenefitsById(oldPlanId, newPlanId);
                     Integer oldBenefits = counter.getOrDefault(oldPlanId, 0);
                     Integer newBenefits = counter.getOrDefault(newPlanId, 0);
-                    Boolean isUpgrade = oldBenefits <= newBenefits;
+                    isUpgrade = oldBenefits <= newBenefits;
+                };
 
-                    Subscription newSubscription = new Subscription(
-                        subscriber, 
-                        newEditionId
+                Subscription newSubscription = new Subscription(
+                    subscriber, 
+                    newEditionId
+                );
+
+                if(isUpgrade) {
+                    this.subscriptionsRepository.closeById(
+                        subscription.get().getId()
                     );
 
-                    if(isUpgrade) {
-                        this.subscriptionsRepository.closeById(
-                            subscription.get().getId()
-                        );
+                    this.subscriptionsRepository.subscribe(newSubscription);
 
-                        this.subscriptionsRepository.subscribe(newSubscription);
+                    Payment lastPaidPayment = this.findLastPaidPaymentBySubscriber(subscriber);
+                    
+                    Date oldEditionEndDate = Date.valueOf(lastPaidPayment.getDueDate().toLocalDate().plusDays(
+                        newPlan.getDuration().toDays()
+                    ));
 
-                        // tem que rever o preço
-                        Payment newPayment = new Payment(
-                            newSubscription.getId(), 
-                            newEdition.getPrice()
-                        );
+                    Date currentDate = Date.valueOf(
+                        LocalDate.now(
+                            this.timezone.getZoneId()
+                        )
+                    );
 
-                        this.paymentsRepository.createFirst(newPayment);
-                        this.pay(newPayment);
-                    } else {
-                        this.subscriptionsRepository.closeById(
-                            subscription.get().getId(), 
-                            lastPayment.getDueDate()
-                        );
+                    Long rest = Duration.between(
+                        oldEditionEndDate.toLocalDate(), 
+                        currentDate.toLocalDate()
+                    ).abs().toDays();
 
-                        this.subscriptionsRepository.subscribe(newSubscription);
+                    BigDecimal discount = lastPaidPayment.getPrice().multiply(
+                        BigDecimal.valueOf(
+                            Math.min(rest, 0) / 
+                            Math.min(oldPlan.getDuration().toDays(), 0)
+                        )
+                    );
 
-                        Payment newPayment = new Payment(
-                            newSubscription.getId(), 
-                            newEdition.getPrice(),
-                            lastPayment.getDueDate()
-                        );
+                    BigDecimal price = newEdition.getPrice().subtract(discount).min(
+                        BigDecimal.ZERO
+                    );
+                    
+                    Payment newPayment = new Payment(
+                        newSubscription.getId(), 
+                        price
+                    );
 
-                        this.paymentsRepository.create(newPayment);
-                    }; 
+                    this.paymentsRepository.createFirst(newPayment);
+                    this.pay(newPayment);
+                } else {
+                    this.subscriptionsRepository.closeById(
+                        subscription.get().getId(), 
+                        lastPayment.getDueDate()
+                    );
+
+                    this.subscriptionsRepository.subscribe(newSubscription);
+
+                    Payment newPayment = new Payment(
+                        newSubscription.getId(), 
+                        newEdition.getPrice(),
+                        lastPayment.getDueDate()
+                    );
+
+                    this.paymentsRepository.create(newPayment);
                 };
             } else {
                 Subscription newSubscription = new Subscription(
