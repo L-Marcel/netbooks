@@ -16,6 +16,7 @@ import app.netbooks.backend.annotations.AuhenticatedOnly;
 import app.netbooks.backend.annotations.SubscriberOnly;
 import app.netbooks.backend.authentication.AuthenticatedUser;
 import app.netbooks.backend.dtos.response.PaymentResponse;
+import app.netbooks.backend.dtos.response.RenewDetailsResponse;
 import app.netbooks.backend.dtos.response.SubscriptionResponse;
 import app.netbooks.backend.models.Payment;
 import app.netbooks.backend.models.PlanEdition;
@@ -49,6 +50,7 @@ public class SubscriptionsController {
             subscription, 
             edition
         );
+
         return ResponseEntity.ok().body(response);
     };
 
@@ -69,6 +71,19 @@ public class SubscriptionsController {
             subscription, 
             edition
         );
+        return ResponseEntity.ok().body(response);
+    };
+
+    @AuhenticatedOnly
+    @GetMapping("/me/renew/details")
+    public ResponseEntity<RenewDetailsResponse> findRenewDetails(
+        @AuthenticationPrincipal AuthenticatedUser user
+    ) {
+        Payment lastPayment = subscriptionsService.findLastPaymentBySubscriber(
+            user.getUser().getUuid()
+        );
+
+        RenewDetailsResponse response = new RenewDetailsResponse(lastPayment);
         return ResponseEntity.ok().body(response);
     };
 

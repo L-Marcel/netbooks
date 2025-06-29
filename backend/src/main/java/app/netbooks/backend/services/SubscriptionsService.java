@@ -65,7 +65,7 @@ public class SubscriptionsService {
             .orElseThrow(SubscriptionNotFound::new);
     };
 
-    private Payment findLastPaymentBySubscriber(UUID subscriber) {
+    public Payment findLastPaymentBySubscriber(UUID subscriber) {
         return this.paymentsRepository.findLastBySubscriber(
             subscriber
         ).orElseThrow(PaymentNotFound::new);
@@ -317,7 +317,16 @@ public class SubscriptionsService {
     public void payLastPaymentBySubscriber(UUID subscriber) {
         this.transactions.run(() -> {
             Payment lastPayment = this.findLastPaymentBySubscriber(subscriber);
-            this.pay(subscriber, lastPayment);
+            Date currentDate = this.server.getServerCurrentDate();
+            Boolean isAfterPayDate = currentDate.compareTo(lastPayment.getPayDate()) >= 0;
+            Boolean isBeforeDueDate = currentDate.compareTo(lastPayment.getDueDate()) <= 0;
+            
+            if(
+                isAfterPayDate && 
+                isBeforeDueDate
+            ) {
+                this.pay(subscriber, lastPayment);
+            } else throw new PaymentNotFound();
         });
     };
     

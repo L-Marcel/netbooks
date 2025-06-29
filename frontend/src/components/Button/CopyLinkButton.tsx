@@ -8,16 +8,14 @@ type CopyLinkButtonProps = {
 function CopyLinkButton({ code }: CopyLinkButtonProps) {
   const [copied, setCopied] = useState(false);
 
-  const copyLink = () => {
-    navigator.clipboard.writeText(code).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
+  const copyLink = () => navigator.clipboard.writeText(code).then(() => {
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  });
 
   return (
     <div className="absolute right-5 top-5">
-      <button onClick={copyLink} className="btn btn-block">
+      <button type="button" onClick={copyLink} className="btn btn-block">
         <FaLink />
       </button>
 

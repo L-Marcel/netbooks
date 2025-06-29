@@ -36,19 +36,17 @@ export default function BookCarousel({ tag, books }: Props) {
     return () => window.removeEventListener("resize", updateWidth);
   }, [carousel]);
 
-  const onToNext = () => {
+  const onToNext = () =>
     carousel.current?.scrollBy({
       left: (ITEM_WIDTH + gap) * (visibleCount - 1),
       behavior: "smooth",
     });
-  };
 
-  const onToPrevious = () => {
+  const onToPrevious = () =>
     carousel.current?.scrollBy({
       left: (ITEM_WIDTH + gap) * -(visibleCount - 1),
       behavior: "smooth",
     });
-  };
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "ArrowLeft") onToPrevious();

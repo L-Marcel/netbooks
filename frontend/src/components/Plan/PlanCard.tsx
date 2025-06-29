@@ -11,11 +11,12 @@ import { format } from "date-fns";
 import Decimal from "decimal.js";
 import { Subscription } from "@models/subscription";
 import { PlanEdition } from "@models/plan_edition";
+import Loading from "@components/Loading";
+import { LoadingContext } from "../../hooks/useLoading";
 
 interface Props {
   plan: Plan;
-  isLoading: boolean;
-  disabled: boolean;
+  loading: LoadingContext;
   subscription?: Subscription;
   nextSubscription?: Subscription;
   mostPopular?: boolean;
@@ -30,8 +31,7 @@ export default function PlanCard({
   nextSubscription,
   mostPopular,
   mostEconomic,
-  isLoading,
-  disabled,
+  loading,
   onSubscribe,
   onCancelNextSubscriptions,
 }: Props) {
@@ -135,12 +135,13 @@ export default function PlanCard({
               onClick={onCancelNextSubscriptions}
               type="button"
               className="btn btn-error btn-block"
-              disabled={isUserPlan || disabled || isLoading}
+              disabled={isUserPlan || loading.hasAny}
             >
-              {isLoading && !disabled && (
-                <span className="loading loading-spinner" />
-              )}
-              {isLoading ? "Interrompendo mudança..." : "Interromper Mudança"}
+              <Loading
+                isLoading={loading.has(plan.id)}
+                loadingMessage="Interrompendo mudança..."
+                defaultMessage="Interromper Mudança"
+              />
             </button>
           ) : (
             <button
@@ -149,16 +150,17 @@ export default function PlanCard({
               }
               type="button"
               className="btn btn-primary btn-block"
-              disabled={isUserPlan || disabled || isLoading}
+              disabled={isUserPlan || loading.hasAny}
             >
-              {isLoading && !disabled && (
-                <span className="loading loading-spinner" />
+              {isUserPlan ? (
+                "Inscrito"
+              ) : (
+                <Loading
+                  isLoading={loading.has(plan.id)}
+                  loadingMessage="Inscrevendo-se..."
+                  defaultMessage="Inscreve-se"
+                />
               )}
-              {isUserPlan
-                ? "Inscrito"
-                : isLoading
-                  ? "Inscrevendo-se..."
-                  : "Inscreve-se"}
             </button>
           )}
           {isUserPlan && subscription?.closedIn && (

@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { login, UserLoginData } from "../../services/user";
 import { FaEnvelope, FaKey } from "react-icons/fa";
 import AuthGuard from "@components/Guards/AuthGuard";
+import useLoading from "../../hooks/useLoading";
+import Loading from "@components/Loading";
 
 export default function Login() {
   return (
@@ -15,7 +17,7 @@ export default function Login() {
 
 function Page() {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const loading = useLoading();
   const [data, setData] = useState<UserLoginData>({
     email: "",
     password: "",
@@ -30,14 +32,10 @@ function Page() {
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
+    loading.start("login");
     login(data)
-      .then(() => {
-        navigate("/");
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      .then(() => navigate("/"))
+      .finally(() => loading.stop("login"));
   };
 
   return (
@@ -69,10 +67,13 @@ function Page() {
           <button
             className="btn btn-primary"
             type="submit"
-            disabled={isLoading}
+            disabled={loading.hasAny}
           >
-            {isLoading && <span className="loading loading-spinner" />}
-            {isLoading ? "Entrando..." : "Entrar"}
+            <Loading
+              isLoading={loading.has("login")}
+              loadingMessage="Entrando..."
+              defaultMessage="Entrar"
+            />
           </button>
         </form>
         <footer className="text-center">

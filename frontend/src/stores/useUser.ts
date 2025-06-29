@@ -20,12 +20,8 @@ const useUser = create<UserStore>()(
         set({ token });
         if (token) {
           fetchUser(token)
-            .then((user) => {
-              set({ user });
-            })
-            .finally(() => {
-              set({ fetched: true });
-            });
+            .then((user) => set({ user }))
+            .finally(() => set({ fetched: true }));
         } else set({ fetched: true });
       },
       setUser: (user?: User) => set({ user }),
@@ -39,13 +35,9 @@ const useUser = create<UserStore>()(
         return (state?: UserStore, error?: unknown) => {
           if (state?.token && !error) {
             fetchUser(state.token)
-              .then((user) => {
-                state?.setUser(user);
-              })
-              .finally(() => {
-                state?.setFetched(true);
-              });
-          }
+              .then((user) =>  state?.setUser(user))
+              .finally(() => state?.setFetched(true));
+          } else state?.setFetched(true);
         };
       },
     }
