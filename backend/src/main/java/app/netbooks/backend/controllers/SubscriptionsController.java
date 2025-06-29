@@ -78,8 +78,7 @@ public class SubscriptionsController {
         @AuthenticationPrincipal AuthenticatedUser user
     ) {
         subscriptionsService.closedScheduledsBySubscriber(
-            user.getUser().getUuid(),
-            user.getUser().getAutomaticBilling()
+            user.getUser().getUuid()
         );
 
         return ResponseEntity.ok().build();
@@ -99,6 +98,18 @@ public class SubscriptionsController {
     };
 
     @AuhenticatedOnly
+    @PostMapping("/me/payments/pay")
+    public ResponseEntity<List<PaymentResponse>> payLastPaymentBySubscriber(
+        @AuthenticationPrincipal AuthenticatedUser user
+    ) {
+        subscriptionsService.payLastPaymentBySubscriber(
+            user.getUser().getUuid()
+        );
+
+        return ResponseEntity.ok().build();
+    };
+
+    @AuhenticatedOnly
     @PostMapping("/subscribe/{id}")
     public ResponseEntity<Void> subscribe(
         @AuthenticationPrincipal AuthenticatedUser user,
@@ -108,7 +119,6 @@ public class SubscriptionsController {
 
         subscriptionsService.subscribe(
             user.getUser().getUuid(),
-            user.getUser().getAutomaticBilling(),
             edition
         );
 

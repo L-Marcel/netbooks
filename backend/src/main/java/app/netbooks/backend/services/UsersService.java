@@ -152,8 +152,4 @@ public class UsersService {
             };
         });
     };
-
-    public void switchAutomaticBillingById(UUID uuid) {
-        this.repository.switchAutomaticBillingById(uuid);
-    };
 };

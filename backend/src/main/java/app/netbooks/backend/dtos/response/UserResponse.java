@@ -23,6 +23,7 @@ public class UserResponse {
     private UUID uuid;
     private String name;
     private String email;
+    private Boolean automaticBilling;
     private List<Role> roles;
 
     public UserResponse(AuthenticatedUser user) {
@@ -34,6 +35,7 @@ public class UserResponse {
         this.name = user.getName();
         this.email = user.getEmail();
         this.roles = roles;
+        this.automaticBilling = user.getAutomaticBilling();
     };
 
     public static List<UserResponse> fromList(

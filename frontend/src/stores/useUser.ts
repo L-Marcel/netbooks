@@ -6,22 +6,30 @@ import { User } from "../models/user";
 export type UserStore = {
   token?: string;
   user?: User;
+  fetched: boolean;
   setToken: (token?: string) => void;
   setUser: (user?: User) => void;
+  setFetched: (fetched: boolean) => void;
 };
 
 const useUser = create<UserStore>()(
   persist(
     (set) => ({
+      fetched: false,
       setToken: (token?: string) => {
         set({ token });
         if (token) {
-          fetchUser(token).then((user) => {
-            set({ user });
-          });
-        }
+          fetchUser(token)
+            .then((user) => {
+              set({ user });
+            })
+            .finally(() => {
+              set({ fetched: true });
+            });
+        } else set({ fetched: true });
       },
       setUser: (user?: User) => set({ user }),
+      setFetched: (fetched: boolean) => set({ fetched }),
     }),
     {
       name: "netbooks@auth",
@@ -30,9 +38,13 @@ const useUser = create<UserStore>()(
       onRehydrateStorage: () => {
         return (state?: UserStore, error?: unknown) => {
           if (state?.token && !error) {
-            fetchUser(state.token).then((user) => {
-              state?.setUser(user);
-            });
+            fetchUser(state.token)
+              .then((user) => {
+                state?.setUser(user);
+              })
+              .finally(() => {
+                state?.setFetched(true);
+              });
           }
         };
       },

@@ -18,14 +18,18 @@ import app.netbooks.backend.errors.PlanEditionNotFound;
 import app.netbooks.backend.errors.PlanNotFound;
 import app.netbooks.backend.errors.SubscriptionAlreadyExists;
 import app.netbooks.backend.errors.SubscriptionNotFound;
+import app.netbooks.backend.errors.UserNotFound;
 import app.netbooks.backend.models.Payment;
+import app.netbooks.backend.models.PaymentStatus;
 import app.netbooks.backend.models.Plan;
 import app.netbooks.backend.models.PlanEdition;
 import app.netbooks.backend.models.Subscription;
+import app.netbooks.backend.models.User;
 import app.netbooks.backend.repositories.interfaces.PaymentsRepository;
 import app.netbooks.backend.repositories.interfaces.PlansEditionsRepository;
 import app.netbooks.backend.repositories.interfaces.PlansRepository;
 import app.netbooks.backend.repositories.interfaces.SubscriptionsRepository;
+import app.netbooks.backend.repositories.interfaces.UsersRepository;
 import app.netbooks.backend.utils.Server;
 
 @Service
@@ -46,6 +50,9 @@ public class SubscriptionsService {
     private PlansEditionsRepository plansEditionsRepository;
 
     @Autowired
+    private UsersRepository usersRepository;
+
+    @Autowired
     private PaymentsRepository paymentsRepository;
 
     public Subscription findBySubscriber(UUID subscriber) throws SubscriptionNotFound {
@@ -59,13 +66,13 @@ public class SubscriptionsService {
     };
 
     private Payment findLastPaymentBySubscriber(UUID subscriber) {
-        return this.paymentsRepository.findLastPaymentBySubscriber(
+        return this.paymentsRepository.findLastBySubscriber(
             subscriber
         ).orElseThrow(PaymentNotFound::new);
     };
 
     private Payment findLastPaidPaymentBySubscriber(UUID subscriber) {
-        return this.paymentsRepository.findLastPaidPaymentBySubscriber(
+        return this.paymentsRepository.findLastPaidBySubscriber(
             subscriber
         ).orElseThrow(PaymentNotFound::new);
     };
@@ -74,35 +81,27 @@ public class SubscriptionsService {
         return this.subscriptionsRepository.findBySubscriber(subscriber);
     };
 
-    public void closedScheduledsBySubscriber(UUID subscriber, Boolean automaticBilling) {
+    public void closedScheduledsBySubscriber(UUID subscriber) {
         this.transactions.run(() -> {
             this.subscriptionsRepository.closedScheduledsBySubscriber(subscriber);
             this.subscriptionsRepository.closeNotClosedBySubscriber(subscriber);
-            this.paymentsRepository.deleteInvisibleScheduledPaymentsBySubscriber(subscriber);
-            this.paymentsRepository.cancelVisibleScheduledPaymentsBySubscriber(subscriber);
-            this.paymentsRepository.hiddenVisibleScheduledPaymentsBySubscriber(subscriber);
+            this.paymentsRepository.deleteInvisibleScheduledBySubscriber(subscriber);
+            this.paymentsRepository.cancelVisibleScheduledBySubscriber(subscriber);
+            this.paymentsRepository.hiddenVisibleScheduledBySubscriber(subscriber);
             Optional<Subscription> subscription = this.searchBySubscriber(subscriber);
             if(subscription.isPresent()) {
-                PlanEdition oldPlanEdition = this.plansEditionsRepository.findById(
-                    subscription.get().getEdition()
-                ).orElseThrow(PlanEditionNotFound::new);
+                User user = this.usersRepository.findById(subscriber)
+                    .orElseThrow(UserNotFound::new);
 
-                Payment lastPayment = this.findLastPaymentBySubscriber(subscriber);
-
-                Payment newPayment = new Payment(
-                    subscription.get().getId(), 
-                    oldPlanEdition.getPrice(),
-                    lastPayment.getDueDate()
-                );
-
-                this.paymentsRepository.create(newPayment);
+                if(user.getAutomaticBilling()) {
+                    this.paymentsRepository.showInvisibleScheduledBySubscriber(subscriber);
+                };
             };
         });
     };
 
     public void subscribe(
         UUID subscriber,
-        Boolean automaticBilling,
         PlanEdition newEdition
     ) throws SubscriptionAlreadyExists {
         transactions.run(() -> {
@@ -114,10 +113,10 @@ public class SubscriptionsService {
             
             this.subscriptionsRepository.closedScheduledsBySubscriber(subscriber);
             this.subscriptionsRepository.closeNotClosedBySubscriber(subscriber);
-            this.paymentsRepository.deleteInvisibleScheduledPaymentsBySubscriber(subscriber);
-            this.paymentsRepository.cancelVisibleScheduledPaymentsBySubscriber(subscriber);
-            this.paymentsRepository.hiddenVisibleScheduledPaymentsBySubscriber(subscriber);
-
+            this.paymentsRepository.deleteInvisibleScheduledBySubscriber(subscriber);
+            this.paymentsRepository.cancelVisibleScheduledBySubscriber(subscriber);
+            this.paymentsRepository.hiddenVisibleScheduledBySubscriber(subscriber);
+            
             Integer newEditionId = newEdition.getId();
 
             if(subscription.isPresent()) {
@@ -175,8 +174,8 @@ public class SubscriptionsService {
 
                     BigDecimal discount = lastPaidPayment.getPrice().multiply(
                         BigDecimal.valueOf(
-                            Math.min(rest, 0) / 
-                            Math.min(oldPlan.getDuration().toDays(), 1)
+                            Math.max(rest, 0) / 
+                            Math.max(oldPlan.getDuration().toDays(), 1)
                         )
                     );
 
@@ -189,8 +188,20 @@ public class SubscriptionsService {
                         price
                     );
 
+                    if(
+                        lastPayment.getStatus().equals(PaymentStatus.HIDDEN)
+                        || (
+                            lastPayment.getStatus().equals(PaymentStatus.SCHEDULED) &&
+                            lastPaidPayment.getPayDate().before(currentDate)
+                        )
+                    ) {
+                        this.paymentsRepository.deleteById(lastPayment.getId());
+                    } else if(lastPayment.getStatus().equals(PaymentStatus.SCHEDULED)) {
+                        this.paymentsRepository.cancelById(lastPayment.getId());
+                    };
+
                     this.paymentsRepository.createFirst(newPayment);
-                    this.pay(subscriber, newPayment, automaticBilling);
+                    this.pay(subscriber, newPayment);
                 } else {
                     Subscription newSubscription = new Subscription(
                         subscriber, 
@@ -213,6 +224,15 @@ public class SubscriptionsService {
                         lastPayment.getDueDate()
                     );
 
+                    if(isSamePlan) {
+                        User user = this.usersRepository.findById(subscriber)
+                            .orElseThrow(UserNotFound::new);
+                        
+                        if(user.getAutomaticBilling()) {
+                            newPayment.setStatus(PaymentStatus.HIDDEN);
+                        };
+                    };
+
                     this.paymentsRepository.create(newPayment);
                 };
             } else {
@@ -232,13 +252,16 @@ public class SubscriptionsService {
                 );
                 
                 this.paymentsRepository.createFirst(newPayment);
-                this.pay(subscriber, newPayment, automaticBilling);
+                this.pay(subscriber, newPayment);
             };
         });
     };
 
-    public void renew(UUID subscriber, Boolean automaticBilling) {
+    public void renew(UUID subscriber) {
         this.transactions.run(() -> {
+            User user = this.usersRepository.findById(subscriber)
+                .orElseThrow(UserNotFound::new);
+
             Payment lastPayment = this.findLastPaymentBySubscriber(subscriber);
 
             Subscription subscription = this.subscriptionsRepository.findById(
@@ -253,7 +276,7 @@ public class SubscriptionsService {
                 edition.getPlan()
             ).orElseThrow(PlanNotFound::new);
 
-            if(edition.getAvailable() && automaticBilling) {
+            if(edition.getAvailable()) {
                 Payment newPayment = new Payment(
                     subscription.getId(), 
                     edition.getPrice(),
@@ -262,8 +285,11 @@ public class SubscriptionsService {
                     ))
                 );
 
+                if(!user.getAutomaticBilling()) 
+                    newPayment.setStatus(PaymentStatus.HIDDEN);
+
                 this.paymentsRepository.create(newPayment);
-            } else if(plan.getAvailable() && automaticBilling) {
+            } else if(plan.getAvailable()) {
                 Optional<PlanEdition> newEdition = this.plansEditionsRepository.findBestByPlan(
                     plan.getId()
                 );
@@ -271,7 +297,6 @@ public class SubscriptionsService {
                 if(newEdition.isPresent()) {
                     this.subscribe(
                         subscription.getSubscriber(),
-                        automaticBilling,
                         newEdition.get()
                     );
                 };
@@ -279,22 +304,36 @@ public class SubscriptionsService {
         });
     };
 
-    private void pay(UUID subscriber, Payment payment, Boolean automaticBilling) {
-        // [TODO] Falta o ignorado paid_at
+    private void pay(UUID subscriber, Payment payment) {
         this.transactions.run(() -> {
             this.paymentsRepository.payById(payment.getId());
-            this.renew(subscriber, automaticBilling);
+            this.renew(subscriber);
         });
     };
 
-    public void payLastPaymentBySubscriber(UUID subscriber, Boolean automaticBilling) {
+    public void payLastPaymentBySubscriber(UUID subscriber) {
         this.transactions.run(() -> {
             Payment lastPayment = this.findLastPaymentBySubscriber(subscriber);
-            this.pay(subscriber, lastPayment, automaticBilling);
+            this.pay(subscriber, lastPayment);
         });
     };
     
     public List<Payment> findAllPaymentsBySubscriber(UUID subscriber) {
         return this.paymentsRepository.findAllBySubscriber(subscriber);
+    };
+
+    public void switchAutomaticBillingBySubscriber(UUID subscriber) {
+        this.transactions.run(() -> {
+            User user = this.usersRepository.findById(subscriber)
+                .orElseThrow(UserNotFound::new);
+            
+            this.usersRepository.switchAutomaticBillingById(subscriber);
+            
+            if(user.getAutomaticBilling()) {
+                this.paymentsRepository.hiddenVisibleScheduledBySubscriber(subscriber);
+            } else {
+                this.paymentsRepository.showInvisibleScheduledBySubscriber(subscriber);
+            };
+        });
     };
 };

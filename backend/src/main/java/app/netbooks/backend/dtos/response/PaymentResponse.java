@@ -24,6 +24,7 @@ public class PaymentResponse {
     private Date payDate;
     private Date dueDate;
     private Timestamp createdAt;
+    private Timestamp paidAt;
     private PaymentStatus status;
 
     private ProductResponse product;
@@ -35,6 +36,7 @@ public class PaymentResponse {
         this.payDate = payment.getPayDate();
         this.dueDate = payment.getDueDate();
         this.createdAt = payment.getCreatedAt();
+        this.paidAt = payment.getPaidAt();
         this.status = payment.getStatus();
         this.product = new ProductResponse(payment.getProduct());
     };

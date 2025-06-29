@@ -209,7 +209,7 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    UPDATE FROM subscriber
+                    UPDATE subscriber
                     SET automatic_billing = NOT automatic_billing
                     WHERE uuid = ?;
                     """

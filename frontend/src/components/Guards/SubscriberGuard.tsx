@@ -8,11 +8,12 @@ interface Props {
 
 export default function SubscriberGuard({ children }: Props) {
   const user = useUser((state) => state.user);
+  const fetched = useUser((state) => state.fetched);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user || !user?.isSubscriber()) navigate("/subscribe");
-  }, [user, navigate]);
+    if (fetched && !(user && user?.isSubscriber())) navigate("/subscribe");
+  }, [user, fetched, navigate]);
 
   return user && user.isSubscriber() ? children : null;
 }
