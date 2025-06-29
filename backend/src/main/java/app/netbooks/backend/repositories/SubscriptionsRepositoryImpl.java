@@ -213,6 +213,25 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
     };
 
     @Override
+    public void reopenById(Long id) {
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    UPDATE subscription
+                    SET closed_in = NULL
+                    WHERE id = ?;
+                    """
+                );
+            ) {
+                statement.setLong(1, id);
+                statement.executeUpdate();
+            };
+        });
+    };
+
+    @Override
     public void closeById(Long id, Date closeDate) {
         this.execute((connection) -> {
             try (
@@ -252,14 +271,13 @@ public class SubscriptionsRepositoryImpl extends BaseRepository implements Subsc
     };
 
     @Override
-    public void closedScheduledsBySubscriber(UUID subscriber) {
+    public void deleteScheduledsBySubscriber(UUID subscriber) {
         this.execute((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    UPDATE subscription  
-                    SET closed_in = CURRENT_DATE
+                    DELETE FROM subscription  
                     WHERE subscriber = ?
                     AND started_in > CURRENT_DATE
                     AND closed_in IS NULL;

@@ -11,8 +11,9 @@ public interface SubscriptionsRepository {
     public Optional<Subscription> findNextScheduledBySubscriber(UUID subscriber);
     public Optional<Subscription> findById(Long id);
     public void subscribe(Subscription subscription);
+    public void reopenById(Long id);
     public void closeById(Long id);
     public void closeById(Long id, Date closeDate);
     public void closeNotClosedBySubscriber(UUID subscriber);
-    public void closedScheduledsBySubscriber(UUID subscriber);;
+    public void deleteScheduledsBySubscriber(UUID subscriber);;
 };

@@ -83,7 +83,7 @@ public class SubscriptionsService {
 
     public void closedScheduledsBySubscriber(UUID subscriber) {
         this.transactions.run(() -> {
-            this.subscriptionsRepository.closedScheduledsBySubscriber(subscriber);
+            this.subscriptionsRepository.deleteScheduledsBySubscriber(subscriber);
             this.subscriptionsRepository.closeNotClosedBySubscriber(subscriber);
             this.paymentsRepository.deleteInvisibleScheduledBySubscriber(subscriber);
             this.paymentsRepository.cancelVisibleScheduledBySubscriber(subscriber);
@@ -92,6 +92,12 @@ public class SubscriptionsService {
             if(subscription.isPresent()) {
                 User user = this.usersRepository.findById(subscriber)
                     .orElseThrow(UserNotFound::new);
+                
+                if(subscription.get().getClosedIn() != null) {
+                    this.subscriptionsRepository.reopenById(
+                        subscription.get().getId()
+                    );
+                };
 
                 if(user.getAutomaticBilling()) {
                     this.paymentsRepository.showInvisibleScheduledBySubscriber(subscriber);
@@ -111,11 +117,7 @@ public class SubscriptionsService {
             Plan newPlan = plansRepository.findById(newEdition.getPlan())
                 .orElseThrow(PlanNotFound::new);
             
-            this.subscriptionsRepository.closedScheduledsBySubscriber(subscriber);
-            this.subscriptionsRepository.closeNotClosedBySubscriber(subscriber);
-            this.paymentsRepository.deleteInvisibleScheduledBySubscriber(subscriber);
-            this.paymentsRepository.cancelVisibleScheduledBySubscriber(subscriber);
-            this.paymentsRepository.hiddenVisibleScheduledBySubscriber(subscriber);
+            this.closedScheduledsBySubscriber(subscriber);
             
             Integer newEditionId = newEdition.getId();
 
@@ -154,7 +156,8 @@ public class SubscriptionsService {
                     );
 
                     this.subscriptionsRepository.closeById(
-                        subscription.get().getId()
+                        subscription.get().getId(),
+                        currentDate
                     );
 
                     this.subscriptionsRepository.subscribe(
