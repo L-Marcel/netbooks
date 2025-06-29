@@ -6,6 +6,8 @@ import ImageInput from "@components/Input/FileInput";
 import { FaEnvelope, FaKey, FaUpload, FaUser } from "react-icons/fa";
 import { ApiError, ValidationError } from "../../services/axios";
 import AuthGuard from "@components/Guards/AuthGuard";
+import Loading from "@components/Loading";
+import useLoading from "../../hooks/useLoading";
 
 export default function Register() {
   return (
@@ -17,7 +19,7 @@ export default function Register() {
 
 function Page() {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const loading = useLoading();
   const [validations, setValidations] = useState<ValidationError>({});
 
   const [data, setData] = useState<UserRegisterData>({
@@ -27,19 +29,15 @@ function Page() {
     passwordConfirmation: "",
   });
 
-  const onChangeData = (e: ChangeEvent<HTMLInputElement>) => {
-    setData((data) => ({
-      ...data,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  const onChangeData = (e: ChangeEvent<HTMLInputElement>) => setData((data) => ({
+    ...data,
+    [e.target.name]: e.target.value,
+  }));
 
-  const onClearAvatar = () => {
-    setData((data) => ({
-      ...data,
-      avatar: undefined,
-    }));
-  };
+  const onClearAvatar = () => setData((data) => ({
+    ...data,
+    avatar: undefined,
+  }));;
 
   const onLoadAvatar = (base64: string, blob: Blob, filename?: string) => {
     const url = URL.createObjectURL(blob);
@@ -55,7 +53,7 @@ function Page() {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    loading.start("register");
     registerUser(data)
       .then(() => {
         navigate("/login");
@@ -70,7 +68,7 @@ function Page() {
         }
       })
       .finally(() => {
-        setIsLoading(false);
+        loading.stop("register");
       });
   };
 
@@ -158,10 +156,13 @@ function Page() {
           <button
             className="btn btn-primary"
             type="submit"
-            disabled={isLoading}
+            disabled={loading.hasAny}
           >
-            {isLoading && <span className="loading loading-spinner" />}
-            {isLoading ? "Criando..." : "Criar"}
+            <Loading
+              isLoading={loading.has("register")}
+              loadingMessage="Registrando..."
+              defaultMessage="Registrar"
+            />
           </button>
         </form>
         <footer className="text-center">

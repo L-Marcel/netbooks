@@ -10,7 +10,7 @@ export default function ExitRoomButton() {
   };
 
   return (
-    <button className="btn btn-error absolute left-5 top-5" onClick={onExit}>
+    <button type="button" className="btn btn-error absolute left-5 top-5" onClick={onExit}>
       Sair
     </button>
   );

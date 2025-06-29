@@ -73,13 +73,6 @@ export class Plan {
   }
 
   public getDurationText(): string {
-    console.log(
-      formatDuration(this.duration, {
-        format: ["years", "months", "days"],
-        zero: false,
-        locale: ptBR,
-      })
-    );
     return formatDuration(this.duration, {
       format: ["years", "months", "days"],
       zero: false,

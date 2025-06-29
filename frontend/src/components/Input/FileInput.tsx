@@ -55,9 +55,7 @@ export default function ImageInput({
     height: 0,
   });
 
-  const onResetZoom = () => {
-    setZoom(1);
-  };
+  const onResetZoom = () => setZoom(1);
 
   const onChangeZoom = (e: ChangeEvent<HTMLInputElement>) => {
     setZoom(Number.parseFloat(e.currentTarget.value));
@@ -68,9 +66,7 @@ export default function ImageInput({
     areaRef.current?.showModal();
   };
 
-  const onClickToUpload = () => {
-    inputRef.current?.click();
-  };
+  const onClickToUpload = () => inputRef.current?.click();
 
   const onClickToClear = () => {
     onCancel();

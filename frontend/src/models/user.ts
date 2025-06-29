@@ -11,6 +11,7 @@ export interface UserData {
   name: string;
   email: string;
   roles: Role[];
+  automaticBilling: boolean;
 }
 
 export class User {
@@ -19,6 +20,7 @@ export class User {
   readonly email: string;
   readonly roles: Role[];
   readonly avatar: string;
+  readonly automaticBilling: boolean;
 
   constructor(data: UserData) {
     this.uuid = data.uuid;
@@ -26,6 +28,7 @@ export class User {
     this.email = data.email;
     this.roles = data.roles;
     this.avatar = `http://localhost:8080/users/${this.uuid}.webp`;
+    this.automaticBilling = data.automaticBilling;
   }
 
   isSubscriber(): boolean {

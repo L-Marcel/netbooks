@@ -4,6 +4,7 @@ public enum PaymentStatus {
     SCHEDULED,
     PAID,
     CANCELED,
+    HIDDEN,
     UNKNOWN;
 
     public static PaymentStatus fromString(String status) {

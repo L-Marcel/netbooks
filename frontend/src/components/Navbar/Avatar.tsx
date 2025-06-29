@@ -13,9 +13,7 @@ export default function Avatar() {
   const [imageError, setImageError] = useState(false);
   const user = useUser((state) => state.user);
 
-  const onImageError = () => {
-    setImageError(true);
-  };
+  const onImageError = () => setImageError(true);
 
   return (
     <div className="dropdown dropdown-end">

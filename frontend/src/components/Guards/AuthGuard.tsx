@@ -12,13 +12,14 @@ export default function AuthGuard({
   onlyUnauthenticated = false,
 }: Props) {
   const user = useUser((state) => state.user);
+  const fetched = useUser((state) => state.fetched);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!!user === onlyUnauthenticated) {
+    if (!!user === onlyUnauthenticated && fetched) {
       navigate(onlyUnauthenticated ? "/home" : "/login");
     }
-  }, [user, onlyUnauthenticated, navigate]);
+  }, [user, onlyUnauthenticated, navigate, fetched]);
 
-  return !!user !== onlyUnauthenticated ? children : null;
+  return !!user !== onlyUnauthenticated && fetched ? children : null;
 }

@@ -8,8 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-// [TODO] Falta colocar o status de vencido
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -20,6 +18,7 @@ public class Payment {
     private Date payDate;
     private Date dueDate;
     private Timestamp createdAt;
+    private Timestamp paidAt;
     private PaymentStatus status;
 
     private Product product;
@@ -31,6 +30,7 @@ public class Payment {
         Date payDate,
         Date dueDate,
         Timestamp createdAt,
+        Timestamp paidAt,
         PaymentStatus status
     ) {
         this(subscription, price, dueDate);

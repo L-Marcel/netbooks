@@ -1,6 +1,19 @@
-import { addDays, Duration, intervalToDuration } from "date-fns";
+import {
+  addDays,
+  Duration,
+  formatDuration,
+  intervalToDuration,
+  isAfter,
+} from "date-fns";
 import Decimal from "decimal.js";
-import { PaymentStatus } from "./payment_status";
+import { fromZonedTime } from "date-fns-tz";
+import { ptBR } from "date-fns/locale";
+
+export enum PaymentStatus {
+  SCHEDULED = "SCHEDULED",
+  PAID = "PAID",
+  CANCELED = "CANCELED",
+}
 
 export type ProductData = {
   name: string;
@@ -18,6 +31,14 @@ export class Product {
       end: addDays(new Date(), data.duration),
     });
   }
+
+  public getDurationText(): string {
+    return formatDuration(this.duration, {
+      format: ["years", "months", "days"],
+      zero: false,
+      locale: ptBR,
+    });
+  }
 }
 
 export type PaymentData = {
@@ -27,6 +48,7 @@ export type PaymentData = {
   dueDate: Date;
   payDate: Date;
   createdAt: Date;
+  paidAt: Date;
   status: PaymentStatus;
   product: ProductData;
 };
@@ -38,6 +60,7 @@ export class Payment {
   readonly dueDate: Date;
   readonly payDate: Date;
   readonly createdAt: Date;
+  readonly paidAt: Date;
   readonly status: PaymentStatus;
   readonly product: Product;
 
@@ -48,7 +71,17 @@ export class Payment {
     this.dueDate = new Date(data.dueDate);
     this.payDate = new Date(data.payDate);
     this.createdAt = new Date(data.createdAt);
+    this.paidAt = new Date(data.paidAt);
     this.status = data.status;
     this.product = new Product(data.product);
+  }
+
+  public isOverdue(): boolean {
+    return (
+      isAfter(
+        fromZonedTime(new Date().setHours(0, 0, 0, 0), "-03:00"),
+        this.dueDate
+      ) && this.status !== PaymentStatus.PAID
+    );
   }
 }

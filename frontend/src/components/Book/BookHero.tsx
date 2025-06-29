@@ -8,9 +8,7 @@ interface Props {
 
 export default function BookHero({ book }: Props) {
   const navigate = useNavigate();
-  const onReadRequested = () => {
-    navigate("/books/" + book?.id);
-  };
+  const onReadRequested = () => navigate("/books/" + book?.id);
 
   return (
     <div className="hero justify-start max-h-screen min-h-96 relative bg-gradient-to-br from-base-100 via-base-200 to-base-300">

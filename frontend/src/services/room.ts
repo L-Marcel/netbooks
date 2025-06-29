@@ -1,13 +1,12 @@
 import useRoom, { Participant, Room } from "@stores/useRoom";
 import api from "./axios";
 import { connect, disconnect } from "./socket";
-import { User } from "@models/user";
 import useUser from "@stores/useUser";
 
 export async function join(
   userName: string,
   code?: string,
-  isOwner?: Boolean
+  isOwner?: boolean
 ): Promise<void> {
   const { setParticipant } = useRoom.getState();
 
@@ -24,9 +23,7 @@ export async function join(
 }
 
 export async function close(): Promise<void> {
-  return await api.delete("rooms").then(() => {
-    disconnect();
-  });
+  return await api.delete("rooms").then(() => disconnect());
 }
 
 export async function create(): Promise<string> {

@@ -9,9 +9,11 @@ import {
   subscribe,
 } from "@services/subscriptions";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import useLoading from "../../hooks/useLoading";
 
 export default function Subscribe() {
-  const [loading, setLoading] = useState(-1);
+  const loading = useLoading();
+  const { clear: clearLoading } = loading;
 
   const [subscription, setSubscription] = useState<Subscription | undefined>(
     undefined
@@ -39,14 +41,10 @@ export default function Subscribe() {
         setNextSubscription(undefined);
         setPlans([]);
       })
-      .finally(() => {
-        setLoading(-1);
-      });
-  }, [setSubscription, setNextSubscription, setPlans]);
+      .finally(clearLoading);
+  }, [setSubscription, setNextSubscription, setPlans, clearLoading]);
 
-  useEffect(() => {
-    update();
-  }, [update]);
+  useEffect(update, [update]);
 
   const { mostPopular, mostEconomic } = useMemo(() => {
     return plans.reduce(
@@ -82,19 +80,18 @@ export default function Subscribe() {
           <PlanCard
             key={plan.id}
             plan={plan}
-            disabled={loading !== -1 && loading !== plan.id}
-            isLoading={loading === plan.id}
+            loading={loading}
             subscription={subscription}
             nextSubscription={nextSubscription}
             mostPopular={mostPopular && mostPopular?.id === plan.id}
             mostEconomic={mostEconomic && mostEconomic?.id === plan.id}
             onCancelNextSubscriptions={() => {
-              setLoading(plan.id);
-              closeNextSubscriptions().finally(() => update());
+              loading.start(plan.id);
+              closeNextSubscriptions().finally(update);
             }}
             onSubscribe={(edition) => {
-              setLoading(plan.id);
-              subscribe(edition.id).finally(() => update());
+              loading.start(plan.id);
+              subscribe(edition.id).finally(update);
             }}
           />
         ))}

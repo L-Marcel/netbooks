@@ -32,8 +32,8 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    INSERT INTO payment (subscription, price, pay_date, due_date, status) 
-                    VALUES (?, ?, ?, ?, ?);
+                    INSERT INTO payment (subscription, price, pay_date, due_date, paid_at, status) 
+                    VALUES (?, ?, ?, ?, ?, ?);
                     """,
                     true
                 );
@@ -42,7 +42,8 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
                 statement.setBigDecimal(2, payment.getPrice());
                 statement.setDate(3, payment.getPayDate());
                 statement.setDate(4, payment.getDueDate());
-                statement.setString(5, payment.getStatus().toString());
+                statement.setTimestamp(5, payment.getPaidAt());
+                statement.setString(6, payment.getStatus().toString());
                 statement.executeUpdate();
 
                 try (ResultSet result = statement.getGeneratedKeys()) {
@@ -82,7 +83,7 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
     };
 
     @Override
-    public void deleteInvisibleScheduledPaymentsBySubscriber(UUID subscriber) {
+    public void deleteInvisibleScheduledBySubscriber(UUID subscriber) {
         this.execute((connection) -> {
            try (
                 PreparedStatement statement = connection.prepareStatement(
@@ -105,7 +106,7 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
     };
 
     @Override
-    public void cancelVisibleScheduledPaymentsBySubscriber(UUID subscriber) {
+    public void cancelVisibleScheduledBySubscriber(UUID subscriber) {
         this.execute((connection) -> {
            try (
                 PreparedStatement statement = connection.prepareStatement(
@@ -116,6 +117,7 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
                     ON pay.subscription = sub.id
                     SET pay.status = 'CANCELED'
                     WHERE pay.status = 'SCHEDULED'
+                    AND sub.started_in <= CURRENT_DATE
                     AND pay.pay_date <= CURRENT_DATE
                     AND sub.subscriber = ?;
                     """
@@ -128,7 +130,44 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
     };
 
     @Override
-    public void hiddenVisibleScheduledPaymentsBySubscriber(UUID subscriber) {
+    public void deleteById(Long id) {
+        this.execute((connection) -> {
+           try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    DELETE FROM payment AS pay
+                    WHERE pay.id = ?;
+                    """
+                );
+            ) {
+                statement.setLong(1, id);
+                statement.executeUpdate();
+            }; 
+        });
+    };
+
+    @Override
+    public void cancelById(Long id) {
+        this.execute((connection) -> {
+           try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    UPDATE payment AS pay
+                    SET pay.status = 'CANCELED'
+                    WHERE pay.id = ?;
+                    """
+                );
+            ) {
+                statement.setLong(1, id);
+                statement.executeUpdate();
+            };
+        });
+    };
+
+    @Override
+    public void hiddenVisibleScheduledBySubscriber(UUID subscriber) {
         this.execute((connection) -> {
            try (
                 PreparedStatement statement = connection.prepareStatement(
@@ -137,9 +176,20 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
                     UPDATE payment AS pay
                     JOIN subscription AS sub
                     ON pay.subscription = sub.id
+                    LEFT JOIN (
+                        SELECT DISTINCT sub.subscriber 
+                        FROM payment AS pay
+                        JOIN subscription AS sub
+                        ON pay.subscription = sub.id
+                        AND pay.status = 'HIDDEN'
+                        AND pay.pay_date > CURRENT_DATE
+                    ) AS sch
+                    ON sch.subscriber = sub.subscriber
                     SET pay.status = 'HIDDEN'
                     WHERE pay.status = 'SCHEDULED'
+                    AND sub.started_in <= CURRENT_DATE
                     AND pay.pay_date > CURRENT_DATE
+                    AND sch.subscriber IS NULL
                     AND sub.subscriber = ?;
                     """
                 );
@@ -151,7 +201,41 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
     };
 
     @Override
-    public Optional<Payment> findLastPaymentBySubscriber(UUID subscriber) {
+    public void showInvisibleScheduledBySubscriber(UUID subscriber) {
+        this.execute((connection) -> {
+           try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    UPDATE payment AS pay
+                    JOIN subscription AS sub
+                    ON pay.subscription = sub.id
+                    LEFT JOIN (
+                        SELECT DISTINCT sub.subscriber 
+                        FROM payment AS pay
+                        JOIN subscription AS sub
+                        ON pay.subscription = sub.id
+                        AND pay.status = 'SCHEDULED'
+                        AND pay.pay_date > CURRENT_DATE
+                    ) AS sch
+                    ON sch.subscriber = sub.subscriber
+                    SET pay.status = 'SCHEDULED'
+                    WHERE pay.status = 'HIDDEN'
+                    AND sub.started_in <= CURRENT_DATE
+                    AND pay.pay_date > CURRENT_DATE
+                    AND sch.subscriber IS NULL
+                    AND sub.subscriber = ?;
+                    """
+                );
+            ) {
+                statement.setString(1, subscriber.toString());
+                statement.executeUpdate();
+            };
+        });
+    };
+
+    @Override
+    public Optional<Payment> findLastBySubscriber(UUID subscriber) {
         return this.queryOrDefault((connection) -> {
             Optional<Payment> paymentFound = Optional.empty();
 
@@ -162,7 +246,8 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
                     SELECT DISTINCT pay.* FROM payment AS pay
                     JOIN subscription AS sub
                     ON pay.subscription = sub.id
-                    WHERE sub.subscriber = ?
+                    WHERE sub.subscriber = ? 
+                    AND pay.due_date >= CURRENT_DATE
                     ORDER BY pay.created_at DESC, pay.id DESC
                     LIMIT 1;
                     """
@@ -177,6 +262,7 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
                         Date payDate = result.getDate("pay_date");
                         Date dueDate = result.getDate("due_date");
                         Timestamp createdAt = result.getTimestamp("created_at");
+                        Timestamp paidAt = result.getTimestamp("paid_at");
                         PaymentStatus status = PaymentStatus.fromString(result.getString("status"));
 
                         Payment payment = new Payment(
@@ -186,6 +272,7 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
                             payDate,
                             dueDate,
                             createdAt,
+                            paidAt,
                             status
                         );
 
@@ -199,7 +286,7 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
     };
 
     @Override
-    public Optional<Payment> findLastPaidPaymentBySubscriber(UUID subscriber) {
+    public Optional<Payment> findLastPaidBySubscriber(UUID subscriber) {
         return this.queryOrDefault((connection) -> {
             Optional<Payment> paymentFound = Optional.empty();
 
@@ -225,6 +312,7 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
                         Date payDate = result.getDate("pay_date");
                         Date dueDate = result.getDate("due_date");
                         Timestamp createdAt = result.getTimestamp("created_at");
+                        Timestamp paidAt = result.getTimestamp("paid_at");
                         PaymentStatus status = PaymentStatus.fromString(result.getString("status"));
 
                         Payment payment = new Payment(
@@ -234,6 +322,7 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
                             payDate,
                             dueDate,
                             createdAt,
+                            paidAt,
                             status
                         );
 
@@ -254,7 +343,8 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
                     // language=sql
                     """
                     UPDATE payment
-                    SET status = 'PAID'
+                    SET status = 'PAID',
+                    paid_at = CURRENT_TIMESTAMP
                     WHERE id = ?
                     """
                 );
@@ -289,6 +379,7 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
                         Date payDate = result.getDate("pay_date");
                         Date dueDate = result.getDate("due_date");
                         Timestamp createdAt = result.getTimestamp("created_at");
+                        Timestamp paidAt = result.getTimestamp("paid_at");
                         PaymentStatus status = PaymentStatus.fromString(result.getString("status"));
 
                         String productName = result.getString("name");
@@ -306,6 +397,7 @@ public class PaymentsRepositoryImpl extends BaseRepository implements PaymentsRe
                             payDate,
                             dueDate,
                             createdAt,
+                            paidAt,
                             status,
                             product
                         );

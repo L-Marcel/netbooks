@@ -49,3 +49,12 @@ export async function fetchUser(token: string): Promise<User> {
     })
     .then((response) => new User(response.data));
 }
+
+export async function switchAutomaticBilling() {
+  return api.post("/users/switch-automatic-billing").then(async () => {
+    const token = useAuth.getState().token;
+    return fetchUser(token ?? "").then((user) => {
+      useAuth.getState().setUser(user);
+    });
+  });
+}

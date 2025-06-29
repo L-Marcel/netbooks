@@ -27,6 +27,7 @@ import app.netbooks.backend.dtos.response.UserResponse;
 import app.netbooks.backend.models.Role;
 import app.netbooks.backend.models.User;
 import app.netbooks.backend.services.RolesService;
+import app.netbooks.backend.services.SubscriptionsService;
 import app.netbooks.backend.services.TokensService;
 import app.netbooks.backend.services.UsersService;
 
@@ -41,6 +42,9 @@ public class UsersController {
 
     @Autowired
     private TokensService tokensService;
+
+    @Autowired
+    private SubscriptionsService subscriptionsService;
 
     @AdministratorOnly
     @GetMapping
@@ -116,11 +120,11 @@ public class UsersController {
     };
 
     @SubscriberOnly
-    @GetMapping("/switch-automatic-billing")
+    @PostMapping("/switch-automatic-billing")
     public ResponseEntity<SubscriptionResponse> switchAutomaticBilling(
         @AuthenticationPrincipal AuthenticatedUser user
     ) {
-        this.usersService.switchAutomaticBillingById(
+        this.subscriptionsService.switchAutomaticBillingBySubscriber(
             user.getUser().getUuid()
         );
         
