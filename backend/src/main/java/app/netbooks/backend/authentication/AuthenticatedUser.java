@@ -26,6 +26,10 @@ public class AuthenticatedUser implements UserDetails {
             .collect(Collectors.toList());
     };
 
+    public Boolean isAdmin() {
+        return this.roles.contains(Role.ADMINISTRATOR);
+    };
+
     @Override
     public String getUsername() {
         return this.getUser().getEmail();

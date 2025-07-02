@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FaLink } from "react-icons/fa";
+import Button from ".";
 
 type CopyLinkButtonProps = {
   code: string;
@@ -8,16 +9,17 @@ type CopyLinkButtonProps = {
 function CopyLinkButton({ code }: CopyLinkButtonProps) {
   const [copied, setCopied] = useState(false);
 
-  const copyLink = () => navigator.clipboard.writeText(code).then(() => {
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  });
+  const copyLink = () =>
+    navigator.clipboard.writeText(code).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
 
   return (
     <div className="absolute right-5 top-5">
-      <button type="button" onClick={copyLink} className="btn btn-block">
+      <Button onClick={copyLink} className="btn btn-block">
         <FaLink />
-      </button>
+      </Button>
 
       {copied && (
         <div

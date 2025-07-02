@@ -1,4 +1,6 @@
 import { UUID } from "crypto";
+import { Subscription } from "./subscription";
+import { Benefit } from "./benefit";
 
 export enum Role {
   ADMINISTRATOR = "ADMINISTRATOR",
@@ -21,25 +23,33 @@ export class User {
   readonly roles: Role[];
   readonly avatar: string;
   readonly automaticBilling: boolean;
+  readonly benefits: Benefit[];
+  readonly subscription?: Subscription;
 
-  constructor(data: UserData) {
+  constructor(
+    data: UserData,
+    benefits: Benefit[],
+    subscription?: Subscription
+  ) {
     this.uuid = data.uuid;
     this.name = data.name;
     this.email = data.email;
     this.roles = data.roles;
     this.avatar = `http://localhost:8080/users/${this.uuid}.webp`;
     this.automaticBilling = data.automaticBilling;
+    this.benefits = benefits;
+    this.subscription = subscription;
   }
 
-  isSubscriber(): boolean {
+  public isSubscriber(): boolean {
     return this.roles.includes(Role.SUBSCRIBER);
   }
 
-  isAdmin(): boolean {
+  public isAdmin(): boolean {
     return this.roles.includes(Role.ADMINISTRATOR);
   }
 
-  getInitials(): string {
+  public getInitials(): string {
     if (!this.name) return "?";
 
     const parts = this.name.trim().split(" ");
@@ -50,5 +60,14 @@ export class User {
     }
 
     return "?";
+  }
+
+  public canHaveFiveReadings(): boolean {
+    return (
+      this.isAdmin() ||
+      this.benefits.some(
+        (benefit) => benefit === Benefit.CAN_HAVE_FIVE_READINGS
+      )
+    );
   }
 }

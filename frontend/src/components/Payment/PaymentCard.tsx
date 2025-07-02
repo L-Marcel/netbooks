@@ -5,16 +5,15 @@ import {
   FaRegCircle,
   FaRegTimesCircle,
 } from "react-icons/fa";
-import { LoadingContext } from "../../hooks/useLoading";
 import Loading from "@components/Loading";
+import Button from "@components/Button";
 
 interface Props {
   payment: Payment;
-  loading: LoadingContext;
   onPay: () => void;
 }
 
-export default function PaymentCard({ loading, payment, onPay }: Props) {
+export default function PaymentCard({ payment, onPay }: Props) {
   const canPay = payment.status === "SCHEDULED" && !payment.isOverdue();
 
   let icon = <FaRegTimesCircle className="size-6 text-error" />;
@@ -86,18 +85,16 @@ export default function PaymentCard({ loading, payment, onPay }: Props) {
             </p>
           )}
           {canPay && (
-            <button
-              disabled={loading.hasAny}
-              type="button"
+            <Button
               onClick={onPay}
               className="mt-4 btn btn-info btn-md w-min text-nowrap"
             >
               <Loading
-                isLoading={loading.has(payment.id)}
+                id={payment.id}
                 loadingMessage="Realizando pagamento..."
                 defaultMessage="Realizar pagamento"
               />
-            </button>
+            </Button>
           )}
         </div>
       </div>

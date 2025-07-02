@@ -3,21 +3,19 @@ import { Plan } from "@models/plan";
 import { Subscription } from "@models/subscription";
 import { fetchAvailablePlans } from "@services/plans";
 import {
-  fetchSubscription,
   fetchNextSubscription,
   closeNextSubscriptions,
   subscribe,
 } from "@services/subscriptions";
+import { fetchUpdatedUser } from "@services/user";
+import { useLoading } from "@stores/useLoading";
+import useUser from "@stores/useUser";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import useLoading from "../../hooks/useLoading";
 
 export default function Subscribe() {
-  const loading = useLoading();
-  const { clear: clearLoading } = loading;
-
-  const [subscription, setSubscription] = useState<Subscription | undefined>(
-    undefined
-  );
+  const user = useUser((state) => state.user);
+  const startLoading = useLoading((state) => state.start);
+  const clearLoading = useLoading((state) => state.clear);
 
   const [nextSubscription, setNextSubscription] = useState<
     Subscription | undefined
@@ -27,22 +25,20 @@ export default function Subscribe() {
 
   const update = useCallback(() => {
     Promise.all([
-      fetchSubscription(),
       fetchNextSubscription().catch(() => undefined),
       fetchAvailablePlans(),
     ])
-      .then(([subscription, nextSubscription, plans]) => {
-        setSubscription(subscription);
+      .then(async ([nextSubscription, plans]) => {
+        await fetchUpdatedUser();
         setNextSubscription(nextSubscription);
         setPlans(plans.sort((a, b) => a.benefits.length - b.benefits.length));
       })
       .catch(() => {
-        setSubscription(undefined);
         setNextSubscription(undefined);
         setPlans([]);
       })
       .finally(clearLoading);
-  }, [setSubscription, setNextSubscription, setPlans, clearLoading]);
+  }, [setNextSubscription, setPlans, clearLoading]);
 
   useEffect(update, [update]);
 
@@ -80,17 +76,16 @@ export default function Subscribe() {
           <PlanCard
             key={plan.id}
             plan={plan}
-            loading={loading}
-            subscription={subscription}
+            subscription={user?.subscription}
             nextSubscription={nextSubscription}
             mostPopular={mostPopular && mostPopular?.id === plan.id}
             mostEconomic={mostEconomic && mostEconomic?.id === plan.id}
             onCancelNextSubscriptions={() => {
-              loading.start(plan.id);
+              startLoading(plan.id);
               closeNextSubscriptions().finally(update);
             }}
             onSubscribe={(edition) => {
-              loading.start(plan.id);
+              startLoading(plan.id);
               subscribe(edition.id).finally(update);
             }}
           />

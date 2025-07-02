@@ -1,8 +1,10 @@
+import Button from "@components/Button";
 import useMediaQuery from "../../hooks/useMediaQuery";
-import { remToPx } from "@components/Utils/pixels";
+import { remToPx } from "../../Utils/pixels";
 import { Book, Tag } from "@models/book";
 import { KeyboardEvent, useLayoutEffect, useRef, useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 interface Props {
   tag: Tag;
@@ -63,20 +65,18 @@ export default function BookCarousel({ tag, books }: Props) {
       <div className="relative flex flex-col">
         {needArrows && (
           <div className="absolute z-10 left-6 right-6 lg:left-4 lg:right-4 top-1/2 flex -translate-y-[1.5rem] transform justify-between">
-            <button
-              type="button"
+            <Button
               onClick={onToPrevious}
               className="btn btn-circle btn-soft btn-primary"
             >
               <FaArrowLeft />
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
               onClick={onToNext}
               className="btn btn-circle btn-soft btn-primary"
             >
               <FaArrowRight />
-            </button>
+            </Button>
           </div>
         )}
         <div
@@ -90,13 +90,18 @@ export default function BookCarousel({ tag, books }: Props) {
         >
           {books.map((book) => {
             return (
-              <img
+              <Link
                 key={book.id}
-                src={book.cover}
-                className="rounded-lg shadow-2xl object-cover w-[100px] h-[160px] md:w-[200px] md:h-[320px]"
-                height={320}
-                width={200}
-              />
+                to={"/books/" + book.id}
+                className="border-none outline-none focus-visible:inset-ring-2 rounded-xl group inset-ring-primary block hover:opacity-50 focus-visible:opacity-60 min-w-[100px] min-h-[160px] md:min-w-[200px] md:min-h-[320px]"
+              >
+                <img
+                  src={book.cover}
+                  className="object-cover shadow-2xl rounded-lg group-focus-visible:rounded-2xl w-[100px] h-[160px] md:w-[200px] md:h-[320px]"
+                  height={320}
+                  width={200}
+                />
+              </Link>
             );
           })}
         </div>

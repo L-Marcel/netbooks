@@ -36,11 +36,7 @@ export default function Home() {
 
   return (
     <main className="flex flex-col w-full h-ful items-center bg-base-100">
-      <div className="carousel w-full h-full">
-        <div className="carousel-item w-full h-full">
-          <BookHero book={books.length > 0 ? books[0] : undefined} />
-        </div>
-      </div>
+      <BookHero book={books.length > 0 ? books[0] : undefined} />
       {Object.entries(mapOfBooks)
         .filter(([, books]) => books.length > 0)
         .sort(([, a], [, b]) => b.length - a.length)

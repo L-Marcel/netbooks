@@ -74,7 +74,8 @@ SELECT * FROM author;
 INSERT IGNORE INTO benefit (name) VALUES
   ('CAN_READ_ALL_BOOKS'),
   ('CAN_EXPLORE_IN_GROUP'),
-  ('CAN_DOWNLOAD_BOOKS');
+  ('CAN_DOWNLOAD_BOOKS'),
+  ('CAN_HAVE_FIVE_READINGS');
 
 SELECT * FROM benefit;
 
@@ -161,7 +162,8 @@ INSERT IGNORE INTO plan_benefit (plan, benefit) VALUES
   (2, 'CAN_EXPLORE_IN_GROUP'),
   (3, 'CAN_READ_ALL_BOOKS'),
   (3, 'CAN_EXPLORE_IN_GROUP'),
-  (3, 'CAN_DOWNLOAD_BOOKS');
+  (3, 'CAN_DOWNLOAD_BOOKS'),
+  (3, 'CAN_HAVE_FIVE_READINGS');
 SELECT * FROM plan_benefit;
 
 INSERT IGNORE INTO plan_edition (id, started_in, closed_in, price, plan) VALUES 
@@ -221,15 +223,17 @@ INSERT IGNORE INTO payment (subscription, price, pay_date, due_date, status, pai
   (3, 300.00, DATE_ADD(CURRENT_DATE, INTERVAL 358 DAY), DATE_ADD(CURRENT_DATE, INTERVAL 365 DAY), 'SCHEDULED', NULL);
 SELECT * FROM payment;
 
-INSERT IGNORE INTO classification (book, subscriber, value) VALUES
+INSERT IGNORE INTO classification (book, user, value) VALUES
   (1, 'e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e', 10),
   (2, 'e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e', 8),
   (1, '09876543-2109-fedc-ba98-7654321fedcb', 8),
   (2, 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 6);
 SELECT * FROM classification;
 
-INSERT IGNORE INTO reading (id, book, subscriber, current_page, finished, started_in, stopped_in) VALUES
+INSERT IGNORE INTO reading (id, book, user, current_page, finished, started_in, stopped_in) VALUES
   (1, 1, 'e8d7c6b5-a4b3-c2d1-0f1e-2d3c4b5a6f7e', 10, false, CURRENT_DATE, CURRENT_DATE),
   (2, 2, '09876543-2109-fedc-ba98-7654321fedcb', 20, false, CURRENT_DATE, CURRENT_DATE),
-  (3, 1, '09876543-2109-fedc-ba98-7654321fedcb', 223, true, CURRENT_DATE, CURRENT_DATE);
+  (3, 1, '09876543-2109-fedc-ba98-7654321fedcb', 223, true, CURRENT_DATE, CURRENT_DATE),
+  (4, 1, 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 223, true, CURRENT_DATE, CURRENT_DATE),
+  (5, 1, 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 223, false, CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY));
 SELECT * FROM reading;

@@ -11,6 +11,12 @@ export async function fetchBooks(): Promise<Book[]> {
     );
 }
 
+export async function fetchBook(id: number): Promise<Book> {
+  return api
+    .get<Book>("books/" + id)
+    .then((response) => new Book(response.data));
+}
+
 export async function fetchTags(): Promise<Tag[]> {
   return api.get<Tag[]>("tags").then((response) => response.data);
 }

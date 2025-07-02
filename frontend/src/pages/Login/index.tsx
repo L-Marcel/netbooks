@@ -1,11 +1,12 @@
 import { ChangeEvent, FormEvent, useState } from "react";
-import Input from "@components/Input";
+import Field from "@components/Input/Field";
 import { Link, useNavigate } from "react-router-dom";
 import { login, UserLoginData } from "../../services/user";
 import { FaEnvelope, FaKey } from "react-icons/fa";
 import AuthGuard from "@components/Guards/AuthGuard";
-import useLoading from "../../hooks/useLoading";
 import Loading from "@components/Loading";
+import { useLoading } from "@stores/useLoading";
+import Button from "@components/Button";
 
 export default function Login() {
   return (
@@ -17,7 +18,9 @@ export default function Login() {
 
 function Page() {
   const navigate = useNavigate();
-  const loading = useLoading();
+  const startLoading = useLoading((state) => state.start);
+  const stopLoading = useLoading((state) => state.stop);
+
   const [data, setData] = useState<UserLoginData>({
     email: "",
     password: "",
@@ -32,10 +35,10 @@ function Page() {
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    loading.start("login");
+    startLoading("login");
     login(data)
       .then(() => navigate("/"))
-      .finally(() => loading.stop("login"));
+      .finally(() => stopLoading("login"));
   };
 
   return (
@@ -46,7 +49,7 @@ function Page() {
           <p>Acesse sua conta agora mesmo</p>
         </header>
         <form className="flex flex-col gap-5 px-5 w-full" onSubmit={onSubmit}>
-          <Input
+          <Field
             icon={FaEnvelope}
             label="E-mail"
             id="email"
@@ -55,7 +58,7 @@ function Page() {
             onChange={onChangeData}
             placeholder="marcela@email.com"
           />
-          <Input
+          <Field
             icon={FaKey}
             label="Senha"
             id="password"
@@ -64,17 +67,13 @@ function Page() {
             onChange={onChangeData}
             placeholder="••••••••"
           />
-          <button
-            className="btn btn-primary"
-            type="submit"
-            disabled={loading.hasAny}
-          >
+          <Button className="btn btn-primary" type="submit">
             <Loading
-              isLoading={loading.has("login")}
+              id="login"
               loadingMessage="Entrando..."
               defaultMessage="Entrar"
             />
-          </button>
+          </Button>
         </form>
         <footer className="text-center">
           <p>

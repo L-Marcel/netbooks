@@ -35,7 +35,7 @@ const useUser = create<UserStore>()(
         return (state?: UserStore, error?: unknown) => {
           if (state?.token && !error) {
             fetchUser(state.token)
-              .then((user) =>  state?.setUser(user))
+              .then((user) => state?.setUser(user))
               .finally(() => state?.setFetched(true));
           } else state?.setFetched(true);
         };

@@ -12,11 +12,10 @@ import Decimal from "decimal.js";
 import { Subscription } from "@models/subscription";
 import { PlanEdition } from "@models/plan_edition";
 import Loading from "@components/Loading";
-import { LoadingContext } from "../../hooks/useLoading";
+import Button from "@components/Button";
 
 interface Props {
   plan: Plan;
-  loading: LoadingContext;
   subscription?: Subscription;
   nextSubscription?: Subscription;
   mostPopular?: boolean;
@@ -31,7 +30,6 @@ export default function PlanCard({
   nextSubscription,
   mostPopular,
   mostEconomic,
-  loading,
   onSubscribe,
   onCancelNextSubscriptions,
 }: Props) {
@@ -131,37 +129,35 @@ export default function PlanCard({
             </p>
           )}
           {isNextUserPlan ? (
-            <button
+            <Button
               onClick={onCancelNextSubscriptions}
-              type="button"
               className="btn btn-error btn-block"
-              disabled={isUserPlan || loading.hasAny}
+              disabled={isUserPlan}
             >
               <Loading
-                isLoading={loading.has(plan.id)}
+                id={plan.id}
                 loadingMessage="Interrompendo mudança..."
                 defaultMessage="Interromper Mudança"
               />
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               onClick={() =>
                 onSubscribe(plan.getCheapestEdition() as PlanEdition)
               }
-              type="button"
               className="btn btn-primary btn-block"
-              disabled={isUserPlan || loading.hasAny}
+              disabled={isUserPlan}
             >
               {isUserPlan ? (
                 "Inscrito"
               ) : (
                 <Loading
-                  isLoading={loading.has(plan.id)}
+                  id={plan.id}
                   loadingMessage="Inscrevendo-se..."
                   defaultMessage="Inscreve-se"
                 />
               )}
-            </button>
+            </Button>
           )}
           {isUserPlan && subscription?.closedIn && (
             <p className="ml-0.5 mt-4 text-xs flex flex-row items-center gap-2 font-light">

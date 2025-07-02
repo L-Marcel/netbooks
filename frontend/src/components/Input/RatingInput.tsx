@@ -1,3 +1,5 @@
+import Input from ".";
+
 interface Props {
   readonly?: boolean;
   rate: number;
@@ -63,70 +65,70 @@ export function RatingInput({ readonly = false, rate }: Props) {
         </>
       ) : (
         <>
-          <input
+          <Input
             type="radio"
             name="rating-11"
             className="mask mask-star-2 mask-half-1 bg-primary"
             aria-label="0.5 star"
             defaultChecked={value === 0.5}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
             className="mask mask-star-2 mask-half-2 bg-primary"
             aria-label="1 star"
             defaultChecked={value === 1}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
             className="mask mask-star-2 mask-half-1 bg-primary"
             aria-label="1.5 star"
             defaultChecked={value === 1.5}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
             className="mask mask-star-2 mask-half-2 bg-primary"
             aria-label="2 star"
             defaultChecked={value === 2}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
             className="mask mask-star-2 mask-half-1 bg-primary"
             aria-label="2.5 star"
             defaultChecked={value === 2.5}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
             className="mask mask-star-2 mask-half-2 bg-primary"
             aria-label="3 star"
             defaultChecked={value === 3}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
             className="mask mask-star-2 mask-half-1 bg-primary"
             aria-label="3.5 star"
             defaultChecked={value === 3.5}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
             className="mask mask-star-2 mask-half-2 bg-primary"
             aria-label="4 star"
             defaultChecked={value === 4}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
             className="mask mask-star-2 mask-half-1 bg-primary"
             aria-label="4.5 star"
             defaultChecked={value === 4.5}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
             className="mask mask-star-2 mask-half-2 bg-primary"

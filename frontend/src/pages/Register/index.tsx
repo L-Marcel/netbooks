@@ -1,5 +1,5 @@
 import { ChangeEvent, useState } from "react";
-import Input from "@components/Input";
+import Field from "@components/Input/Field";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser, UserRegisterData } from "../../services/user";
 import ImageInput from "@components/Input/FileInput";
@@ -7,7 +7,8 @@ import { FaEnvelope, FaKey, FaUpload, FaUser } from "react-icons/fa";
 import { ApiError, ValidationError } from "../../services/axios";
 import AuthGuard from "@components/Guards/AuthGuard";
 import Loading from "@components/Loading";
-import useLoading from "../../hooks/useLoading";
+import { useLoading } from "@stores/useLoading";
+import Button from "@components/Button";
 
 export default function Register() {
   return (
@@ -19,7 +20,9 @@ export default function Register() {
 
 function Page() {
   const navigate = useNavigate();
-  const loading = useLoading();
+  const startLoading = useLoading((state) => state.start);
+  const stopLoading = useLoading((state) => state.stop);
+
   const [validations, setValidations] = useState<ValidationError>({});
 
   const [data, setData] = useState<UserRegisterData>({
@@ -29,15 +32,17 @@ function Page() {
     passwordConfirmation: "",
   });
 
-  const onChangeData = (e: ChangeEvent<HTMLInputElement>) => setData((data) => ({
-    ...data,
-    [e.target.name]: e.target.value,
-  }));
+  const onChangeData = (e: ChangeEvent<HTMLInputElement>) =>
+    setData((data) => ({
+      ...data,
+      [e.target.name]: e.target.value,
+    }));
 
-  const onClearAvatar = () => setData((data) => ({
-    ...data,
-    avatar: undefined,
-  }));;
+  const onClearAvatar = () =>
+    setData((data) => ({
+      ...data,
+      avatar: undefined,
+    }));
 
   const onLoadAvatar = (base64: string, blob: Blob, filename?: string) => {
     const url = URL.createObjectURL(blob);
@@ -53,7 +58,7 @@ function Page() {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    loading.start("register");
+    startLoading("register");
     registerUser(data)
       .then(() => {
         navigate("/login");
@@ -68,7 +73,7 @@ function Page() {
         }
       })
       .finally(() => {
-        loading.stop("register");
+        stopLoading("register");
       });
   };
 
@@ -112,7 +117,7 @@ function Page() {
                 <FaUpload />
               </ImageInput>
             </div>
-            <Input
+            <Field
               icon={FaUser}
               validations={validations["name"]}
               label="Nome"
@@ -123,7 +128,7 @@ function Page() {
               placeholder="Marcela"
             />
           </div>
-          <Input
+          <Field
             icon={FaEnvelope}
             validations={validations["email"]}
             label="E-mail"
@@ -133,7 +138,7 @@ function Page() {
             onChange={onChangeData}
             placeholder="marcela@email.com"
           />
-          <Input
+          <Field
             icon={FaKey}
             validations={validations["password"]}
             label="Senha"
@@ -143,7 +148,7 @@ function Page() {
             onChange={onChangeData}
             placeholder="••••••••"
           />
-          <Input
+          <Field
             icon={FaKey}
             validations={validations["passwordConfirmation"]}
             label="Confirmar senha"
@@ -153,17 +158,13 @@ function Page() {
             onChange={onChangeData}
             placeholder="••••••••"
           />
-          <button
-            className="btn btn-primary"
-            type="submit"
-            disabled={loading.hasAny}
-          >
+          <Button className="btn btn-primary" type="submit">
             <Loading
-              isLoading={loading.has("register")}
+              id="register"
               loadingMessage="Registrando..."
               defaultMessage="Registrar"
             />
-          </button>
+          </Button>
         </form>
         <footer className="text-center">
           <p>

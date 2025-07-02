@@ -2,6 +2,9 @@ import api from "./axios";
 import useAuth from "../stores/useUser";
 import axios from "axios";
 import { User, UserData } from "../models/user";
+import useUser from "../stores/useUser";
+import { Subscription, SubscriptionData } from "@models/subscription";
+import { Benefit, BenefitData } from "@models/benefit";
 
 export type UserLoginData = {
   email: string;
@@ -39,15 +42,50 @@ export async function registerUser(data: UserRegisterData) {
   });
 }
 
-export async function fetchUser(token: string): Promise<User> {
-  return axios
-    .get<UserData>("http://localhost:8080/users/me", {
+export async function fetchUpdatedUser(): Promise<void> {
+  const token = useUser.getState().token;
+  return fetchUser(token ?? "").then((user) => {
+    useUser.getState().setUser(user);
+  });
+}
+
+async function fetchSubscription(token: string): Promise<Subscription> {
+  return api
+    .get<SubscriptionData>("/subscriptions/me", {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token,
       },
     })
-    .then((response) => new User(response.data));
+    .then((response) => new Subscription(response.data));
+}
+
+async function fetchBenefits(token: string): Promise<Benefit[]> {
+  return api
+    .get<BenefitData[]>("/plans/me/benefits", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    })
+    .then((response) => response.data.map((data) => data.name as Benefit));
+}
+
+export async function fetchUser(token: string): Promise<User> {
+  return Promise.all([
+    axios
+      .get<UserData>("http://localhost:8080/users/me", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => response.data),
+    fetchBenefits(token).catch(() => []),
+    fetchSubscription(token).catch(() => undefined),
+  ]).then(([data, benefits, subscription]) => {
+    return new User(data, benefits, subscription);
+  });
 }
 
 export async function switchAutomaticBilling() {

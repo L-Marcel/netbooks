@@ -17,4 +17,8 @@ public class BooksTagsService {
     public Map<Long, List<Tag>> mapAllByBook() {
         return this.repository.mapAllByBook();
     };
+
+    public List<Tag> findAllByBook(Long id) {
+        return this.repository.findAllByBook(id);
+    };
 };

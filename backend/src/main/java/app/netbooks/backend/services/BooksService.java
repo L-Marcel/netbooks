@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import app.netbooks.backend.errors.BookNotFound;
 import app.netbooks.backend.models.Book;
 import app.netbooks.backend.repositories.interfaces.BooksRepository;
 
@@ -15,5 +16,10 @@ public class BooksService {
     
     public List<Book> findAll() {
         return this.repository.findAll();
-    }; 
+    };
+
+    public Book findById(Long id) {
+        return this.repository.findById(id)
+            .orElseThrow(BookNotFound::new);
+    };
 };
