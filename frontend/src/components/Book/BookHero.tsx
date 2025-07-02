@@ -9,6 +9,7 @@ import { useLoading } from "@stores/useLoading";
 import Loading from "@components/Loading";
 import { useEffect, useState } from "react";
 import { FaBookBookmark } from "react-icons/fa6";
+import useUser from "@stores/useUser";
 interface Props {
   book?: Book;
   reading?: Reading;
@@ -21,6 +22,7 @@ export default function BookHero({
   notFinishedReadingsIsFull = false,
 }: Props) {
   const navigate = useNavigate();
+  const user = useUser((state) => state.user);
   const startLoading = useLoading((state) => state.start);
   const stopLoading = useLoading((state) => state.stop);
   const loadingId = "new-reading-" + (book?.id ?? -1);
@@ -72,7 +74,7 @@ export default function BookHero({
               loadingMessage="Carregando..."
               defaultMessage={
                 <>
-                  {!reading && (
+                  {!reading && user && (
                     <Link
                       to={"/books/" + book?.id}
                       className="btn btn-square btn-secondary"
@@ -80,7 +82,7 @@ export default function BookHero({
                       <FaBookBookmark />
                     </Link>
                   )}
-                  {lastReading && (
+                  {lastReading && user && (
                     <Link
                       to={"/readings/" + lastReading?.id}
                       className={`btn ${!reading ? "btn-primary" : "btn-secondary"}`}
@@ -88,7 +90,7 @@ export default function BookHero({
                       Continuar leitura
                     </Link>
                   )}
-                  {!!reading && (
+                  {user? (!!reading && (
                     <Button
                       disabled={notFinishedReadingsIsFull}
                       onClick={onNewReadRequested}
@@ -100,6 +102,13 @@ export default function BookHero({
                         defaultMessage="Nova leitura"
                       />
                     </Button>
+                  )):(
+                    <Link
+                      to="/subscribe"
+                      className="btn btn-primary"
+                    >
+                      Nova leitura
+                    </Link>
                   )}
                 </>
               }

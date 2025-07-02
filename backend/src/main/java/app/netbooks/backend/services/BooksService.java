@@ -3,9 +3,11 @@ package app.netbooks.backend.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import app.netbooks.backend.errors.BookNotFound;
+import app.netbooks.backend.files.pdfs.BookPdfsStorage;
 import app.netbooks.backend.models.Book;
 import app.netbooks.backend.repositories.interfaces.BooksRepository;
 
@@ -13,6 +15,9 @@ import app.netbooks.backend.repositories.interfaces.BooksRepository;
 public class BooksService {
     @Autowired
     private BooksRepository repository;
+
+    @Autowired
+    private BookPdfsStorage pdfsStorage;
     
     public List<Book> findAll() {
         return this.repository.findAll();
@@ -21,5 +26,9 @@ public class BooksService {
     public Book findById(Long id) {
         return this.repository.findById(id)
             .orElseThrow(BookNotFound::new);
+    };
+
+    public Resource findContentById(Long id) {
+        return this.pdfsStorage.gerFile(id);
     };
 };

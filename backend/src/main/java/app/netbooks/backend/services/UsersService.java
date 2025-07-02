@@ -7,11 +7,12 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import app.netbooks.backend.connections.transactions.Transactions;
 import app.netbooks.backend.errors.UserNotFound;
 import app.netbooks.backend.errors.ValidationsError;
-import app.netbooks.backend.images.UserAvatarStorage;
+import app.netbooks.backend.files.images.UsersAvatarsStorage;
 import app.netbooks.backend.models.User;
 import app.netbooks.backend.repositories.interfaces.UsersRepository;
 import app.netbooks.backend.validation.Validator;
@@ -25,7 +26,7 @@ public class UsersService {
     private BCryptPasswordEncoder encoder;
 
     @Autowired
-    private UserAvatarStorage avatarStorage;
+    private UsersAvatarsStorage avatarsStorage;
 
     @Autowired
     private Transactions transactions;
@@ -56,7 +57,7 @@ public class UsersService {
 
     public void register(
         String name, 
-        String avatar,
+        MultipartFile avatar,
         String email, 
         String password,
         String passwordConfirmation
@@ -85,28 +86,29 @@ public class UsersService {
         validator.validate("passwordConfirmation", passwordConfirmation)
             .verify(passwordConfirmation != null && passwordConfirmation.equals(password), "Senhas coincidem!", "Senhas não coincidem!");
 
+        // [TODO] Resolve esse validate
         validator.validate("avatar", avatar)
-            .nullable()
-            .pattern("^data:image\\/(png|jpeg|jpg);base64,[A-Za-z0-9+/]+={0,2}$", "Formato valido de imagem!", "Formato inválido de imagem!");
+            .nullable();
+            //.pattern("^data:image\\/(png|jpeg|jpg);base64,[A-Za-z0-9+/]+={0,2}$", "Formato valido de imagem!", "Formato inválido de imagem!");
 
         validator.run();
         
-        User user = new User(name, avatar, email, encoder.encode(password));
+        User user = new User(name, email, encoder.encode(password));
 
         this.transactions.run(() -> {
             this.repository.create(user);
-            if(user.getAvatar() != null) {
-                avatarStorage.storeAvatar(user.getUuid(), user.getAvatar());
+            if(avatar != null) {
+                avatarsStorage.storeAvatar(user.getUuid(), avatar);
             };
         }, () -> {
-            avatarStorage.deleteAvatar(user.getUuid());
+            avatarsStorage.deleteAvatar(user.getUuid());
         });
     };
 
     public void update(
         User user,
         String name, 
-        String avatar,
+        MultipartFile avatar,
         String email, 
         String password
     ) throws ValidationsError {
@@ -133,22 +135,21 @@ public class UsersService {
             .pattern("(.*[\\d].*){2,}", "Tem 2 dígitos!", "Precisa ter 2 dígitos!");
         
         validator.validate("avatar", avatar)
-            .nullable()
-            .pattern("^data:image\\/(png|jpeg|jpg);base64,[A-Za-z0-9+/]+={0,2}$", "Formato valido de imagem!", "Formato inválido de imagem!");
+            .nullable();
+            //.pattern("^data:image\\/(png|jpeg|jpg);base64,[A-Za-z0-9+/]+={0,2}$", "Formato valido de imagem!", "Formato inválido de imagem!");
 
         validator.run();
         
         user.setName(name);
-        user.setAvatar(avatar);
         user.setEmail(email);
         user.setPassword(encoder.encode(password));
         
         this.transactions.run(() -> {
             this.repository.update(user);
-            if(user.getAvatar() != null) {
-                avatarStorage.storeAvatar(user.getUuid(), user.getAvatar());
+            if(avatar != null) {
+                avatarsStorage.storeAvatar(user.getUuid(), avatar);
             } else {
-                avatarStorage.deleteAvatar(user.getUuid());
+                avatarsStorage.deleteAvatar(user.getUuid());
             };
         });
     };

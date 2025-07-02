@@ -19,8 +19,5 @@ public class FilesConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/books/banners/**")
             .addResourceLocations("file:database/data/books/banners/")
             .addResourceLocations("file:../database/data/books/banners/");
-        registry.addResourceHandler("/books/files/**")
-            .addResourceLocations("file:database/data/books/files/")
-            .addResourceLocations("file:../database/data/books/files/");
     };
 };
