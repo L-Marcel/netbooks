@@ -46,6 +46,7 @@ public abstract class ImageStorage extends FilesStorage {
     };
 
     @Override
+    @SuppressWarnings("null")
     public void validate(
         MultipartFile file
     ) throws InvalidImageFormat, EmptyFile {

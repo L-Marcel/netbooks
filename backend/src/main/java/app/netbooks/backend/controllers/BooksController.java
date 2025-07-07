@@ -5,11 +5,14 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.netbooks.backend.annotations.SubscriberOrAdministratorOnly;
@@ -86,7 +89,8 @@ public class BooksController {
     @SubscriberOrAdministratorOnly
     public ResponseEntity<Resource> findContentById(
         @AuthenticationPrincipal AuthenticatedUser user,
-        @PathVariable Long id
+        @PathVariable Long id,
+        @RequestParam(defaultValue = "1") Integer page
     ) {
         Book book = this.booksService.findById(id);
         
@@ -94,14 +98,25 @@ public class BooksController {
             user.getUser().getUuid()
         );
 
-        List<Benefit> requirements = this.booksBenefitsService.findAllByBook(
-            book.getId()
+        this.booksBenefitsService.validateBookAccess(
+            book.getId(), 
+            benefits
         );
 
         Resource content = this.booksService.findContentById(
-            book.getId()
+            book.getId(),
+            --page
         );
 
-        return ResponseEntity.ok().body(content);
+        String contentDisposition = String.format(
+            "inline; filename=\"%s_page_%d.pdf\"",
+            book.getTitle(),
+            page
+        );
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+            .contentType(MediaType.APPLICATION_PDF)
+            .body(content);
     };
 };
