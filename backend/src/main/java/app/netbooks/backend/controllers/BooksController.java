@@ -4,19 +4,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.netbooks.backend.annotations.SubscriberOrAdministratorOnly;
-import app.netbooks.backend.authentication.AuthenticatedUser;
 import app.netbooks.backend.dtos.response.BookResponse;
 import app.netbooks.backend.models.Author;
 import app.netbooks.backend.models.Benefit;
@@ -26,7 +20,6 @@ import app.netbooks.backend.services.BooksAuthorsService;
 import app.netbooks.backend.services.BooksBenefitsService;
 import app.netbooks.backend.services.BooksService;
 import app.netbooks.backend.services.BooksTagsService;
-import app.netbooks.backend.services.PlansBenefitsService;
 
 @RestController
 @RequestMapping("/books")
@@ -43,10 +36,6 @@ public class BooksController {
     @Autowired
     private BooksBenefitsService booksBenefitsService;
 
-    @Autowired
-    private PlansBenefitsService plansBenefitsService;
-
-
     @GetMapping
     public ResponseEntity<List<BookResponse>> findAll() {
         List<Book> books = this.booksService.findAll();
@@ -62,8 +51,7 @@ public class BooksController {
         );
         return ResponseEntity.ok().body(response);
     };
-
-
+    
     @GetMapping("/{id}")
     @SubscriberOrAdministratorOnly
     public ResponseEntity<BookResponse> findById(
@@ -83,40 +71,5 @@ public class BooksController {
         );
 
         return ResponseEntity.ok().body(response);
-    };
-
-    @GetMapping("/{id}/content")
-    @SubscriberOrAdministratorOnly
-    public ResponseEntity<Resource> findContentById(
-        @AuthenticationPrincipal AuthenticatedUser user,
-        @PathVariable Long id,
-        @RequestParam(defaultValue = "1") Integer page
-    ) {
-        Book book = this.booksService.findById(id);
-        
-        List<Benefit> benefits = this.plansBenefitsService.findAllBySubscriber(
-            user.getUser().getUuid()
-        );
-
-        this.booksBenefitsService.validateBookAccess(
-            book.getId(), 
-            benefits
-        );
-
-        Resource content = this.booksService.findContentById(
-            book.getId(),
-            --page
-        );
-
-        String contentDisposition = String.format(
-            "inline; filename=\"%s_page_%d.pdf\"",
-            book.getTitle(),
-            page
-        );
-
-        return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-            .contentType(MediaType.APPLICATION_PDF)
-            .body(content);
     };
 };

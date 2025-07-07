@@ -29,7 +29,7 @@ public class ReadingsRepositoryImpl extends BaseRepository implements ReadingsRe
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    SELECT * FROM reading 
+                    SELECT * FROM reading_with_percentage 
                     WHERE id = ?
                     AND user = ?;
                     """
@@ -43,6 +43,8 @@ public class ReadingsRepositoryImpl extends BaseRepository implements ReadingsRe
                         Date stoppedIn = result.getDate("stopped_in");
                         Boolean finished = result.getBoolean("finished");
                         Integer currentPage = result.getInt("current_page");
+                        Integer numPages = result.getInt("num_pages");
+                        Double percentage = result.getDouble("percentage");
                         Long book = result.getLong("book");
                         
                         Reading reading = new Reading(
@@ -51,6 +53,8 @@ public class ReadingsRepositoryImpl extends BaseRepository implements ReadingsRe
                             stoppedIn,
                             finished,
                             currentPage,
+                            numPages,
+                            percentage,
                             user,
                             book
                         );
@@ -73,7 +77,7 @@ public class ReadingsRepositoryImpl extends BaseRepository implements ReadingsRe
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    SELECT * FROM reading
+                    SELECT * FROM reading_with_percentage
                     WHERE user = ?
                     ORDER BY finished ASC, started_in DESC, id DESC;  
                     """
@@ -87,6 +91,8 @@ public class ReadingsRepositoryImpl extends BaseRepository implements ReadingsRe
                         Date stoppedIn = result.getDate("stopped_in");
                         Boolean finished = result.getBoolean("finished");
                         Integer currentPage = result.getInt("current_page");
+                        Integer numPages = result.getInt("num_pages");
+                        Double percentage = result.getDouble("percentage");
                         Long book = result.getLong("book");
                         
                         Reading reading = new Reading(
@@ -95,6 +101,8 @@ public class ReadingsRepositoryImpl extends BaseRepository implements ReadingsRe
                             stoppedIn,
                             finished,
                             currentPage,
+                            numPages,
+                            percentage,
                             user,
                             book
                         );
@@ -117,7 +125,7 @@ public class ReadingsRepositoryImpl extends BaseRepository implements ReadingsRe
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    SELECT * FROM reading
+                    SELECT * FROM reading_with_percentage
                     WHERE user = ?
                     AND book = ?
                     ORDER BY finished ASC, started_in DESC, id DESC;  
@@ -133,6 +141,8 @@ public class ReadingsRepositoryImpl extends BaseRepository implements ReadingsRe
                         Date stoppedIn = result.getDate("stopped_in");
                         Boolean finished = result.getBoolean("finished");
                         Integer currentPage = result.getInt("current_page");
+                        Integer numPages = result.getInt("num_pages");
+                        Double percentage = result.getDouble("percentage");
                         
                         Reading reading = new Reading(
                             id,
@@ -140,6 +150,8 @@ public class ReadingsRepositoryImpl extends BaseRepository implements ReadingsRe
                             stoppedIn,
                             finished,
                             currentPage,
+                            numPages,
+                            percentage,
                             user,
                             book
                         );
@@ -274,7 +286,7 @@ public class ReadingsRepositoryImpl extends BaseRepository implements ReadingsRe
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    SELECT * FROM reading
+                    SELECT * FROM reading_with_percentage
                     WHERE user = ?
                     AND book = ?
                     ORDER BY finished ASC, started_in DESC, id DESC;
@@ -290,6 +302,8 @@ public class ReadingsRepositoryImpl extends BaseRepository implements ReadingsRe
                         Date stoppedIn = result.getDate("stopped_in");
                         Boolean finished = result.getBoolean("finished");
                         Integer currentPage = result.getInt("current_page");
+                        Integer numPages = result.getInt("num_pages");
+                        Double percentage = result.getDouble("percentage");
                         
                         Reading reading = new Reading(
                             id,
@@ -297,6 +311,8 @@ public class ReadingsRepositoryImpl extends BaseRepository implements ReadingsRe
                             stoppedIn,
                             finished,
                             currentPage,
+                            numPages,
+                            percentage,
                             user,
                             book
                         );

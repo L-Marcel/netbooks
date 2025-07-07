@@ -70,7 +70,7 @@ public class ReadingService {
         });
     };
 
-    public void updateUserAndId(UUID user, Long id, Integer page) {
+    public void updateByUserAndId(UUID user, Long id, Integer page) {
         this.transactions.run(() -> {
             this.findByUserAndId(user, id);
             this.repository.updatePageById(id, page);

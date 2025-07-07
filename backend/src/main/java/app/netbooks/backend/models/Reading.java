@@ -16,6 +16,8 @@ public class Reading {
     private Date stoppedIn;
     private Boolean finished;
     private Integer currentPage;
+    private Integer numPages;
+    private Double percentage;
     private UUID user;
     private Long book;
 

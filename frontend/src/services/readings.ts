@@ -29,6 +29,15 @@ export async function fetchReading(id: number): Promise<Reading> {
     .then((response) => new Reading(response.data));
 }
 
+export async function fetchReadingContent(id: number, page: number): Promise<File> {
+  return api
+    .get<File>("readings/" + id + "/content?page=" + page, {
+      responseType: 'blob'
+    })
+    .then((response) => new File([response.data], response.headers["filename"]));
+}
+
+
 export async function fetchReadingByBook(book: number): Promise<Reading> {
   return api
     .get<Reading>("readings/books/" + book)

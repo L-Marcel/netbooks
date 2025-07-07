@@ -1,11 +1,12 @@
 import { Reading } from "@models/reading";
 import { format } from "date-fns";
-import { FaRegCheckCircle, FaRegCircle, FaTrashAlt } from "react-icons/fa";
+import { FaRegCheckCircle, FaTrashAlt } from "react-icons/fa";
 import Loading from "@components/Loading";
 import Button from "@components/Button";
 import { Link } from "react-router-dom";
 import { useLoading } from "@stores/useLoading";
 import { finishReading } from "@services/readings";
+import { CSSProperties } from "react";
 
 interface Props {
   reading: Reading;
@@ -16,6 +17,7 @@ export default function ReadingCard({ reading, onFinish }: Props) {
   const startLoading = useLoading((state) => state.start);
   const stopLoading = useLoading((state) => state.stop);
   const loadingId = "continue-reading-" + (reading?.id ?? -1);
+  const completeAndFinished = reading.finished && reading.getPercentage() == 100.00;
 
   const onFinishReading = () => {
     startLoading(loadingId);
@@ -24,27 +26,43 @@ export default function ReadingCard({ reading, onFinish }: Props) {
       .finally(() => stopLoading(loadingId));
   };
 
-  const icon = reading.finished ? (
+  const icon = completeAndFinished? (
     <FaRegCheckCircle className="size-6 text-success" />
+  ) : (reading.finished? (
+    <div className="radial-progress text-error" style={{
+      "--value": reading.getPercentage(),
+      "--size": "1.5rem",
+      "--thickness": "3px"
+    } as CSSProperties} aria-valuenow={reading.getPercentage()} role="progressbar"/>
   ) : (
-    <FaRegCircle className="size-6 text-info" />
-  );
+    <div className="radial-progress text-info" style={{
+      "--value": reading.getPercentage(),
+      "--size": "1.5rem",
+      "--thickness": "3px"
+    } as CSSProperties} aria-valuenow={reading.getPercentage()} role="progressbar"/>
+  ));
 
-  const border = reading.finished ? (
+  const border = completeAndFinished? (
     <span className="w-2 h-auto bg-success" />
+  ) : (reading.finished? (
+    <span className="w-2 h-auto bg-error" />
   ) : (
     <span className="w-2 h-auto bg-info" />
-  );
+  ));
 
-  const badge = reading.finished ? (
+  const badge = completeAndFinished? (
     <span className="badge text-md font-semibold badge-success">
-      Leitura finalizada
+      {reading.getPercentage()}% / finalizada
+    </span>
+  ) : (reading.finished? (
+    <span className="badge text-md font-semibold badge-error">
+      {reading.getPercentage()}% / encerrada
     </span>
   ) : (
     <span className="badge text-md font-semibold badge-info">
-      Leitura em andamento
+      {reading.getPercentage()}% / andamento
     </span>
-  );
+  ));
 
   return (
     <li className="flex flex-row w-full bg-base-200 overflow-hidden rounded-box shadow-sm">
@@ -65,7 +83,7 @@ export default function ReadingCard({ reading, onFinish }: Props) {
             {format(reading.stoppedIn, "dd/MM/yyyy")}
           </p>
           <p className="text-sm font-extralight">
-            Página: {reading.currentPage}
+            Página: {reading.currentPage}/{reading.numPages}
           </p>
           {!reading.finished && (
             <div className="flex flex-row gap-3">

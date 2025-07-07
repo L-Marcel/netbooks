@@ -31,9 +31,9 @@ function App() {
             <Route path="/subscribe" element={<Subscribe />} />
             <Route path="/billing" element={<Billing />} />
             <Route path="/books/:id" element={<Books />} />
-            <Route path="/readings/:id" element={<Readings />} />
             <Route path="/match" element={<Match />} />
           </Route>
+          <Route path="/readings/:id" element={<Readings />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/match/:code" element={<MatchRoom />} />

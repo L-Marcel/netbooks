@@ -23,6 +23,8 @@ public class ReadingResponse {
     private Date stoppedIn;
     private Boolean finished;
     private Integer currentPage;
+    private Integer numPages;
+    private Double percentage;
     private UUID user;
     private Long book;
 
@@ -34,6 +36,8 @@ public class ReadingResponse {
         this.stoppedIn = reading.getStoppedIn();
         this.finished = reading.getFinished();
         this.currentPage = reading.getCurrentPage();
+        this.numPages = reading.getNumPages();
+        this.percentage = reading.getPercentage();
         this.user = reading.getUser();
         this.book = reading.getBook();
     };

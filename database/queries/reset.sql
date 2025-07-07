@@ -235,5 +235,6 @@ INSERT IGNORE INTO reading (id, book, user, current_page, finished, started_in, 
   (2, 2, '09876543-2109-fedc-ba98-7654321fedcb', 20, false, CURRENT_DATE, CURRENT_DATE),
   (3, 1, '09876543-2109-fedc-ba98-7654321fedcb', 223, true, CURRENT_DATE, CURRENT_DATE),
   (4, 1, 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 223, true, CURRENT_DATE, CURRENT_DATE),
-  (5, 1, 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 223, false, CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY));
+  (5, 1, 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 153, true, CURRENT_DATE, CURRENT_DATE),
+  (6, 1, 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 223, false, CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY));
 SELECT * FROM reading;
