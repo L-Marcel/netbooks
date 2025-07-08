@@ -5,7 +5,7 @@ import { fetchBooks, fetchTags } from "@services/books";
 import { useQuery } from "react-query";
 
 export default function Home() {
-  const { data: books = [] } = useQuery({
+  const { data: books = [], refetch } = useQuery({
     queryKey: ["books"],
     queryFn: () => fetchBooks(),
   });
@@ -36,7 +36,10 @@ export default function Home() {
 
   return (
     <main className="flex flex-col w-full h-ful items-center bg-base-100">
-      <BookHero book={books.length > 0 ? books[0] : undefined} />
+      <BookHero
+        onUpdateClassification={refetch}
+        book={books.length > 0 ? books[0] : undefined}
+      />
       {Object.entries(mapOfBooks)
         .filter(([, books]) => books.length > 0)
         .sort(([, a], [, b]) => b.length - a.length)

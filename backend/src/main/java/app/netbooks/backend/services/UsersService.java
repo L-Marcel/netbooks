@@ -73,7 +73,7 @@ public class UsersService {
             .email("Formato válido!", "Fomato inválido!")
             .min(6, "Tem mais de 5 caracteres!", "Tem menos de 6 caracteres!")
             .max(120, "Tem menos de 121 caracteres!", "Tem mais de 120 caracteres!")
-            .verify(!this.repository.findByEmail(email).isPresent(), "Disponível para uso!", "Já se encontra em uso!");
+            .verify((value) -> !this.repository.findByEmail(value).isPresent(), "Disponível para uso!", "Já se encontra em uso!");
 
         validator.validate("password", password)
             .min(8, "Tem mais de 7 caracteres!", "Tem menos de 8 caracteres!")
@@ -84,13 +84,12 @@ public class UsersService {
             .pattern("(.*[\\d].*){2,}", "Tem 2 dígitos!", "Precisa ter 2 dígitos!");
 
         validator.validate("passwordConfirmation", passwordConfirmation)
-            .verify(passwordConfirmation != null && passwordConfirmation.equals(password), "Senhas coincidem!", "Senhas não coincidem!");
+            .verify((value) -> value.equals(password), "Senhas coincidem!", "Senhas não coincidem!");
 
-        // [TODO] Resolve esse validate
         validator.validate("avatar", avatar)
-            .nullable();
-            //.pattern("^data:image\\/(png|jpeg|jpg);base64,[A-Za-z0-9+/]+={0,2}$", "Formato valido de imagem!", "Formato inválido de imagem!");
-
+            .nullable()
+            .verifyIfCatch((value) -> avatarsStorage.validate(avatar), "Formato valido de imagem!", "Formato inválido de imagem!");
+        
         validator.run();
         
         User user = new User(name, email, encoder.encode(password));
@@ -124,7 +123,7 @@ public class UsersService {
             .email("Formato válido!", "Fomato inválido!")
             .min(6, "Tem mais de 5 caracteres!", "Tem menos de 6 caracteres!")
             .max(120, "Tem menos de 121 caracteres!", "Tem mais de 120 caracteres!")
-            .verify(!candidate.isPresent() || candidate.get().getEmail().equals(email), "Disponível para uso!", "Já se encontra em uso!");
+            .verify((value) -> !candidate.isPresent() || candidate.get().getEmail().equals(value), "Disponível para uso!", "Já se encontra em uso!");
 
         validator.validate("password", password)
             .min(8, "Tem mais de 7 caracteres!", "Tem menos de 8 caracteres!")
@@ -135,9 +134,9 @@ public class UsersService {
             .pattern("(.*[\\d].*){2,}", "Tem 2 dígitos!", "Precisa ter 2 dígitos!");
         
         validator.validate("avatar", avatar)
-            .nullable();
-            //.pattern("^data:image\\/(png|jpeg|jpg);base64,[A-Za-z0-9+/]+={0,2}$", "Formato valido de imagem!", "Formato inválido de imagem!");
-
+            .nullable()
+            .verifyIfCatch((value) -> avatarsStorage.validate(avatar), "Formato valido de imagem!", "Formato inválido de imagem!");
+        
         validator.run();
         
         user.setName(name);

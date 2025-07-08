@@ -13,9 +13,11 @@ import { Subscription } from "@models/subscription";
 import { PlanEdition } from "@models/plan_edition";
 import Loading from "@components/Loading";
 import Button from "@components/Button";
+import { motion } from "motion/react";
 
 interface Props {
   plan: Plan;
+  index: number;
   subscription?: Subscription;
   nextSubscription?: Subscription;
   mostPopular?: boolean;
@@ -26,6 +28,7 @@ interface Props {
 
 export default function PlanCard({
   plan,
+  index,
   subscription,
   nextSubscription,
   mostPopular,
@@ -75,7 +78,33 @@ export default function PlanCard({
   const endDate = plan.getCheapestEndDate();
 
   return (
-    <div className="card w-full bg-base-200 shadow-sm h-min break-inside-avoid mb-8">
+    <motion.div
+      initial={{
+        opacity: 0,
+        height: 400,
+      }}
+      animate={{
+        opacity: 1,
+        height: "min-content",
+      }}
+      transition={{
+        height: {
+          type: "spring",
+          stiffness: 400,
+          damping: 30,
+          duration: 0.4,
+          delay: index * 0.2 + 0.4,
+        },
+        opacity: {
+          type: "spring",
+          stiffness: 400,
+          damping: 30,
+          duration: 1,
+          delay: index * 0.2,
+        },
+      }}
+      className="card w-full bg-base-200 shadow-sm h-min break-inside-avoid mb-8"
+    >
       <div className="card-body relative">
         <PlanTags tags={tags} />
         <div className="flex flex-row justify-between items-center">
@@ -173,6 +202,6 @@ export default function PlanCard({
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

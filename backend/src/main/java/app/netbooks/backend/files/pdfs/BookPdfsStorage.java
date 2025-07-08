@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import app.netbooks.backend.errors.BookFileNotFound;
 import app.netbooks.backend.errors.EmptyFile;
 import app.netbooks.backend.errors.InternalServerError;
+import app.netbooks.backend.errors.InvalidPdfFormat;
 
 public interface BookPdfsStorage {
     public void storeFile(Long id, MultipartFile file) 
@@ -14,4 +15,6 @@ public interface BookPdfsStorage {
         throws InternalServerError;
     public Resource gerFile(Long id)
         throws BookFileNotFound;
+    public void validate(MultipartFile file) 
+        throws InvalidPdfFormat, EmptyFile;
 };

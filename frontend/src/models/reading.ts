@@ -36,7 +36,7 @@ export class Reading {
       percentage: this.getPercentage(),
       user: this.user,
     });
-  };
+  }
 
   constructor(data: ReadingData) {
     this.id = data.id;
@@ -52,12 +52,17 @@ export class Reading {
 
   public getPercentage(): number {
     return this.percentage.toDecimalPlaces(2).toNumber();
-  };
+  }
+
+  public setPage(page: number) {
+    this.currentPage = Math.min(Math.max(page, 1), this.numPages);
+    this.percentage = new Decimal((page / this.numPages) * 100);
+  }
 
   public nextPage() {
     this.currentPage = Math.min(this.currentPage + 1, this.numPages);
     this.percentage = new Decimal((this.currentPage / this.numPages) * 100);
-  };
+  }
 
   public previousPage() {
     this.currentPage = Math.max(this.currentPage - 1, 0);

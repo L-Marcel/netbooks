@@ -34,12 +34,12 @@ public class AuthenticationMiddleware extends OncePerRequestFilter  {
     private RolesService rolesService;
 
     @Override
-    @SuppressWarnings("null")
     protected void doFilterInternal(
         HttpServletRequest request, 
         HttpServletResponse response, 
         FilterChain filterChain
     ) throws ServletException, IOException {
+        if(request == null || response == null || filterChain == null) return;
         Optional<String> token = this.getToken(request);
         
         if(token.isPresent()) {

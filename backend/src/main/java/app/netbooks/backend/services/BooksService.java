@@ -38,6 +38,26 @@ public class BooksService {
             .orElseThrow(BookNotFound::new);
     };
 
+       public Resource findContentById(Long id) {
+        Resource file = this.pdfsStorage.gerFile(id);
+        
+        try (
+            InputStream inputStream = file.getInputStream();
+            RandomAccessReadBuffer buffer = new RandomAccessReadBuffer(inputStream);
+            PDDocument bookPDF = Loader.loadPDF(buffer);
+        ) {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bookPDF.save(byteArrayOutputStream);
+            
+            return new ByteArrayResource(
+                byteArrayOutputStream.toByteArray()
+            );
+        } catch (HttpError e) {
+            throw e;
+        } catch (Exception e) {
+            throw new InternalServerError();
+        }
+    };
 
     public Resource findContentById(Long id, Integer page) {
         Resource file = this.pdfsStorage.gerFile(id);

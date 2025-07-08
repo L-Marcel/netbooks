@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import app.netbooks.backend.connections.transactions.Transactions;
+import app.netbooks.backend.errors.ReadingAlreadyFinished;
 import app.netbooks.backend.errors.ReadingNotFound;
 import app.netbooks.backend.errors.TooManyReadings;
 import app.netbooks.backend.models.Benefit;
@@ -24,6 +25,16 @@ public class ReadingService {
     public Reading findByUserAndId(UUID user, Long id) {
         return this.repository.findByUserAndId(user, id)
             .orElseThrow(ReadingNotFound::new);
+    };
+
+    public Reading findNotFinishedByUserAndId(UUID user, Long id) {
+        Reading reading = this.repository.findByUserAndId(user, id)
+            .orElseThrow(ReadingNotFound::new);
+        
+        if(reading.getFinished())
+            throw new ReadingAlreadyFinished();
+
+        return reading;
     };
 
     public Reading findLastByUserAndBook(UUID user, Long book) {

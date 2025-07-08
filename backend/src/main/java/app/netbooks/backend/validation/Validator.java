@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -157,10 +158,37 @@ public class Validator {
             return this;
         };
 
-        public Field<T> verify(boolean condition, String message, String error) {
+        public Field<T> verify(Function<T, Boolean> condition, String message, String error) {
             this.steps.add(new Tuple<Runnable, String>(() -> {
-                if(!condition || this.value == null)
+                if(this.value == null || !condition.apply(this.value))
                     throw new ValidationStepError(error);
+            }, message));
+
+            return this;
+        };
+
+        public Field<T> verifyIfCatch(ThrowingConsumer<T> condition, String message, String error) {
+            this.steps.add(new Tuple<Runnable, String>(() -> {
+                try {
+                    if(this.value == null)
+                        throw new ValidationStepError(error);
+                    condition.apply(this.value);
+                } catch (Exception e) {
+                    throw new ValidationFieldError(e.getMessage());
+                };
+            }, message));
+
+            return this;
+        };
+
+        public Field<T> verifyWithCatch(ThrowingFunction<T, Boolean> condition, String message, String error) {
+            this.steps.add(new Tuple<Runnable, String>(() -> {
+                try {
+                    if(this.value == null || !condition.apply(this.value))
+                        throw new ValidationStepError(error);
+                } catch (Exception e) {
+                    throw new ValidationFieldError(e.getMessage());
+                };
             }, message));
 
             return this;

@@ -11,11 +11,15 @@ import { fetchUpdatedUser } from "@services/user";
 import { useLoading } from "@stores/useLoading";
 import useUser from "@stores/useUser";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "motion/react";
 
 export default function Subscribe() {
   const user = useUser((state) => state.user);
   const startLoading = useLoading((state) => state.start);
   const clearLoading = useLoading((state) => state.clear);
+  const hasLoading = useLoading((state) => state.has);
+  const navigate = useNavigate();
 
   const [nextSubscription, setNextSubscription] = useState<
     Subscription | undefined
@@ -24,12 +28,13 @@ export default function Subscribe() {
   const [plans, setPlans] = useState<Plan[]>([]);
 
   const update = useCallback(() => {
+    startLoading("plans");
     Promise.all([
       fetchNextSubscription().catch(() => undefined),
       fetchAvailablePlans(),
     ])
       .then(async ([nextSubscription, plans]) => {
-        await fetchUpdatedUser();
+        await fetchUpdatedUser().catch(() => {});
         setNextSubscription(nextSubscription);
         setPlans(plans.sort((a, b) => a.benefits.length - b.benefits.length));
       })
@@ -38,7 +43,7 @@ export default function Subscribe() {
         setPlans([]);
       })
       .finally(clearLoading);
-  }, [setNextSubscription, setPlans, clearLoading]);
+  }, [setNextSubscription, setPlans, startLoading, clearLoading]);
 
   useEffect(update, [update]);
 
@@ -72,24 +77,35 @@ export default function Subscribe() {
   return (
     <main className="p-8 gap-8 bg-base-100">
       <section className="columns-1 lg:columns-2 xl:columns-3 w-full">
-        {plans.map((plan) => (
-          <PlanCard
-            key={plan.id}
-            plan={plan}
-            subscription={user?.subscription}
-            nextSubscription={nextSubscription}
-            mostPopular={mostPopular && mostPopular?.id === plan.id}
-            mostEconomic={mostEconomic && mostEconomic?.id === plan.id}
-            onCancelNextSubscriptions={() => {
-              startLoading(plan.id);
-              closeNextSubscriptions().finally(update);
-            }}
-            onSubscribe={(edition) => {
-              startLoading(plan.id);
-              subscribe(edition.id).finally(update);
-            }}
-          />
-        ))}
+        {hasLoading("plans") || plans.length == 0 ? (
+          <>
+            <motion.div className="skeleton card w-full bg-base-200 shadow-sm h-100 break-inside-avoid mb-8" />
+            <motion.div className="skeleton card w-full bg-base-200 shadow-sm h-100 break-inside-avoid mb-8" />
+            <motion.div className="skeleton card w-full bg-base-200 shadow-sm h-100 break-inside-avoid mb-8" />
+          </>
+        ) : (
+          plans.map((plan, index) => (
+            <PlanCard
+              index={index}
+              key={plan.id}
+              plan={plan}
+              subscription={user?.subscription}
+              nextSubscription={nextSubscription}
+              mostPopular={mostPopular && mostPopular?.id === plan.id}
+              mostEconomic={mostEconomic && mostEconomic?.id === plan.id}
+              onCancelNextSubscriptions={() => {
+                startLoading(plan.id);
+                if (user) closeNextSubscriptions().finally(update);
+                else navigate("/login");
+              }}
+              onSubscribe={(edition) => {
+                startLoading(plan.id);
+                if (user) subscribe(edition.id).finally(update);
+                else navigate("/login");
+              }}
+            />
+          ))
+        )}
       </section>
     </main>
   );

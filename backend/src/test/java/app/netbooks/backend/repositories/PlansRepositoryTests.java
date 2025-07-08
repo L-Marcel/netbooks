@@ -155,7 +155,6 @@ public abstract class PlansRepositoryTests extends BaseTests {
 
         assertDoesNotThrow(() -> {
             PlansRepositoryImpl plansRepository = new PlansRepositoryImpl(database);
-            plansRepository.initialize();
             plansRepository.findAll();
             plansRepository.findById(null);
         });

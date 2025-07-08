@@ -13,4 +13,6 @@ public interface UsersAvatarsStorage {
         throws InvalidImageFormat, InternalServerError, EmptyFile;  
     public void deleteAvatar(UUID uuid)
         throws InternalServerError;  
+    public void validate(MultipartFile file) 
+        throws InvalidImageFormat, EmptyFile;
 };

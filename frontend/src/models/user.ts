@@ -1,6 +1,7 @@
 import { UUID } from "crypto";
 import { Subscription } from "./subscription";
 import { Benefit } from "./benefit";
+import { Book } from "./book";
 
 export enum Role {
   ADMINISTRATOR = "ADMINISTRATOR",
@@ -68,6 +69,18 @@ export class User {
       this.benefits.some(
         (benefit) => benefit === Benefit.CAN_HAVE_FIVE_READINGS
       )
+    );
+  }
+
+  public canDownloadBook(book: Book): boolean {
+    return (
+      this.isAdmin() ||
+      (this.benefits.some(
+        (benefit) => benefit === Benefit.CAN_DOWNLOAD_BOOKS
+      ) &&
+        book.requirements.every((requirement) =>
+          this.benefits.includes(requirement)
+        ))
     );
   }
 }

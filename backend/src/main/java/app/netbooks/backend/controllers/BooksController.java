@@ -4,22 +4,36 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import app.netbooks.backend.annotations.AuhenticatedOnly;
 import app.netbooks.backend.annotations.SubscriberOrAdministratorOnly;
+import app.netbooks.backend.authentication.AuthenticatedUser;
+import app.netbooks.backend.dtos.request.ClassificationRequestBody;
 import app.netbooks.backend.dtos.response.BookResponse;
+import app.netbooks.backend.dtos.response.ClassificationResponse;
 import app.netbooks.backend.models.Author;
 import app.netbooks.backend.models.Benefit;
 import app.netbooks.backend.models.Book;
+import app.netbooks.backend.models.Classification;
 import app.netbooks.backend.models.Tag;
 import app.netbooks.backend.services.BooksAuthorsService;
 import app.netbooks.backend.services.BooksBenefitsService;
 import app.netbooks.backend.services.BooksService;
 import app.netbooks.backend.services.BooksTagsService;
+import app.netbooks.backend.services.ClassificationsService;
+import app.netbooks.backend.services.PlansBenefitsService;
 
 @RestController
 @RequestMapping("/books")
@@ -35,6 +49,12 @@ public class BooksController {
 
     @Autowired
     private BooksBenefitsService booksBenefitsService;
+
+    @Autowired
+    private PlansBenefitsService plansBenefitsService;
+
+    @Autowired
+    private ClassificationsService classificationsService;
 
     @GetMapping
     public ResponseEntity<List<BookResponse>> findAll() {
@@ -71,5 +91,71 @@ public class BooksController {
         );
 
         return ResponseEntity.ok().body(response);
+    };
+
+    @GetMapping("/{book}/classification")
+    @AuhenticatedOnly
+    public ResponseEntity<ClassificationResponse> findClassificationByBookAndUser(
+        @PathVariable Long book,
+        @AuthenticationPrincipal AuthenticatedUser user
+    ) {
+        Classification classification = this.classificationsService.findByBookAndUser(
+            book, 
+            user.getUser().getUuid()
+        );
+
+        ClassificationResponse response = new ClassificationResponse(classification);
+        return ResponseEntity.ok().body(response);
+    };
+
+    @PostMapping("/{book}/classification")
+    @AuhenticatedOnly
+    public ResponseEntity<ClassificationResponse> createOrUpdateClassificationByBookAndUser(
+        @PathVariable Long book,
+        @AuthenticationPrincipal AuthenticatedUser user,
+        @RequestBody ClassificationRequestBody body
+    ) {
+        Classification classification = this.classificationsService.createOrUpdate(
+            book, 
+            user.getUser().getUuid(),
+            body.getValue()
+        );
+
+        ClassificationResponse response = new ClassificationResponse(classification);
+        return ResponseEntity.ok().body(response);
+    };
+
+    @GetMapping("/{id}/download")
+    @SubscriberOrAdministratorOnly
+    public ResponseEntity<Resource> findContentById(
+        @AuthenticationPrincipal AuthenticatedUser user,
+        @PathVariable Long id,
+        @RequestParam(defaultValue = "1") Integer page
+    ) {
+        Book book = this.booksService.findById(id);
+        
+        List<Benefit> benefits = this.plansBenefitsService.findAllBySubscriber(
+            user.getUser().getUuid()
+        );
+
+        this.booksBenefitsService.validateBookAccessToDownlaod(
+            book.getId(), 
+            benefits
+        );
+
+        Resource content = this.booksService.findContentById(
+            book.getId()
+        );
+
+        String contentDisposition = String.format(
+            "inline; filename=\"%s.pdf\"",
+            book.getTitle()
+        );
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+            .header("Filename", book.getTitle() + ".pdf")
+            .contentType(MediaType.APPLICATION_PDF)
+            .body(content);
     };
 };

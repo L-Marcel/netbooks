@@ -316,35 +316,35 @@ public abstract class ValidatorTests extends BaseTests {
         assertDoesNotThrow(() -> {
             Validator validator = new Validator();
             validator.validate("pattern", "")
-                .verify(true, "...", "...");
+                .verify((value) -> true, "...", "...");
             validator.run();
         });
 
         assertThrows(ValidationsError.class, () -> {
             Validator validator = new Validator();
             validator.validate("pattern", "")
-                .verify(false, "...", "...");
+                .verify((value) -> false, "...", "...");
             validator.run();
         });
 
         assertThrows(ValidationsError.class, () -> {
             Validator validator = new Validator();
             validator.validate("pattern", null)
-                .verify(false, "...", "...");
+                .verify((value) -> false, "...", "...");
             validator.run();
         });
 
         assertThrows(ValidationsError.class, () -> {
             Validator validator = new Validator();
             validator.validate("pattern", null)
-                .verify(true, "...", "...");
+                .verify((value) -> true, "...", "...");
             validator.run();
         });
 
         assertDoesNotThrow(() -> {
             Validator validator = new Validator();
             validator.validate("pattern", null)
-                .verify(false, "...", "...")
+                .verify((value) -> false, "...", "...")
                 .nullable();
             validator.run();
         });
@@ -352,7 +352,7 @@ public abstract class ValidatorTests extends BaseTests {
         assertDoesNotThrow(() -> {
             Validator validator = new Validator();
             validator.validate("pattern", null)
-                .verify(true, "...", "...")
+                .verify((value) -> true, "...", "...")
                 .nullable();
             validator.run();
         });
@@ -360,7 +360,7 @@ public abstract class ValidatorTests extends BaseTests {
         assertDoesNotThrow(() -> {
             Validator validator = new Validator();
             validator.validate("pattern", "")
-                .verify(true, "...", "...")
+                .verify((value) -> true, "...", "...")
                 .nullable();
             validator.run();
         });

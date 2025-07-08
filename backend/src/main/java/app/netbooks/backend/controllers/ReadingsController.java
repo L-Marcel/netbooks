@@ -67,7 +67,7 @@ public class ReadingsController {
         @PathVariable Long id,
         @RequestParam(defaultValue = "1") Integer page
     ) {
-        Reading reading = this.readingsService.findByUserAndId(
+        Reading reading = this.readingsService.findNotFinishedByUserAndId(
             user.getUser().getUuid(),
             id
         );

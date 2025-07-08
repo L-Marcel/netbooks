@@ -8,8 +8,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class FilesConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(
-        @SuppressWarnings("null") ResourceHandlerRegistry registry
+        ResourceHandlerRegistry registry
     ) {
+        if(registry == null) return;
         registry.addResourceHandler("/users/**")
             .addResourceLocations("file:database/data/users/")
             .addResourceLocations("file:../database/data/users/");

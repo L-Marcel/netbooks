@@ -12,13 +12,12 @@ public abstract class PdfsStorage extends FilesStorage {
     };
     
     @Override
-    @SuppressWarnings("null")
     public void validate(
         MultipartFile file
     ) throws InvalidPdfFormat, EmptyFile {
         super.validate(file);
 
-        Boolean isValid = file.getContentType() != null && 
+        Boolean isValid = !file.isEmpty() && file.getContentType() != null && 
             file.getContentType().contains("pdf");
         
         if(!isValid) throw new InvalidPdfFormat();

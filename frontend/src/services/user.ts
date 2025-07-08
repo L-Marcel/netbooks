@@ -14,6 +14,7 @@ export type UserLoginData = {
 export type UserRegisterData = {
   name: string;
   avatar?: {
+    blob: Blob;
     url: string;
     base64: string;
     filename?: string;
@@ -35,10 +36,11 @@ export async function logout() {
   setUser(undefined);
 }
 
-export async function registerUser(data: UserRegisterData) {
-  return api.post<void>("/users", {
-    ...data,
-    avatar: data.avatar?.base64,
+export async function registerUser(data: FormData) {
+  return api.post<void>("/users", data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
 }
 
@@ -72,8 +74,8 @@ async function fetchBenefits(token: string): Promise<Benefit[]> {
 }
 
 export async function fetchUser(token: string): Promise<User> {
-  return Promise.all([
-    axios
+  return await Promise.all([
+    await axios
       .get<UserData>("http://localhost:8080/users/me", {
         headers: {
           "Content-Type": "application/json",
@@ -81,8 +83,8 @@ export async function fetchUser(token: string): Promise<User> {
         },
       })
       .then((response) => response.data),
-    fetchBenefits(token).catch(() => []),
-    fetchSubscription(token).catch(() => undefined),
+    await fetchBenefits(token).catch(() => [] as Benefit[]),
+    await fetchSubscription(token).catch(() => undefined),
   ]).then(([data, benefits, subscription]) => {
     return new User(data, benefits, subscription);
   });

@@ -26,7 +26,7 @@ export default function Navbar() {
             <NavbarLinks user={user} />
           </ul>
         </div>
-        <Logo className="h-8 w-18 lg:h-12 lg:w-28" />
+        <Logo className="not-sm:hidden h-8 w-18 lg:h-12 lg:w-28" />
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1 items-center gap-1">

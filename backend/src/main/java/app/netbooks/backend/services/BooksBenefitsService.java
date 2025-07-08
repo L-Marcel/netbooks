@@ -27,9 +27,6 @@ public class BooksBenefitsService {
         List<Benefit> requirements = this.findAllByBook(
             id
         );
-        
-        System.out.println(requirements);
-        System.out.println(benefits);
 
         if(!requirements.stream().allMatch(
             (requirement) -> {
@@ -38,5 +35,15 @@ public class BooksBenefitsService {
                 );
             }
         )) throw new Unauthorized();
+    };
+
+    public void validateBookAccessToDownlaod(Long id, List<Benefit> benefits) {
+        this.validateBookAccess(id, benefits);
+
+        if(
+            !benefits.stream().anyMatch(
+                (benefit) -> benefit.getName().equals("CAN_DOWNLOAD_BOOKS")
+            )
+        ) throw new Unauthorized();
     };
 };

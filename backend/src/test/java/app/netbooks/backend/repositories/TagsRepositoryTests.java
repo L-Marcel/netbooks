@@ -105,7 +105,6 @@ public abstract class TagsRepositoryTests extends BaseTests {
 
         assertDoesNotThrow(() -> {
             TagsRepositoryImpl tagsRepositoryImpl = new TagsRepositoryImpl(database);
-            tagsRepositoryImpl.initialize();
             tagsRepositoryImpl.findAll();
             tagsRepositoryImpl.findByName(null);
         });

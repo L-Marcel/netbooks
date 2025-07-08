@@ -219,7 +219,6 @@ public abstract class UsersRepositoryTests extends BaseTests {
 
         assertDoesNotThrow(() -> {
             UsersRepositoryImpl usersRepositoryImpl = new UsersRepositoryImpl(database);
-            usersRepositoryImpl.initialize();
             usersRepositoryImpl.findAll();
             usersRepositoryImpl.findById(null);
             usersRepositoryImpl.findByEmail(null);

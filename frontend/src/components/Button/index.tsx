@@ -1,16 +1,26 @@
 import { useLoading } from "@stores/useLoading";
 import { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
 
+interface Props
+  extends DetailedHTMLProps<
+    ButtonHTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  > {
+  notDisableOnLoading?: boolean;
+}
+
 export default function Button({
   disabled,
+  notDisableOnLoading = false,
   ...props
-}: DetailedHTMLProps<
-  ButtonHTMLAttributes<HTMLButtonElement>,
-  HTMLButtonElement
->) {
+}: Props) {
   const hasAnyLoading = useLoading((state) => state.hasAny);
 
   return (
-    <button disabled={hasAnyLoading || disabled} type="button" {...props} />
+    <button
+      disabled={(hasAnyLoading && !notDisableOnLoading) || disabled}
+      type="button"
+      {...props}
+    />
   );
 }

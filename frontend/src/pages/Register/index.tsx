@@ -50,6 +50,7 @@ function Page() {
       ...data,
       avatar: {
         url,
+        blob,
         base64,
         filename,
       },
@@ -59,7 +60,26 @@ function Page() {
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     startLoading("register");
-    registerUser(data)
+
+    const formData = new FormData();
+
+    const body = {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      passwordConfirmation: data.passwordConfirmation,
+    };
+
+    formData.append(
+      "body",
+      new Blob([JSON.stringify(body)], { type: "application/json" })
+    );
+
+    if (data.avatar?.blob) {
+      formData.append("avatar", data.avatar.blob, data.avatar.filename);
+    }
+
+    registerUser(formData)
       .then(() => {
         navigate("/login");
       })

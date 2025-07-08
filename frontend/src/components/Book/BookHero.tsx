@@ -10,9 +10,14 @@ import Loading from "@components/Loading";
 import { useEffect, useState } from "react";
 import { FaBookBookmark } from "react-icons/fa6";
 import useUser from "@stores/useUser";
+import BookClassificationDialog from "./BookClassificationDialog";
+import { FaDownload } from "react-icons/fa";
+import { downloadBook } from "@services/books";
+
 interface Props {
   book?: Book;
   reading?: Reading;
+  onUpdateClassification: () => void;
   notFinishedReadingsIsFull?: boolean;
 }
 
@@ -20,6 +25,7 @@ export default function BookHero({
   book,
   reading,
   notFinishedReadingsIsFull = false,
+  onUpdateClassification,
 }: Props) {
   const navigate = useNavigate();
   const user = useUser((state) => state.user);
@@ -33,6 +39,20 @@ export default function BookHero({
     startReadingsOfBook(book?.id ?? -1)
       .then((reading) => navigate("/readings/" + reading?.id))
       .finally(() => stopLoading(loadingId));
+  };
+
+  const onDownloadBook = () => {
+    downloadBook(book?.id ?? -1)
+      .then((file) => {
+        const url = URL.createObjectURL(file);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = file.name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      });
   };
 
   useEffect(() => {
@@ -63,7 +83,20 @@ export default function BookHero({
           <header className="flex flex-col gap-4 md:gap-2">
             <h1 className="text-3xl lg:text-5xl font-bold">{book?.title}</h1>
             <BookTags tags={book?.tags ?? []} />
-            <RatingInput readonly rate={book?.stars ?? 0} />
+            <div className="flex flex-row items-center gap-1">
+              <RatingInput readonly rate={book?.stars ?? 0} />
+              {user && book && (
+                <BookClassificationDialog
+                  onUpdate={onUpdateClassification}
+                  book={book}
+                />
+              )}
+              {user && book && user.canDownloadBook(book) && (
+                <Button onClick={onDownloadBook} className="btn btn-ghost btn-primary btn-sm">
+                  <FaDownload /> Baixar
+                </Button>
+              )}
+            </div>
           </header>
           <main>
             <p className="text-sm md:text-base">{book?.description}</p>
@@ -82,7 +115,7 @@ export default function BookHero({
                       <FaBookBookmark />
                     </Link>
                   )}
-                  {lastReading && user && (
+                  {lastReading && !lastReading.finished && user && (
                     <Link
                       to={"/readings/" + lastReading?.id}
                       className={`btn ${!reading ? "btn-primary" : "btn-secondary"}`}
@@ -90,7 +123,7 @@ export default function BookHero({
                       Continuar leitura
                     </Link>
                   )}
-                  {user? (!!reading && (
+                  {user ? (
                     <Button
                       disabled={notFinishedReadingsIsFull}
                       onClick={onNewReadRequested}
@@ -102,11 +135,8 @@ export default function BookHero({
                         defaultMessage="Nova leitura"
                       />
                     </Button>
-                  )):(
-                    <Link
-                      to="/subscribe"
-                      className="btn btn-primary"
-                    >
+                  ) : (
+                    <Link to="/subscribe" className="btn btn-primary">
                       Nova leitura
                     </Link>
                   )}

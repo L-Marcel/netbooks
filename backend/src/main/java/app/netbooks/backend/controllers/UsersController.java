@@ -86,7 +86,7 @@ public class UsersController {
 
     @PostMapping
     public ResponseEntity<Void> register(
-        @RequestPart("avatar") MultipartFile avatar,
+        @RequestPart(name="avatar", required=false) MultipartFile avatar,
         @RequestPart("body") RegisterUserRequestBody body
     ) {
         usersService.register(
@@ -106,7 +106,7 @@ public class UsersController {
     @PutMapping
     public ResponseEntity<UserResponse> update(
         @AuthenticationPrincipal AuthenticatedUser user,
-        @RequestPart("avatar") MultipartFile avatar,
+        @RequestPart(name="avatar", required=false) MultipartFile avatar,
         @RequestPart("body") RegisterUserRequestBody body
     ) {
         usersService.update(

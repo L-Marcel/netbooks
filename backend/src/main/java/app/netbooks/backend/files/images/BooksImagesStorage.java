@@ -15,4 +15,6 @@ public interface BooksImagesStorage {
         throws InvalidImageFormat, InternalServerError, EmptyFile; 
     public void deleteBanner(Long id)
         throws InternalServerError;
+    public void validate(MultipartFile file) 
+        throws InvalidImageFormat, EmptyFile;
 };

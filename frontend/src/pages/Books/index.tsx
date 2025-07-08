@@ -29,9 +29,13 @@ function Page() {
   const [book, setBook] = useState<Book>();
   const [readings, setReadings] = useState<Reading[]>([]);
 
-  const countNotFinishedReadings = useMemo(() => {
-    return readings.filter((reading) => !reading.finished).length;
+  const notFinishedReadings = useMemo(() => {
+    return readings.filter((reading) => !reading.finished);
   }, [readings]);
+
+  const countNotFinishedReadings = useMemo(() => {
+    return notFinishedReadings.length;
+  }, [notFinishedReadings.length]);
 
   const notFinishedReadingsIsFull = useMemo(() => {
     return (
@@ -58,8 +62,11 @@ function Page() {
   return (
     <main className="flex flex-col w-full h-ful items-center bg-base-100">
       <BookHero
+        onUpdateClassification={update}
         book={book}
-        reading={readings.length > 0 ? readings[0] : undefined}
+        reading={
+          notFinishedReadings.length > 0 ? notFinishedReadings[0] : undefined
+        }
         notFinishedReadingsIsFull={notFinishedReadingsIsFull}
       />
       <section className="flex flex-col gap-8 p-8 w-full">

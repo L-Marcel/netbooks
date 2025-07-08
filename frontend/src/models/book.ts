@@ -1,3 +1,5 @@
+import { Benefit, BenefitData } from "./benefit";
+
 export type Author = {
   id: number;
   name: string;
@@ -22,6 +24,7 @@ export interface BookData {
   stars: number;
   tags: Tag[];
   authors: Author[];
+  requirements: BenefitData[];
 }
 
 export class Book {
@@ -35,6 +38,7 @@ export class Book {
   readonly stars: number;
   readonly tags: Tag[];
   readonly authors: Author[];
+  readonly requirements: Benefit[];
   readonly cover: string;
   readonly banner: string;
 
@@ -49,6 +53,9 @@ export class Book {
     this.stars = data.stars;
     this.tags = data.tags;
     this.authors = data.authors;
+    this.requirements = data.requirements.map(
+      (requirement) => requirement.name as Benefit
+    );
     this.cover = `http://localhost:8080/books/covers/${this.id}.webp`;
     this.banner = `http://localhost:8080/books/banners/${this.id}.webp`;
   }
