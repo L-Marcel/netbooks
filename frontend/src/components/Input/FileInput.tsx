@@ -10,6 +10,8 @@ import Cropper, { Area } from "react-easy-crop";
 import getCroppedImg from "../../services/crop";
 import { FaCloudUploadAlt, FaTrash, FaUpload } from "react-icons/fa";
 import { FaCheck, FaRotate, FaX } from "react-icons/fa6";
+import Button from "@components/Button";
+import Input from ".";
 
 interface CropProps
   extends Exclude<
@@ -144,12 +146,11 @@ export default function ImageInput({
 
   return (
     <>
-      <button type="button" {...props} onClick={onClickToOpen} />
+      <Button {...props} onClick={onClickToOpen} />
       <dialog ref={areaRef} className="modal">
         <div className="modal-box flex flex-col gap-4">
           <h1 className="text-lg font-semibold">Importar imagem</h1>
-          <button
-            type="button"
+          <Button
             onClick={onClickToUpload}
             onDrop={onDropImage}
             onDragOver={(e) => e.preventDefault()}
@@ -172,9 +173,9 @@ export default function ImageInput({
                 </div>
               </div>
             )}
-          </button>
+          </Button>
           <div className="flex gap-4 justify-between items-center">
-            <input
+            <Input
               ref={inputRef}
               type="file"
               className="hidden"
@@ -184,28 +185,25 @@ export default function ImageInput({
             <p className="overflow-ellipsis overflow-hidden w-full text-nowrap font-light">
               {file.name ?? file.url ?? "Nenhum arquivo carregado..."}
             </p>
-            <button
-              type="button"
+            <Button
               className="btn btn-soft btn-primary btn-square"
               onClick={onClickToUpload}
             >
               <FaUpload />
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
               disabled={!canClear}
               className="btn btn-soft btn-secondary btn-square"
               onClick={onClickToClear}
             >
               <FaTrash />
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
               onClick={onCancel}
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
             >
               <FaX />
-            </button>
+            </Button>
           </div>
         </div>
       </dialog>
@@ -236,14 +234,13 @@ export default function ImageInput({
           <div className="flex gap-4 mx-6 mb-6">
             <div className="flex flex-row gap-4 justify-between items-center w-full flex-wrap">
               <div className="flex flex-row gap-4 justify-start items-center not-sm:w-full">
-                <button
-                  type="button"
+                <Button
                   className="btn btn-circle btn-soft btn-primary"
                   onClick={onResetZoom}
                 >
                   <FaRotate />
-                </button>
-                <input
+                </Button>
+                <Input
                   type="range"
                   step={0.1}
                   min="0.1"
@@ -254,30 +251,27 @@ export default function ImageInput({
                 />
               </div>
               <div className="flex flex-row gap-4 justify-start items-center">
-                <button
-                  type="button"
+                <Button
                   className="btn btn-soft btn-primary"
                   onClick={onConfirm}
                 >
                   <FaCheck />
                   Confirmar
-                </button>
-                <button
-                  type="button"
+                </Button>
+                <Button
                   className="btn btn-soft btn-square btn-secondary"
                   onClick={onCancel}
                 >
                   <FaX />
-                </button>
+                </Button>
               </div>
             </div>
-            <button
-              type="button"
+            <Button
               onClick={onCancel}
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
             >
               <FaX />
-            </button>
+            </Button>
           </div>
         </div>
       </dialog>

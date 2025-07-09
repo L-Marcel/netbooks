@@ -11,7 +11,6 @@ import app.netbooks.backend.connections.interfaces.Database;
 import app.netbooks.backend.connections.interfaces.OperationFunction;
 import app.netbooks.backend.connections.interfaces.QueryFunction;
 import app.netbooks.backend.errors.InternalServerError;
-import jakarta.annotation.PostConstruct;
 
 public abstract class BaseRepository {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -21,13 +20,6 @@ public abstract class BaseRepository {
     public BaseRepository(Database database) {
         this.database = database;
     };
-
-    @PostConstruct
-    private void postConstruct() {
-        this.initialize();
-    };
-
-    public void initialize() {};
 
     public <T> T query(
         QueryFunction<T> query,

@@ -9,8 +9,10 @@ import useUser from "@stores/useUser";
 import { formatDate } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 import { FaTriangleExclamation } from "react-icons/fa6";
-import useLoading from "../../hooks/useLoading";
 import Loading from "@components/Loading";
+import { useLoading } from "@stores/useLoading";
+import Button from "@components/Button";
+import Input from "@components/Input";
 
 export default function Billing() {
   return (
@@ -21,9 +23,10 @@ export default function Billing() {
 }
 
 function Page() {
-  const loading = useLoading();
-  const { start: startLoading, stop: stopLoading } = loading;
   const user = useUser((state) => state.user);
+  const startLoading = useLoading((state) => state.start);
+  const stopLoading = useLoading((state) => state.stop);
+
   const [payments, setPayments] = useState<Payment[]>([]);
   const [renewDetails, setRenewDetails] = useState<RenewDetails>();
 
@@ -69,18 +72,13 @@ function Page() {
               {formatDate(renewDetails?.dueDate, "dd/MM/yyyy")}!
             </span>
             <div>
-              <button
-                disabled={loading.hasAny}
-                type="button"
-                onClick={() => onPay(-1)}
-                className="btn btn-warning"
-              >
+              <Button onClick={() => onPay(-1)} className="btn btn-warning">
                 <Loading
-                  isLoading={loading.has(-1)}
+                  id={-1}
                   loadingMessage="Renovando assinatura..."
                   defaultMessage="Renovar assinatura"
                 />
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -93,15 +91,14 @@ function Page() {
             renovadas manualmente.
           </p>
           <label className="label mt-1">
-            <input
+            <Input
               type="checkbox"
-              disabled={loading.hasAny}
               onChange={onSwitchAutomaticBilling}
               checked={user?.automaticBilling}
               className="toggle text-base-content"
             />
             <Loading
-              isLoading={loading.has("automatic_billing")}
+              id="automatic_billing"
               loadingMessage={
                 user?.automaticBilling ? "Desativando..." : "Ativando..."
               }
@@ -113,7 +110,6 @@ function Page() {
           {payments.map((payment) => (
             <PaymentCard
               onPay={() => onPay(payment.id)}
-              loading={loading}
               key={payment.id}
               payment={payment}
             />

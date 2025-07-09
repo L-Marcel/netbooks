@@ -28,11 +28,11 @@ public class PublisherController {
         List<Publisher> publishers = service.findAll();
         List<PublisherResponse> response = PublisherResponse.fromList(publishers);
         return ResponseEntity.ok().body(response);
-    }
+    };
 
     @PostMapping
     public ResponseEntity<Void> create(@RequestBody Publisher publisher) {
         service.create(publisher);
         return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-}
+    };
+};

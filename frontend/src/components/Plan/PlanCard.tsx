@@ -12,11 +12,12 @@ import Decimal from "decimal.js";
 import { Subscription } from "@models/subscription";
 import { PlanEdition } from "@models/plan_edition";
 import Loading from "@components/Loading";
-import { LoadingContext } from "../../hooks/useLoading";
+import Button from "@components/Button";
+import { motion } from "motion/react";
 
 interface Props {
   plan: Plan;
-  loading: LoadingContext;
+  index: number;
   subscription?: Subscription;
   nextSubscription?: Subscription;
   mostPopular?: boolean;
@@ -27,11 +28,11 @@ interface Props {
 
 export default function PlanCard({
   plan,
+  index,
   subscription,
   nextSubscription,
   mostPopular,
   mostEconomic,
-  loading,
   onSubscribe,
   onCancelNextSubscriptions,
 }: Props) {
@@ -77,7 +78,33 @@ export default function PlanCard({
   const endDate = plan.getCheapestEndDate();
 
   return (
-    <div className="card w-full bg-base-200 shadow-sm h-min break-inside-avoid mb-8">
+    <motion.div
+      initial={{
+        opacity: 0,
+        height: 400,
+      }}
+      animate={{
+        opacity: 1,
+        height: "min-content",
+      }}
+      transition={{
+        height: {
+          type: "spring",
+          stiffness: 400,
+          damping: 30,
+          duration: 0.4,
+          delay: index * 0.2 + 0.4,
+        },
+        opacity: {
+          type: "spring",
+          stiffness: 400,
+          damping: 30,
+          duration: 1,
+          delay: index * 0.2,
+        },
+      }}
+      className="card w-full bg-base-200 shadow-sm h-min break-inside-avoid mb-8"
+    >
       <div className="card-body relative">
         <PlanTags tags={tags} />
         <div className="flex flex-row justify-between items-center">
@@ -131,37 +158,35 @@ export default function PlanCard({
             </p>
           )}
           {isNextUserPlan ? (
-            <button
+            <Button
               onClick={onCancelNextSubscriptions}
-              type="button"
               className="btn btn-error btn-block"
-              disabled={isUserPlan || loading.hasAny}
+              disabled={isUserPlan}
             >
               <Loading
-                isLoading={loading.has(plan.id)}
+                id={plan.id}
                 loadingMessage="Interrompendo mudança..."
                 defaultMessage="Interromper Mudança"
               />
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               onClick={() =>
                 onSubscribe(plan.getCheapestEdition() as PlanEdition)
               }
-              type="button"
               className="btn btn-primary btn-block"
-              disabled={isUserPlan || loading.hasAny}
+              disabled={isUserPlan}
             >
               {isUserPlan ? (
                 "Inscrito"
               ) : (
                 <Loading
-                  isLoading={loading.has(plan.id)}
+                  id={plan.id}
                   loadingMessage="Inscrevendo-se..."
                   defaultMessage="Inscreve-se"
                 />
               )}
-            </button>
+            </Button>
           )}
           {isUserPlan && subscription?.closedIn && (
             <p className="ml-0.5 mt-4 text-xs flex flex-row items-center gap-2 font-light">
@@ -177,6 +202,6 @@ export default function PlanCard({
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -30,7 +30,6 @@ function Page() {
   const roomCode = room?.code;
 
   const isOwner = room?.owner === participant?.user;
-  console.log(room?.owner, participant?.user, isOwner);
 
   return (
     <main className="flex flex-col w-full h-ful items-center bg-base-100">

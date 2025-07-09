@@ -1,5 +1,7 @@
 //import { useNavigate } from "react-router-dom";
 
+import Button from ".";
+
 export default function StartRoomButton() {
   //const navigate = useNavigate();
 
@@ -8,8 +10,8 @@ export default function StartRoomButton() {
   };
 
   return (
-    <button type="button" className="btn btn-primary w-full" onClick={onStart}>
+    <Button className="btn btn-primary w-full" onClick={onStart}>
       Iniciar
-    </button>
+    </Button>
   );
 }

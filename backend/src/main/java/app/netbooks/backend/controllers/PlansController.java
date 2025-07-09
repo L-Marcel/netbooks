@@ -5,10 +5,13 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import app.netbooks.backend.authentication.AuthenticatedUser;
+import app.netbooks.backend.dtos.response.BenefitResponse;
 import app.netbooks.backend.dtos.response.PlanResponse;
 import app.netbooks.backend.models.Benefit;
 import app.netbooks.backend.models.Plan;
@@ -54,6 +57,18 @@ public class PlansController {
             mappedBenefits, 
             mappedEditions
         );
+        return ResponseEntity.ok().body(response);
+    };
+
+    @GetMapping("/me/benefits")
+    public ResponseEntity<List<BenefitResponse>> findById(
+        @AuthenticationPrincipal AuthenticatedUser user
+    ) {
+        List<Benefit> benefits = this.plansBenefitsService.findAllBySubscriber(
+            user.getUser().getUuid()
+        );
+
+        List<BenefitResponse> response = BenefitResponse.fromList(benefits);
         return ResponseEntity.ok().body(response);
     };
 };

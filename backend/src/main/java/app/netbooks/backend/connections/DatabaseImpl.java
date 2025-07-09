@@ -86,6 +86,7 @@ public class DatabaseImpl implements Database {
             ) {
                 return query.apply(connection);
             } catch (SQLException e) {
+                DatabaseImpl.logger.debug(e.getMessage());
                 throw new InternalServerError(e);
             }
         }
@@ -99,10 +100,8 @@ public class DatabaseImpl implements Database {
             try {
                 operation.apply(connection);
             } catch (InternalServerError e) {
-                if(e.getSqlException() != null) {
-                    DatabaseImpl.logger.debug(e.getSqlException().getMessage());
+                if(e.getSqlException() != null)
                     throw e.getSqlException();
-                };
             };
 
             return null;

@@ -17,4 +17,8 @@ public class BooksAuthorsService {
     public Map<Long, List<Author>> mapAllByBook() {
         return this.repository.mapAllByBook();
     };
+
+    public List<Author> findAllByBook(Long id) {
+        return this.repository.findAllByBook(id);
+    };
 };

@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import app.netbooks.backend.annotations.AdministratorOnly;
 import app.netbooks.backend.annotations.AuhenticatedOnly;
@@ -21,7 +23,6 @@ import app.netbooks.backend.annotations.SubscriberOnly;
 import app.netbooks.backend.authentication.AuthenticatedUser;
 import app.netbooks.backend.dtos.request.LoginRequestBody;
 import app.netbooks.backend.dtos.request.RegisterUserRequestBody;
-import app.netbooks.backend.dtos.request.UpdateUserRequestBody;
 import app.netbooks.backend.dtos.response.SubscriptionResponse;
 import app.netbooks.backend.dtos.response.UserResponse;
 import app.netbooks.backend.models.Role;
@@ -85,11 +86,12 @@ public class UsersController {
 
     @PostMapping
     public ResponseEntity<Void> register(
-        @RequestBody RegisterUserRequestBody body
+        @RequestPart(name="avatar", required=false) MultipartFile avatar,
+        @RequestPart("body") RegisterUserRequestBody body
     ) {
         usersService.register(
             body.getName(),
-            body.getAvatar(),
+            avatar,
             body.getEmail(),
             body.getPassword(),
             body.getPasswordConfirmation()
@@ -104,12 +106,13 @@ public class UsersController {
     @PutMapping
     public ResponseEntity<UserResponse> update(
         @AuthenticationPrincipal AuthenticatedUser user,
-        @RequestBody UpdateUserRequestBody body
+        @RequestPart(name="avatar", required=false) MultipartFile avatar,
+        @RequestPart("body") RegisterUserRequestBody body
     ) {
         usersService.update(
             user.getUser(),
             body.getName(),
-            body.getAvatar(),
+            avatar,
             body.getEmail(),
             body.getPassword()
         );

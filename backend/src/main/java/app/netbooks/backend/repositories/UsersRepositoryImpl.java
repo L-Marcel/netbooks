@@ -44,7 +44,6 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                     User user = new User(
                         uuid, 
                         name, 
-                        null, 
                         email, 
                         password, 
                         automaticBilling
@@ -84,7 +83,6 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                         User user = new User(
                             uuid, 
                             name, 
-                            null, 
                             email, 
                             password, 
                             automaticBilling
@@ -125,7 +123,6 @@ public class UsersRepositoryImpl extends BaseRepository implements UsersReposito
                         User user = new User(
                             uuid, 
                             name, 
-                            null, 
                             email, 
                             password, 
                             automaticBilling

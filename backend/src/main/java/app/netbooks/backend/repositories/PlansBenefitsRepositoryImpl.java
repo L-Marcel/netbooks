@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
@@ -95,6 +96,38 @@ public class PlansBenefitsRepositoryImpl extends BaseRepository implements Plans
                 );
             ) {
                 preparedStatement.setInt(1, plan);
+                
+                try (ResultSet result = preparedStatement.executeQuery()) {
+                    while(result.next()) {
+                        String benefitName = result.getString("benefit");
+                        Benefit benefit = new Benefit(benefitName);
+                        benefits.add(benefit);
+                    };
+                };
+            };
+
+            return benefits;
+        }, new LinkedList<>());
+    };
+
+    @Override
+    public List<Benefit> findAllBySubscriber(UUID subscriber) {
+        return this.queryOrDefault((connection) -> {
+            List<Benefit> benefits = new LinkedList<>();
+
+            try (
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    SELECT DISTINCT plb.benefit FROM plan_benefit AS plb
+                    JOIN plan AS pln ON pln.id = plb.plan
+                    JOIN plan_edition AS edt ON edt.plan = pln.id
+                    JOIN subscription AS sub ON sub.edition = edt.id
+                    WHERE sub.subscriber = ?;
+                    """
+                );
+            ) {
+                preparedStatement.setString(1, subscriber.toString());
                 
                 try (ResultSet result = preparedStatement.executeQuery()) {
                     while(result.next()) {

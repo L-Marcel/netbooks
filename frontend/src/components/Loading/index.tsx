@@ -1,18 +1,19 @@
+import { useLoading } from "@stores/useLoading";
+import { ReactNode } from "react";
+
 interface Props {
-  isLoading: boolean;
-  defaultMessage: string;
-  loadingMessage: string;
+  id: string | number;
+  defaultMessage: ReactNode;
+  loadingMessage?: ReactNode;
 }
 
-export default function Loading({
-  isLoading,
-  defaultMessage,
-  loadingMessage,
-}: Props) {
+export default function Loading({ id, defaultMessage, loadingMessage }: Props) {
+  const loading = useLoading((state) => state.loadingSet);
+
   return (
     <>
-      {isLoading && <span className="loading loading-spinner"></span>}
-      {isLoading ? loadingMessage : defaultMessage}
+      {loading.has(id) && <span className="loading loading-spinner"></span>}
+      {loading.has(id) ? loadingMessage : defaultMessage}
     </>
   );
 }

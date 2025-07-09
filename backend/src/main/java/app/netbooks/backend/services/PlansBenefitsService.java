@@ -2,6 +2,7 @@ package app.netbooks.backend.services;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,5 +25,9 @@ public class PlansBenefitsService {
 
     public List<Benefit> findByPlan(Integer plan) {
         return this.repository.findAllByPlan(plan);
+    };
+
+    public List<Benefit> findAllBySubscriber(UUID subscriber) {
+        return this.repository.findAllBySubscriber(subscriber);
     };
 };

@@ -58,7 +58,6 @@ public abstract class UsersRepositoryTests extends BaseTests {
             repository.create(
                 new User(
                     "Lucas",
-                    null,
                     "lucas@gmail.com",
                     ""
                 )
@@ -137,7 +136,6 @@ public abstract class UsersRepositoryTests extends BaseTests {
         repository.create(
             new User(
                 "Lucas",
-                null,
                 "lucas@gmail.com",
                 ""
             )
@@ -147,7 +145,6 @@ public abstract class UsersRepositoryTests extends BaseTests {
             repository.create(
                 new User(
                     "Lucas",
-                    null,
                     "lucas@gmail.com",
                     ""
                 )
@@ -157,7 +154,6 @@ public abstract class UsersRepositoryTests extends BaseTests {
         assertThrows(InternalServerError.class, () -> {
             repository.create(
                 new User(
-                    null,
                     null,
                     "lucas@lucas.com",
                     ""
@@ -170,7 +166,6 @@ public abstract class UsersRepositoryTests extends BaseTests {
                 new User(
                     "Lucas",
                     null,
-                    null,
                     ""
                 )
             );
@@ -180,7 +175,6 @@ public abstract class UsersRepositoryTests extends BaseTests {
             repository.create(
                 new User(
                     "Lucas",
-                    null,
                     "lucas@lucas.com",
                     null
                 )
@@ -225,7 +219,6 @@ public abstract class UsersRepositoryTests extends BaseTests {
 
         assertDoesNotThrow(() -> {
             UsersRepositoryImpl usersRepositoryImpl = new UsersRepositoryImpl(database);
-            usersRepositoryImpl.initialize();
             usersRepositoryImpl.findAll();
             usersRepositoryImpl.findById(null);
             usersRepositoryImpl.findByEmail(null);

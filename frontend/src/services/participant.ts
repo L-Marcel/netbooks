@@ -10,7 +10,6 @@ export async function getParticipant(isOwner?: boolean): Promise<void> {
   const { setParticipant } = useRoom.getState();
 
   return await api.get<Participant>("participants/me").then((response) => {
-    console.log(response);
     if (isOwner) {
       connect(response.data.room, response.data.user, true);
     } else {

@@ -75,7 +75,7 @@ public class BooksRepositoryImpl extends BaseRepository implements BooksReposito
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    SELECT * FROM book WHERE id = ?;
+                    SELECT * FROM book_with_stars WHERE id = ?;
                     """
                 );
             ) {

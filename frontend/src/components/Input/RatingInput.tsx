@@ -1,9 +1,18 @@
+import Input from ".";
+
 interface Props {
   readonly?: boolean;
+  onChange?: (rate: number) => void;
   rate: number;
 }
 
-export function RatingInput({ readonly = false, rate }: Props) {
+const DEFAULT_ON_CHANGE = () => {};
+
+export function RatingInput({
+  readonly = false,
+  rate,
+  onChange = DEFAULT_ON_CHANGE,
+}: Props) {
   const value = Math.round(rate) / 2;
 
   return (
@@ -63,75 +72,85 @@ export function RatingInput({ readonly = false, rate }: Props) {
         </>
       ) : (
         <>
-          <input
+          <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-1 bg-primary"
+            className="mask mask-star-2 mask-half-1 bg-primary disabled:hover:cursor-wait"
             aria-label="0.5 star"
-            defaultChecked={value === 0.5}
+            checked={value === 0.5}
+            onChange={() => onChange(1)}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-2 bg-primary"
+            className="mask mask-star-2 mask-half-2 bg-primary disabled:hover:cursor-wait"
             aria-label="1 star"
-            defaultChecked={value === 1}
+            checked={value === 1}
+            onChange={() => onChange(2)}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-1 bg-primary"
+            className="mask mask-star-2 mask-half-1 bg-primary disabled:hover:cursor-wait"
             aria-label="1.5 star"
-            defaultChecked={value === 1.5}
+            checked={value === 1.5}
+            onChange={() => onChange(3)}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-2 bg-primary"
+            className="mask mask-star-2 mask-half-2 bg-primary disabled:hover:cursor-wait"
             aria-label="2 star"
-            defaultChecked={value === 2}
+            checked={value === 2}
+            onChange={() => onChange(4)}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-1 bg-primary"
+            className="mask mask-star-2 mask-half-1 bg-primary disabled:hover:cursor-wait"
             aria-label="2.5 star"
-            defaultChecked={value === 2.5}
+            checked={value === 2.5}
+            onChange={() => onChange(5)}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-2 bg-primary"
+            className="mask mask-star-2 mask-half-2 bg-primary disabled:hover:cursor-wait"
             aria-label="3 star"
-            defaultChecked={value === 3}
+            checked={value === 3}
+            onChange={() => onChange(6)}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-1 bg-primary"
+            className="mask mask-star-2 mask-half-1 bg-primary disabled:hover:cursor-wait"
             aria-label="3.5 star"
-            defaultChecked={value === 3.5}
+            checked={value === 3.5}
+            onChange={() => onChange(7)}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-2 bg-primary"
+            className="mask mask-star-2 mask-half-2 bg-primary disabled:hover:cursor-wait"
             aria-label="4 star"
-            defaultChecked={value === 4}
+            checked={value === 4}
+            onChange={() => onChange(8)}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-1 bg-primary"
+            className="mask mask-star-2 mask-half-1 bg-primary disabled:hover:cursor-wait"
             aria-label="4.5 star"
-            defaultChecked={value === 4.5}
+            checked={value === 4.5}
+            onChange={() => onChange(9)}
           />
-          <input
+          <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-2 bg-primary"
+            className="mask mask-star-2 mask-half-2 bg-primary disabled:hover:cursor-wait"
             aria-label="5 star"
-            defaultChecked={value === 5}
+            checked={value === 5}
+            onChange={() => onChange(10)}
           />
         </>
       )}

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import app.netbooks.backend.errors.Unauthorized;
 import app.netbooks.backend.models.Benefit;
 import app.netbooks.backend.repositories.interfaces.BooksBenefitsRepository;
 
@@ -16,5 +17,33 @@ public class BooksBenefitsService {
 
     public Map<Long, List<Benefit>> mapAllByBook() {
         return this.repository.mapAllByBook();
+    };
+
+    public List<Benefit> findAllByBook(Long id) {
+        return this.repository.findAllByBook(id);
+    };
+
+    public void validateBookAccess(Long id, List<Benefit> benefits) {
+        List<Benefit> requirements = this.findAllByBook(
+            id
+        );
+
+        if(!requirements.stream().allMatch(
+            (requirement) -> {
+                return benefits.stream().anyMatch(
+                    (benefit) -> benefit.getName().equals(requirement.getName())
+                );
+            }
+        )) throw new Unauthorized();
+    };
+
+    public void validateBookAccessToDownlaod(Long id, List<Benefit> benefits) {
+        this.validateBookAccess(id, benefits);
+
+        if(
+            !benefits.stream().anyMatch(
+                (benefit) -> benefit.getName().equals("CAN_DOWNLOAD_BOOKS")
+            )
+        ) throw new Unauthorized();
     };
 };

@@ -1,5 +1,7 @@
+import Button from "@components/Button";
 import AuthGuard from "@components/Guards/AuthGuard";
 import SubscriberGuard from "@components/Guards/SubscriberGuard";
+import Input from "@components/Input";
 import { create, getOpenRoom, join } from "@services/room";
 import useUser from "@stores/useUser";
 import { useState } from "react";
@@ -25,7 +27,7 @@ function Page() {
     try {
       const room = await getOpenRoom();
       navigate("/match/" + room.code);
-    } catch (error) {
+    } catch {
       create().then((code) => {
         navigate("/match/" + code);
       });
@@ -50,14 +52,14 @@ function Page() {
       style={{ height: "calc(100vh - 70px)" }}
     >
       <div className="flex flex-col items-center justify-center w-md h-screen bg-base-100 gap-10">
-        <button className="btn btn-primary w-md" onClick={createRoom}>
+        <Button className="btn btn-primary w-md" onClick={createRoom}>
           Criar Sala
-        </button>
+        </Button>
 
         <hr className="w-md border-gray-700" />
 
         <div className="flex">
-          <input
+          <Input
             type="text"
             name="code"
             id="code"
@@ -67,9 +69,9 @@ function Page() {
             onChange={(e) => setRoomCode(e.target.value)}
             className="input text-lg w-[400px]"
           />
-          <button className="btn w-[50px]" onClick={enterRoom}>
+          <Button className="btn w-[50px]" onClick={enterRoom}>
             <FaArrowRight />
-          </button>
+          </Button>
         </div>
       </div>
     </main>

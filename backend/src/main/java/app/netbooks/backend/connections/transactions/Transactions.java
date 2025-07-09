@@ -17,7 +17,7 @@ public class Transactions {
 
     @Getter
     @Setter
-    private TransactionIsolationLevel isolationLevel = TransactionIsolationLevel.SERIALIZABLE;
+    private TransactionIsolationLevel isolationLevel = TransactionIsolationLevel.REPEATABLE_READ;
     
     public <T> T run(
         Supplier<T> operations,

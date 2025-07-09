@@ -13,28 +13,34 @@ import Subscribe from "@pages/Subscribe";
 import Match from "@pages/Match";
 import MatchRoom from "@pages/MatchRoom";
 import Billing from "@pages/Billing";
+import NavigationListener from "@components/Listeners/NavigationListener";
+import Readings from "@pages/Readings";
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Routes>
-        <Route element={<MainLayout />}>
-          <Route path="/home" element={<Home />} />
-          <Route path="/bookcase" element={<Bookcase />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/subscribe" element={<Subscribe />} />
-          <Route path="/billing" element={<Billing />} />
-          <Route path="/books/:id" element={<Books />} />
-          <Route path="/match" element={<Match />} />
-        </Route>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/match/:code" element={<MatchRoom />} />
-        <Route path="*" element={<Navigate to="/home" />} />
-      </Routes>
-    </QueryClientProvider>
+    <>
+      <NavigationListener />
+      <QueryClientProvider client={queryClient}>
+        <Routes>
+          <Route element={<MainLayout />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/bookcase" element={<Bookcase />} />
+            <Route path="/explore" element={<Explore />} />
+            <Route path="/subscribe" element={<Subscribe />} />
+            <Route path="/billing" element={<Billing />} />
+            <Route path="/books/:id" element={<Books />} />
+            <Route path="/match" element={<Match />} />
+          </Route>
+          <Route path="/readings/:id" element={<Readings />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/match/:code" element={<MatchRoom />} />
+          <Route path="*" element={<Navigate to="/home" />} />
+        </Routes>
+      </QueryClientProvider>
+    </>
   );
 }
 

@@ -13,8 +13,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer{
     @Override
     public void registerStompEndpoints(
-        @SuppressWarnings("null") StompEndpointRegistry registry
+        StompEndpointRegistry registry
     ) {
+        if(registry == null) return;
         registry
             .addEndpoint("/websocket")
             .setAllowedOrigins("*");
@@ -22,8 +23,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer{
 
     @Override
     public void configureMessageBroker(
-        @SuppressWarnings("null") MessageBrokerRegistry registry
+        MessageBrokerRegistry registry
     ){
+        if(registry == null) return;
         registry.enableSimpleBroker("/channel/events/rooms");
         registry.setApplicationDestinationPrefixes("/channel/triggers/rooms");
     };

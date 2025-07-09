@@ -1,3 +1,4 @@
+import Button from "@components/Button";
 import { logout } from "@services/user";
 import useUser from "@stores/useUser";
 import { useState } from "react";
@@ -71,13 +72,12 @@ export default function Avatar() {
           >
             <FaRegCreditCard /> Dados de cobrança
           </NavLink>
-          <button
+          <Button
             className="text-base-content no-underline hover:underline font-bold transition"
-            type="button"
             onClick={logout}
           >
             <FaSignOutAlt /> Sair
-          </button>
+          </Button>
         </li>
       </ul>
     </div>
