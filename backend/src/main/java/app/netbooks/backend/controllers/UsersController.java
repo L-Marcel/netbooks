@@ -23,6 +23,7 @@ import app.netbooks.backend.annotations.SubscriberOnly;
 import app.netbooks.backend.authentication.AuthenticatedUser;
 import app.netbooks.backend.dtos.request.LoginRequestBody;
 import app.netbooks.backend.dtos.request.RegisterUserRequestBody;
+import app.netbooks.backend.dtos.request.UpdateUserRequestBody;
 import app.netbooks.backend.dtos.response.SubscriptionResponse;
 import app.netbooks.backend.dtos.response.UserResponse;
 import app.netbooks.backend.models.Role;
@@ -107,14 +108,17 @@ public class UsersController {
     public ResponseEntity<UserResponse> update(
         @AuthenticationPrincipal AuthenticatedUser user,
         @RequestPart(name="avatar", required=false) MultipartFile avatar,
-        @RequestPart("body") RegisterUserRequestBody body
+        @RequestPart("body") UpdateUserRequestBody body
     ) {
         usersService.update(
             user.getUser(),
             body.getName(),
             avatar,
             body.getEmail(),
-            body.getPassword()
+            body.getPassword(),
+            body.getPasswordConfirmation(),
+            body.getOldPassword(),
+            body.getUpdatePassword()
         );
         
         return ResponseEntity

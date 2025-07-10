@@ -35,7 +35,7 @@ export default function Avatar() {
         ) : (
           <div className="avatar">
             <div className="w-8 rounded-full">
-              <img src={user?.avatar} onError={onImageError} />
+              <img src={user?.getAvatarUrl()} onError={onImageError} />
             </div>
           </div>
         )}
@@ -50,7 +50,7 @@ export default function Avatar() {
               "text-base-content no-underline hover:underline font-bold transition" +
               (isActive ? " text-primary" : "")
             }
-            to="/profile"
+            to="/profile/edit"
           >
             <FaEdit /> Editar perfil
           </NavLink>

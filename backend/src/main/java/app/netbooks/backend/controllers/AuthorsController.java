@@ -21,7 +21,7 @@ public class AuthorsController {
     @Autowired
     private AuthorsService service;
 
-    @GetMapping
+    @GetMapping("/search")
     public ResponseEntity<List<AuthorResponse>> searchByName(
         @RequestParam(required = false, defaultValue = "") String name
     ) {

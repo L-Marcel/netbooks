@@ -12,8 +12,14 @@ import lombok.Setter;
 public class Author {
     private Integer id;
     private String name;
+    private Double score = 0d;
+
+    public Author(Integer id, String name) {
+        this.id = id;
+        this.name = name;
+    };
 
     public Author(String name){
         this.name = name;
-    }
+    };
 };

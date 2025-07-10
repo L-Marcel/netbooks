@@ -9,4 +9,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Tag {
     private String name;
+    private Double score = 0d;
+
+    public Tag(String name) {
+        this.name = name;
+    };
 };

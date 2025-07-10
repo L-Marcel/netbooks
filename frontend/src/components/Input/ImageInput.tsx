@@ -13,7 +13,7 @@ import { FaCheck, FaRotate, FaX } from "react-icons/fa6";
 import Button from "@components/Button";
 import Input from ".";
 
-interface CropProps
+export interface CropProps
   extends Exclude<
     DetailedHTMLProps<
       ButtonHTMLAttributes<HTMLButtonElement>,

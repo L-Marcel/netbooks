@@ -109,7 +109,10 @@ public class UsersService {
         String name, 
         MultipartFile avatar,
         String email, 
-        String password
+        String password,
+        String passwordConfirmation,
+        String oldPassword,
+        Boolean updatePassword
     ) throws ValidationsError {
         Validator validator = new Validator();
 
@@ -123,16 +126,24 @@ public class UsersService {
             .email("Formato válido!", "Fomato inválido!")
             .min(6, "Tem mais de 5 caracteres!", "Tem menos de 6 caracteres!")
             .max(120, "Tem menos de 121 caracteres!", "Tem mais de 120 caracteres!")
-            .verify((value) -> !candidate.isPresent() || candidate.get().getEmail().equals(value), "Disponível para uso!", "Já se encontra em uso!");
+            .verify((value) -> !candidate.isPresent() || candidate.get().getUuid().equals(user.getUuid()), "Disponível para uso!", "Já se encontra em uso!");
 
-        validator.validate("password", password)
-            .min(8, "Tem mais de 7 caracteres!", "Tem menos de 8 caracteres!")
-            .max(24, "Tem menos de 25 caracteres!", "Tem mais de 24 caracteres!")
-            .pattern("^\\S+$", "Sem espaços em branco!", "Espaços em branco detectados!")
-            .pattern("(.*[A-Z].*){2,}", "Tem 2 letras maísculas!", "Precisa ter 2 letras maísculas!")
-            .pattern("(.*[a-z].*){2,}", "Tem 2 letras minúsculas!", "Precisa ter 2 letras minúsculas!")
-            .pattern("(.*[\\d].*){2,}", "Tem 2 dígitos!", "Precisa ter 2 dígitos!");
+        validator.validate("oldPassword", oldPassword)
+            .verify((value) -> encoder.matches(value, user.getPassword()), null, "Senha incorreta!");
         
+        if(updatePassword) {
+            validator.validate("password", password)
+                .min(8, "Tem mais de 7 caracteres!", "Tem menos de 8 caracteres!")
+                .max(24, "Tem menos de 25 caracteres!", "Tem mais de 24 caracteres!")
+                .pattern("^\\S+$", "Sem espaços em branco!", "Espaços em branco detectados!")
+                .pattern("(.*[A-Z].*){2,}", "Tem 2 letras maísculas!", "Precisa ter 2 letras maísculas!")
+                .pattern("(.*[a-z].*){2,}", "Tem 2 letras minúsculas!", "Precisa ter 2 letras minúsculas!")
+                .pattern("(.*[\\d].*){2,}", "Tem 2 dígitos!", "Precisa ter 2 dígitos!");
+            
+            validator.validate("passwordConfirmation", passwordConfirmation)
+                .verify((value) -> value.equals(password), "Senhas coincidem!", "Senhas não coincidem!");
+        };
+
         validator.validate("avatar", avatar)
             .nullable()
             .verifyIfCatch((value) -> avatarsStorage.validate(avatar), "Formato valido de imagem!", "Formato inválido de imagem!");
@@ -141,7 +152,8 @@ public class UsersService {
         
         user.setName(name);
         user.setEmail(email);
-        user.setPassword(encoder.encode(password));
+        if(updatePassword) 
+            user.setPassword(encoder.encode(password));
         
         this.transactions.run(() -> {
             this.repository.update(user);

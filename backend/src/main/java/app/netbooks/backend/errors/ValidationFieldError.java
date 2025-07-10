@@ -36,6 +36,7 @@ public class ValidationFieldError extends RuntimeException {
         error.put("field", this.field);
         error.put("messages", this.messages
             .stream()
+            .filter((message) -> !message._1() || message._2() != null)
             .map((message) -> {
                 Map<String, Object> content = new LinkedHashMap<>();
 

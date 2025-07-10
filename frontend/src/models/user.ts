@@ -2,6 +2,7 @@ import { UUID } from "crypto";
 import { Subscription } from "./subscription";
 import { Benefit } from "./benefit";
 import { Book } from "./book";
+import { ImageData } from "@services/image";
 
 export enum Role {
   ADMINISTRATOR = "ADMINISTRATOR",
@@ -22,7 +23,7 @@ export class User {
   readonly name: string;
   readonly email: string;
   readonly roles: Role[];
-  readonly avatar: string;
+  private avatar?: ImageData;
   readonly automaticBilling: boolean;
   readonly benefits: Benefit[];
   readonly subscription?: Subscription;
@@ -36,10 +37,21 @@ export class User {
     this.name = data.name;
     this.email = data.email;
     this.roles = data.roles;
-    this.avatar = `http://localhost:8080/users/${this.uuid}.webp`;
     this.automaticBilling = data.automaticBilling;
     this.benefits = benefits;
     this.subscription = subscription;
+  }
+
+  public setAvatar(avatar: ImageData) {
+    this.avatar = avatar;
+  }
+
+  public getAvatar(): ImageData | undefined {
+    return this.avatar;
+  }
+
+  public getAvatarUrl(): string {
+    return `http://localhost:8080/users/${this.uuid}.webp`;
   }
 
   public isSubscriber(): boolean {

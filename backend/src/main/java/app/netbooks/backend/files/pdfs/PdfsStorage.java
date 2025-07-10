@@ -17,8 +17,11 @@ public abstract class PdfsStorage extends FilesStorage {
     ) throws InvalidPdfFormat, EmptyFile {
         super.validate(file);
 
-        Boolean isValid = !file.isEmpty() && file.getContentType() != null && 
-            file.getContentType().contains("pdf");
+        if(file.isEmpty() || file.getContentType() == null) 
+            throw new InvalidPdfFormat();
+
+        String type = file.getContentType();
+        Boolean isValid = type.contains("pdf");
         
         if(!isValid) throw new InvalidPdfFormat();
     };

@@ -7,6 +7,7 @@ import app.netbooks.backend.models.Tag;
 
 public interface TagsRepository {
     public List<Tag> findAll();
+    public List<Tag> searchByName(String name);
     public Optional<Tag> findByName(String name);
     public void create(Tag tag);
     public void deleteByName(String name);

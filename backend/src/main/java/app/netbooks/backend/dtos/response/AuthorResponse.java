@@ -16,10 +16,12 @@ import lombok.Setter;
 public class AuthorResponse {
     private Integer id;
     private String name;
+    private Double score;
 
     public AuthorResponse(Author author) {
         this.id = author.getId();
         this.name = author.getName();
+        this.score = author.getScore();
     };
 
     public static List<AuthorResponse> fromList(List<Author> list) {

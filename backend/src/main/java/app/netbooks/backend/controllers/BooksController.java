@@ -140,7 +140,8 @@ public class BooksController {
 
         this.booksBenefitsService.validateBookAccessToDownlaod(
             book.getId(), 
-            benefits
+            benefits,
+            user.isAdmin()
         );
 
         Resource content = this.booksService.findContentById(

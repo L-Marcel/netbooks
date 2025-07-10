@@ -53,17 +53,40 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorsRepo
                 PreparedStatement preparedStatement = connection.prepareStatement(
                     // language=sql
                     """
-                    SELECT * FROM author WHERE name LIKE ?;
+                    SELECT *, 
+                    (
+                        MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)
+                        + (MATCH(name) AGAINST(? IN BOOLEAN MODE) * 1.5)
+                    )
+                    AS score
+                    FROM author
+                    ORDER BY score DESC
+                    LIMIT 8;
                     """
                 );
             ) {
-                preparedStatement.setString(1, "%" + name + "%");
+                preparedStatement.setString(1, name);
+                if(name.trim().equals("")) preparedStatement.setString(2, "");
+                else {
+                    StringBuilder builder = new StringBuilder();
+                    String[] words = name.split(" ");
+                    for(int i = 0; i < words.length; i++) {
+                        String word = words[i];
+                        if(i > 0) builder.append(" ");
+                        builder.append("+");
+                        builder.append(word);
+                        builder.append("*");
+                    };
+
+                    preparedStatement.setString(2, builder.toString());
+                };
 
                 try (ResultSet result = preparedStatement.executeQuery()) {
                     while(result.next()) {
                         Integer id = result.getInt("id");
                         String completeName = result.getString("name");
-                        Author author = new Author(id, completeName);
+                        Double score = result.getDouble("score");
+                        Author author = new Author(id, completeName, score);
                         authors.add(author);
                     };
                 };  

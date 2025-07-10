@@ -9,4 +9,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Publisher {
     private String name;
+    private Double score = 0d;
+
+    public Publisher(String name) {
+        this.name = name;
+    };
 };

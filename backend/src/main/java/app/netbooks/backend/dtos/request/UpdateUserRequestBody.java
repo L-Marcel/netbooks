@@ -14,4 +14,7 @@ public class UpdateUserRequestBody {
     private String avatar;
     private String email;
     private String password;
+    private String passwordConfirmation;
+    private Boolean updatePassword;
+    private String oldPassword;
 };

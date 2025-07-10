@@ -15,6 +15,8 @@ import MatchRoom from "@pages/MatchRoom";
 import Billing from "@pages/Billing";
 import NavigationListener from "@components/Listeners/NavigationListener";
 import Readings from "@pages/Readings";
+import EditProfile from "@pages/EditProfile";
+import Admin from "@pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +34,8 @@ function App() {
             <Route path="/billing" element={<Billing />} />
             <Route path="/books/:id" element={<Books />} />
             <Route path="/match" element={<Match />} />
+            <Route path="/profile/edit" element={<EditProfile />} />
+            <Route path="/admin" element={<Admin />} />
           </Route>
           <Route path="/readings/:id" element={<Readings />} />
           <Route path="/login" element={<Login />} />

@@ -2,11 +2,11 @@ import { useState } from "react";
 import { FaLink } from "react-icons/fa";
 import Button from ".";
 
-type CopyLinkButtonProps = {
+interface Props {
   code: string;
-};
+}
 
-function CopyLinkButton({ code }: CopyLinkButtonProps) {
+function CopyLinkButton({ code }: Props) {
   const [copied, setCopied] = useState(false);
 
   const copyLink = () =>

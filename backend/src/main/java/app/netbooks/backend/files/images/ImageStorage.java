@@ -51,12 +51,14 @@ public abstract class ImageStorage extends FilesStorage {
     ) throws InvalidImageFormat, EmptyFile {
         super.validate(file);
 
-        Boolean isValid = file.getContentType() != null && 
-            (
-                file.getContentType().contains("jpeg") || 
-                file.getContentType().contains("jpg") || 
-                file.getContentType().contains("png")
-            );
+        if(file.getContentType() == null) throw new InvalidImageFormat();
+        
+        String type = file.getContentType();
+        Boolean isValid = 
+            type.contains("jpeg") || 
+            type.contains("jpg") || 
+            type.contains("png") ||
+            type.contains("webp");
 
         if(!isValid) throw new InvalidImageFormat();
     };

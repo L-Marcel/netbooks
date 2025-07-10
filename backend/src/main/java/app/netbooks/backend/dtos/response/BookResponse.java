@@ -33,6 +33,7 @@ public class BookResponse {
     private List<AuthorResponse> authors;
     private List<TagResponse> tags;
     private List<BenefitResponse> requirements;
+    private Double score;
 
     public BookResponse(
         Book book, 

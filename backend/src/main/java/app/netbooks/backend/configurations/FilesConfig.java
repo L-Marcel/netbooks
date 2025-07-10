@@ -1,6 +1,7 @@
 package app.netbooks.backend.configurations;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -8,9 +9,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class FilesConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(
-        ResourceHandlerRegistry registry
+        @NonNull ResourceHandlerRegistry registry
     ) {
-        if(registry == null) return;
         registry.addResourceHandler("/users/**")
             .addResourceLocations("file:database/data/users/")
             .addResourceLocations("file:../database/data/users/");

@@ -12,8 +12,9 @@ export default function SubscriberGuard({ children }: Props) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (fetched && !(user && user?.isSubscriber())) navigate("/subscribe");
+    if (fetched && !(user && (user?.isSubscriber() || user?.isAdmin())))
+      navigate("/subscribe");
   }, [user, fetched, navigate]);
 
-  return user && user.isSubscriber() ? children : null;
+  return user && (user.isSubscriber() || user.isAdmin()) ? children : null;
 }
