@@ -77,5 +77,27 @@ public class BooksTagsRepositoryImpl extends BaseRepository implements BooksTags
 
             return tags;
         }, new LinkedList<>());
+    }
+
+    @Override
+    public void createMany(List<Tag> tags, Long book) {
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    INSERT INTO book_tag (tag, book) values (?, ?);
+                    """
+                );
+            ) {
+                for(Tag tag : tags) {
+                    statement.setString(1, tag.getName());
+                    statement.setLong(2, book);
+                    statement.addBatch();
+                };
+
+                statement.executeBatch();
+            };
+        });
     };
 };

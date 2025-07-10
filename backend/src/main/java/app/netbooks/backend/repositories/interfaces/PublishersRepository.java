@@ -11,4 +11,4 @@ public interface PublishersRepository {
     public Optional<Publisher> findByName(String name);
     public void create(Publisher publisher);
     public void deleteByName(String name);
-}
+};

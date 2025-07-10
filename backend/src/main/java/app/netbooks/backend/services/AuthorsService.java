@@ -17,8 +17,8 @@ public class AuthorsService {
     public List<Author> searchByName(String name) {
         return repository.searchByName(name);
     };
-
-    public Author findById(Integer id) throws AuthorNotFound {
+    
+    public Author findById(Long id) throws AuthorNotFound {
         return repository.findById(id)
         .orElseThrow(() -> new AuthorNotFound());
     };

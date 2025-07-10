@@ -12,7 +12,7 @@ export default function BookTag({ tags = DEFAULT_TAGS }: Props) {
   const visibleTags =
     tags.length > MAX_VISIBLE_TAGS ? tags.slice(0, MAX_VISIBLE_TAGS) : tags;
   const extraTagsCount = tags.length - MAX_VISIBLE_TAGS;
-  
+
   if (!tags || tags.length === 0)
     return (
       <div className="flex flex-wrap gap-2 mb-1">
@@ -36,7 +36,7 @@ export default function BookTag({ tags = DEFAULT_TAGS }: Props) {
       ))}
       {extraTagsCount > 0 && (
         <div
-          className="badge badge-soft badge-primary tooltip tooltip-primary group-[.is-premium]:tooltip-warning group-[.is-premium]:badge-warning tooltip-bottom lg:tooltip-right"
+          className="badge badge-soft badge-primary tooltip tooltip-bottom tooltip-primary group-[.is-premium]:tooltip-warning group-[.is-premium]:badge-warning"
           data-tip={tags
             .map((tag) => tag.name)
             .slice(MAX_VISIBLE_TAGS)

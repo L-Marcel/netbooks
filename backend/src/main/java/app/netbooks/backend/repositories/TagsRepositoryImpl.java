@@ -88,6 +88,27 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
     };
 
     @Override
+    public void createMany(List<Tag> tags) {
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    INSERT IGNORE INTO tag (name) values (?);
+                    """
+                );
+            ) {
+                for(Tag tag : tags) {
+                    statement.setString(1, tag.getName());
+                    statement.addBatch();
+                };
+
+                statement.executeBatch();
+            };
+        });
+    };
+
+    @Override
     public void deleteByName(String name) {
         this.execute((connection) -> {
            try (

@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.stereotype.Repository;
 
 import app.netbooks.backend.connections.interfaces.Database;
@@ -18,7 +19,7 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorsRepo
     };
 
     @Override
-    public Optional<Author> findById(Integer id) {
+    public Optional<Author> findById(Long id) {
         return this.queryOrDefault((connection) -> {
             Optional<Author> authorFound = Optional.empty();
 
@@ -30,7 +31,7 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorsRepo
                     """
                 );
             ) {
-                statement.setInt(1, id);
+                statement.setLong(1, id);
                 try (ResultSet result = statement.executeQuery()) {
                     if(result.next()) {
                         String name = result.getString("name");
@@ -83,7 +84,7 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorsRepo
 
                 try (ResultSet result = preparedStatement.executeQuery()) {
                     while(result.next()) {
-                        Integer id = result.getInt("id");
+                        Long id = result.getLong("id");
                         String completeName = result.getString("name");
                         Double score = result.getDouble("score");
                         Author author = new Author(id, completeName, score);
@@ -114,7 +115,7 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorsRepo
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         this.execute((connection) -> {
             try (
                 PreparedStatement statement = connection.prepareStatement(
@@ -124,9 +125,38 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorsRepo
                     """
                 )
             ) {
-                statement.setInt(1, id);
+                statement.setLong(1, id);
                 statement.executeUpdate();            
             }
+        });
+    }
+
+    @Override
+    public void createMany(List<Author> authors) {
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    INSERT INTO author (name) values (?);
+                    """,
+                    true
+                );
+            ) {
+                for(Author author : authors) {
+                    statement.setString(1, author.getName());
+                    statement.addBatch();
+                };
+
+                statement.executeBatch();
+                
+                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                    for (Author author : authors) {
+                        generatedKeys.next();
+                        author.setId(generatedKeys.getLong(1));
+                    };
+                };
+            };
         });
     };  
 };

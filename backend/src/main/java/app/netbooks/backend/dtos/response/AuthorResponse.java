@@ -14,7 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthorResponse {
-    private Integer id;
+    private Long id;
     private String name;
     private Double score;
 

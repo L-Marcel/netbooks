@@ -59,7 +59,7 @@ export default function FieldFile({
   };
 
   return (
-    <fieldset className="flex flex-col w-full">
+    <fieldset className="flex flex-col w-full overflow-hidden">
       <p className="mb-2 font-medium text-sm">{label}</p>
       <Button
         className={`input hover:cursor-pointer focus-within:input-primary ${hasError ? "!input-error" : ""} w-full text-base-content ${className}`}
@@ -67,7 +67,7 @@ export default function FieldFile({
         {...props}
       >
         {Icon && <Icon className="size-4" />}
-        {files.length > 0 ? files[0].name : "Nenhum arquivo selecionado..."}
+        {files.length > 0 ? files[0].name : <span>Selecione arquivo</span>}
       </Button>
       <Input
         onChange={onFilesChange}

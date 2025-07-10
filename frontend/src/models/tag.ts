@@ -1,6 +1,6 @@
 export type TagData = {
   name: string;
-  score: number;
+  score?: number;
 };
 
 export class Tag {
@@ -9,6 +9,6 @@ export class Tag {
 
   constructor(data: TagData) {
     this.name = data.name;
-    this.score = data.score;
+    this.score = data.score ?? 0;
   }
 }

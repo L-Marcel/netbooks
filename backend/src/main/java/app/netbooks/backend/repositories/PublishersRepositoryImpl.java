@@ -24,7 +24,7 @@ public class PublishersRepositoryImpl extends BaseRepository implements Publishe
     public List<Publisher> findAll() {
         return this.queryOrDefault((connection) -> {
             List<Publisher> publishers = new ArrayList<>();
-
+            
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(

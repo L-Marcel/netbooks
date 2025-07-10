@@ -129,8 +129,7 @@ export default function ImageInput({
     try {
       const result = await getCroppedImg(src, area);
       if (result) onCrop(result.base64, result.blob);
-    } catch (e) {
-      console.log(e);
+    } catch {
       onCancel();
     }
   };

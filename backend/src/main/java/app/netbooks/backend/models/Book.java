@@ -21,6 +21,22 @@ public class Book {
     private Double score;
 
     public Book(
+        Long isbn,
+        String title,
+        String description,
+        Integer numPages,
+        Date publishedIn,
+        Publisher publisher
+    ) {
+        this.isbn = isbn;
+        this.title = title;
+        this.description = description;
+        this.numPages = numPages;
+        this.publishedIn = publishedIn;
+        this.publisher = publisher;
+    };
+
+    public Book(
         Long id,
         Long isbn,
         String title,

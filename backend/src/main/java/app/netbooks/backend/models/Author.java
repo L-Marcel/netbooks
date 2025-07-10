@@ -10,11 +10,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Author {
-    private Integer id;
+    private Long id;
     private String name;
     private Double score = 0d;
 
-    public Author(Integer id, String name) {
+    public Author(Long id, String name) {
         this.id = id;
         this.name = name;
     };

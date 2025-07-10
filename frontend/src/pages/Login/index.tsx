@@ -42,7 +42,6 @@ function Page() {
     login(data)
       .then(() => navigate("/"))
       .catch((error: HttpError) => {
-        console.log(error);
         if (error.type === "default") {
           setError(error.error);
         }

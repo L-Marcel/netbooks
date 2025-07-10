@@ -16,7 +16,6 @@ import { BookRegisterData, downloadBook } from "@services/books";
 import { AnimatePresence, motion } from "motion/react";
 import { format } from "date-fns";
 import { Benefit } from "@models/benefit";
-import { Tag } from "@models/tag";
 
 interface Props {
   preview?: boolean;
@@ -41,11 +40,16 @@ export default function BookHero({
   const title = previewData?.title ?? book?.title;
   const description = previewData?.description ?? book?.description;
   const authors = previewData?.authors ?? book?.authors ?? [];
-  const formattedAuthors = 
-    [...authors.slice(0, authors.length - 2).map((author) => author.name), authors.slice(-2).map((author) => author.name).join(" e ")].join(", ");
+  const formattedAuthors = [
+    ...authors.slice(0, authors.length - 2).map((author) => author.name),
+    authors
+      .slice(-2)
+      .map((author) => author.name)
+      .join(" e "),
+  ].join(", ");
 
   const banner = previewData?.banner?.url ?? book?.banner;
-  const publisher = previewData?.publisher ?? book?.publisher?.name;
+  const publisher = previewData?.publisher ?? book?.publisher;
   const publishedIn = previewData?.publishedIn ?? book?.publishedIn;
   const isPremium = (
     previewData?.requirements ??
@@ -109,7 +113,7 @@ export default function BookHero({
       />
       <div className="flex w-full z-10 items-start py-7 md:py-8 px-4 lg:px-8 flex-col lg:flex-row lg:gap-10">
         <div className="relative max-w-sm min-w-[200px] max-h-[300px] not-lg:hidden">
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence>
             {cover ? (
               <motion.img
                 key={cover}
@@ -117,7 +121,6 @@ export default function BookHero({
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1, delay: 0.25 }}
                 src={cover}
-                layoutId={preview ? "cover-preview" : "cover"}
                 className="max-w-sm min-w-[200px] max-h-[300px] min-h-[300px] rounded-lg border-2 group-[.is-premium]:border-warning-content shadow-2xl not-lg:hidden"
                 height={300}
                 width={200}
@@ -125,14 +128,13 @@ export default function BookHero({
             ) : (
               <motion.div
                 key={cover}
-                layoutId={preview ? "cover-preview" : "cover"}
                 className="max-w-sm min-w-[200px] min-h-[300px] rounded-lg border-2 group-[.is-premium]:border-warning-content shadow-2xl not-lg:hidden skeleton"
               />
             )}
           </AnimatePresence>
           {publisher ? (
             <span className="badge absolute left-0 right-0 badge-ghost mx-auto font-extralight mt-2">
-              {publisher}
+              {publisher?.name}
             </span>
           ) : (
             <div className="badge absolute left-0 right-0 mx-auto font-extralight mt-2 border-none skeleton min-w-26" />
@@ -156,7 +158,7 @@ export default function BookHero({
               stiffness: 300,
             },
           }}
-          className="flex flex-col grow gap-2.5 my-auto"
+          className="flex flex-col not-xl:w-full grow gap-2.5 my-auto"
         >
           <header className="flex flex-col gap-4 md:gap-2">
             {publishedIn ? (
@@ -173,13 +175,7 @@ export default function BookHero({
             ) : (
               <h1 className="skeleton h-9 w-[calc(100%-5rem)]" />
             )}
-            <BookTags
-              tags={
-                previewData?.tags.map((tag) => new Tag({ name: tag, score: 0 })) ??
-                book?.tags ??
-                []
-              }
-            />
+            <BookTags tags={previewData?.tags ?? book?.tags ?? []} />
             <div className="flex flex-row items-center gap-2">
               <RatingInput rate={book?.stars ?? 8} />
               {user && !preview && book && (
@@ -199,13 +195,15 @@ export default function BookHero({
             </div>
           </header>
           <main>
-            {authors? (<span className="text-sm font-thin italic max-w-md">{formattedAuthors}</span>):(
-              <div className="skeleton h-5 max-w-sm"/>
+            {authors ? (
+              <span className="text-sm font-thin italic max-w-md">
+                {formattedAuthors}
+              </span>
+            ) : (
+              <div className="skeleton h-5 max-w-sm" />
             )}
             {description ? (
-              <p className="text-sm md:text-base max-w-md">
-                {description}
-              </p>
+              <p className="text-sm md:text-base max-w-md">{description}</p>
             ) : (
               <div className="flex flex-col gap-2 w-full">
                 <div className="skeleton h-5 md:h-6 max-w-md" />

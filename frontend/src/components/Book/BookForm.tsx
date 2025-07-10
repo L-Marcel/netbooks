@@ -2,11 +2,7 @@ import { ChangeEvent, useState } from "react";
 import Field from "@components/Input/Field";
 import { useNavigate } from "react-router-dom";
 import {
-  fetchUpdatedUser,
-  registerUser,
-  updateUser,
-} from "../../services/user";
-import {
+  FaAsterisk,
   FaBookReader,
   FaCalendarAlt,
   FaPenAlt,
@@ -18,7 +14,7 @@ import Loading from "@components/Loading";
 import { useLoading } from "@stores/useLoading";
 import Button from "@components/Button";
 import { Book } from "@models/book";
-import { BookRegisterData } from "@services/books";
+import { BookRegisterData, registerBook, updateBook } from "@services/books";
 import { fromZonedTime } from "date-fns-tz";
 import BookHero from "./BookHero";
 import FieldArea from "@components/Input/FieldArea";
@@ -47,15 +43,16 @@ export default function BookForm({ book }: Props) {
   const stopLoading = useLoading((state) => state.stop);
 
   const currentDate = fromZonedTime(new Date().setHours(0, 0, 0, 0), "-03:00");
-
+  const [withIsbn, setWithIsbn] = useState<boolean>(true);
   const [validations, setValidations] = useState<ValidationErrors>({});
   const [data, setData] = useState<BookRegisterData>({
     title: book?.title ?? "",
     description: book?.description ?? "",
-    publisher: book?.publisher.name ?? "",
+    isbn: book?.isbn,
+    publisher: book?.publisher,
     publishedIn: book?.publishedIn ?? currentDate,
     authors: book?.authors ?? [],
-    tags: book?.tags.map((tag) => tag.name) ?? [],
+    tags: book?.tags ?? [],
     requirements: book?.requirements ?? [],
   });
 
@@ -64,6 +61,9 @@ export default function BookForm({ book }: Props) {
       ...data,
       requirements: e.target.checked ? [Benefit.CAN_READ_ALL_BOOKS] : [],
     }));
+
+  const onChangeWithIsbn = (e: ChangeEvent<HTMLInputElement>) =>
+    setWithIsbn(e.target.checked);
 
   const onChangePublishedIn = (date: Date) =>
     setData((data) => ({
@@ -143,26 +143,34 @@ export default function BookForm({ book }: Props) {
     const body = {
       title: data.title,
       description: data.description,
+      isbn: data.isbn,
       publisher: data.publisher,
       publishedIn: data.publishedIn,
       authors: data.authors,
       tags: data.tags,
       requirements: data.requirements,
     } as BookRegisterData;
-
+    
     formData.append(
       "body",
       new Blob([JSON.stringify(body)], { type: "application/json" })
     );
 
-    // if (data.avatar?.blob) {
-    //   formData.append("avatar", data.avatar.blob, data.avatar.filename);
-    // }
+    if (data.cover?.blob) {
+      formData.append("cover", data.cover.blob, data.cover.filename);
+    }
+
+    if (data.banner?.blob) {
+      formData.append("banner", data.banner.blob, data.banner.filename);
+    }
+
+    if (data.file) {
+      formData.append("file", data.file);
+    }
 
     if (book) {
-      updateUser(formData)
+      updateBook(formData)
         .then(async () => {
-          await fetchUpdatedUser();
           navigate("/home");
         })
         .catch(onCatchErrors)
@@ -170,9 +178,9 @@ export default function BookForm({ book }: Props) {
           stopLoading("book-edit");
         });
     } else {
-      registerUser(formData)
+      registerBook(formData)
         .then(() => {
-          navigate("/login");
+          navigate("/home");
         })
         .catch(onCatchErrors)
         .finally(() => {
@@ -181,38 +189,60 @@ export default function BookForm({ book }: Props) {
     }
   };
 
-  console.log(data);
-
   return (
-    <main className="flex flex-row gap-4">
-      <section className="flex rounded-box p-6 bg-base-200 flex-col gap-0 w-full max-w-11/12 sm:max-w-sm lg:max-w-lg">
-        <header className="text-start text-base-content">
+    <main className="relative flex flex-row not-xl:flex-wrap-reverse gap-4">
+      <section className="flex rounded-box p-6 bg-base-200 flex-col gap-0 w-full xl:max-w-xl">
+        <header className="text-start text-base-content max-w-11/12 sm:max-w-sm lg:max-w-lg">
           <h1 className="text-3xl font-bold text-base-content">
             Cadastrar livro
           </h1>
           <p>Cadastrar novo livro na plataforma</p>
         </header>
         <div className="divider divider-vertical my-2"></div>
-        <form className="flex flex-col gap-5 w-full" onSubmit={onSubmit}>
-          <Field
-            icon={FaPenAlt}
-            validations={validations["title"]}
-            label="Título"
-            id="title"
-            type="text"
-            value={data.title}
-            onChange={onChangeData}
-            placeholder="Harry Potter e a Pedra Filosofal"
-          />
-          <label className="label">
-            <Input
-              type="checkbox"
-              checked={data.requirements.includes(Benefit.CAN_READ_ALL_BOOKS)}
-              onChange={onChangePremium}
-              className="checkbox checkbox-primary"
+        <form className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full xl:flex xl:flex-col" onSubmit={onSubmit}>
+          <div className="flex flex-col w-full gap-4">
+            <Field
+              icon={FaPenAlt}
+              validations={validations["title"]}
+              label="Título"
+              id="title"
+              type="text"
+              value={data.title}
+              onChange={onChangeData}
+              placeholder="Harry Potter e a Pedra Filosofal"
             />
-            Catálogo premium
-          </label>
+            <label className="label">
+              <Input
+                type="checkbox"
+                checked={data.requirements.includes(Benefit.CAN_READ_ALL_BOOKS)}
+                onChange={onChangePremium}
+                className="checkbox checkbox-primary"
+              />
+              Catálogo premium
+            </label>
+          </div>
+          <div className="flex flex-col w-full gap-4">
+            <Field
+              icon={FaAsterisk}
+              disabled={!withIsbn}
+              validations={validations["isbn"]}
+              label="Número Padrão Internacional (ISBN)"
+              id="isbn"
+              type="text"
+              value={data.isbn}
+              onChange={onChangeData}
+              placeholder="9780306406157"
+            />
+            <label className="label">
+              <Input
+                type="checkbox"
+                checked={withIsbn}
+                onChange={onChangeWithIsbn}
+                className="checkbox checkbox-primary"
+              />
+              Com número padrão
+            </label>
+          </div>
           <FieldArea
             validations={validations["description"]}
             label="Descrição"
@@ -284,8 +314,26 @@ export default function BookForm({ book }: Props) {
             placeholder="Editora"
             id="book-publisher-candidate"
             type="text"
+            selected={data?.publisher}
+            onEnter={(query) => {
+              if (query && query !== "") {
+                setData((data) => ({
+                  ...data,
+                  publisher: new Publisher({ name: query }),
+                }));
+              }
+
+              return query;
+            }}
             onSearch={searchPublishers}
-            onFilter={(publishers) => {
+            onSelect={(publisher) =>
+              setData((data) => ({
+                ...data,
+                publisher: publisher as Publisher,
+              }))
+            }
+            onDraw={(publisher) => publisher?.name}
+            filterData={(publishers) => {
               const totalScore = sum(
                 publishers.map((publisher) => publisher.score)
               );
@@ -293,14 +341,7 @@ export default function BookForm({ book }: Props) {
               else if (totalScore > 0) return publishers.slice(0, 6);
               return publishers;
             }}
-            onSelect={(publisher) =>
-              setData((data) => ({
-                ...data,
-                publisher: (publisher as Publisher).name,
-              }))
-            }
-            onDraw={(publisher) => publisher.name}
-            onRender={(publisher) => ({
+            extractData={(publisher) => ({
               id: publisher.name,
               name: publisher.name,
               value: publisher,
@@ -312,23 +353,40 @@ export default function BookForm({ book }: Props) {
             label="Autores"
             placeholder="Autor(a)"
             id="book-authors-candidates"
+            onEnter={(query) => {
+              if (
+                query &&
+                query !== "" &&
+                !data.authors.some((author) => author.name === query)
+              ) {
+                setData((data) => ({
+                  ...data,
+                  authors: [...data.authors, new Author({ name: query })],
+                }));
+
+                return "";
+              }
+
+              return query;
+            }}
             onSearch={searchAuthors}
             multiple
-            onFilter={(authors) => {
-              const totalScore = sum(authors.map((author) => author.score));
-              if (totalScore > 1) return authors.slice(0, 3);
-              else if (totalScore > 0) return authors.slice(0, 6);
-              return authors;
-            }}
+            selected={data.authors}
             onSelect={(authors) =>
               setData((data) => ({
                 ...data,
                 authors: authors as Author[],
               }))
             }
-            onDraw={(author) => author.name}
-            onRender={(author) => ({
-              id: `${author.id}`,
+            onDraw={(author) => author?.name}
+            filterData={(authors) => {
+              const totalScore = sum(authors.map((author) => author.score));
+              if (totalScore > 1) return authors.slice(0, 3);
+              else if (totalScore > 0) return authors.slice(0, 6);
+              return authors;
+            }}
+            extractData={(author) => ({
+              id: author.name,
               name: author.name,
               value: author,
             })}
@@ -339,23 +397,39 @@ export default function BookForm({ book }: Props) {
             label="Etiquetas"
             placeholder="Etiqueta"
             id="book-tags-candidates"
+            onEnter={(query) => {
+              if (
+                query &&
+                query !== "" &&
+                !data.tags.some((tag) => tag.name === query)
+              ) {
+                setData((data) => ({
+                  ...data,
+                  tags: [...data.tags, new Tag({ name: query })],
+                }));
+
+                return "";
+              }
+
+              return query;
+            }}
             onSearch={searchTags}
             multiple
-            onFilter={(tags) => {
+            selected={data.tags}
+            onSelect={(tags) => {
+              setData((data) => ({
+                ...data,
+                tags: tags as Tag[],
+              }));
+            }}
+            onDraw={(tag) => tag?.name}
+            filterData={(tags) => {
               const totalScore = sum(tags.map((score) => score.score));
               if (totalScore > 1) return tags.slice(0, 3);
               else if (totalScore > 0) return tags.slice(0, 6);
               return tags;
             }}
-            onSelect={(tags) => {
-              console.log(tags);
-              setData((data) => ({
-                ...data,
-                tags: (tags as Tag[]).map((tag) => tag.name),
-              }))
-            }}
-            onDraw={(tag) => tag.name}
-            onRender={(tag) => ({
+            extractData={(tag) => ({
               id: tag.name,
               name: tag.name,
               value: tag,
@@ -378,7 +452,7 @@ export default function BookForm({ book }: Props) {
           </Button>
         </form>
       </section>
-      <div className="flex overflow-hidden rounded-box h-min flex-col w-full grow">
+      <div className="flex overflow-hidden xl:sticky xl:top-4 rounded-box h-min flex-col w-full grow">
         <BookHero preview previewData={data} />
       </div>
     </main>

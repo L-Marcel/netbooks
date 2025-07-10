@@ -2,6 +2,8 @@ package app.netbooks.backend.files.pdfs;
 
 import java.nio.file.Path;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
@@ -11,6 +13,8 @@ import app.netbooks.backend.errors.BookFileNotFound;
 
 @Component
 public class BookPdfsStorageImpl extends PdfsStorage implements BookPdfsStorage {
+    private static Logger logger = LoggerFactory.getLogger(BookPdfsStorageImpl.class);
+
     private Path getBooksStoragePath() {
         return this.getStorageFolder().resolve("books/files");
     };
@@ -36,6 +40,7 @@ public class BookPdfsStorageImpl extends PdfsStorage implements BookPdfsStorage 
             
             return resource;
         } catch (Exception e) {
+            BookPdfsStorageImpl.logger.debug(e.getMessage());
             throw new BookFileNotFound();
         }
     };

@@ -33,7 +33,7 @@ export default function FieldImage({
       >
         {Icon && <Icon className="size-4" />}
         {file?.name ??
-          (file.url != "" ? file.url : "Nenhum arquivo selecionado...")}
+        (file.url != "" ? file.url : <span>Selecione arquivo</span>)}
       </ImageInput>
       <p
         style={{ display: hasError ? "flex" : "none" }}

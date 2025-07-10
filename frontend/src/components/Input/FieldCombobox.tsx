@@ -27,10 +27,15 @@ export default function FieldCombobox<T>({
     <fieldset className="flex flex-col w-full">
       <p className="mb-2 font-medium text-sm">{label}</p>
       <label
-        className={`input focus-within:input-primary ${hasError ? "!input-error" : ""} w-full text-base-content ${className}`}
+        className={`input flex-wrap min-h-10 h-min focus-within:input-primary ${hasError ? "!input-error" : ""} w-full text-base-content ${className}`}
       >
-        {Icon && <Icon className="size-4" />}
-        <ComboboxInput<T> id={id ?? ""} name={id} {...props} />
+        {Icon && <Icon className="size-4 min-w-4 min-h-4" />}
+        <ComboboxInput<T>
+          id={id}
+          name={id}
+          className="min-h-10 max-h-10 w-[calc(100%-1.5rem)]"
+          {...props}
+        />
       </label>
       <p
         style={{ display: hasError ? "flex" : "none" }}
