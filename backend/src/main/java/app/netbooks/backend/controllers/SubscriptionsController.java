@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.netbooks.backend.annotations.AuhenticatedOnly;
+import app.netbooks.backend.annotations.AuthenticatedOnly;
 import app.netbooks.backend.annotations.SubscriberOnly;
 import app.netbooks.backend.authentication.AuthenticatedUser;
 import app.netbooks.backend.dtos.response.PaymentResponse;
@@ -54,7 +54,7 @@ public class SubscriptionsController {
         return ResponseEntity.ok().body(response);
     };
 
-    @AuhenticatedOnly
+    @AuthenticatedOnly
     @GetMapping("/me/next")
     public ResponseEntity<SubscriptionResponse> findNextScheduledBySubscriber(
         @AuthenticationPrincipal AuthenticatedUser user
@@ -74,7 +74,7 @@ public class SubscriptionsController {
         return ResponseEntity.ok().body(response);
     };
 
-    @AuhenticatedOnly
+    @AuthenticatedOnly
     @GetMapping("/me/renew/details")
     public ResponseEntity<RenewDetailsResponse> findRenewDetails(
         @AuthenticationPrincipal AuthenticatedUser user
@@ -87,7 +87,7 @@ public class SubscriptionsController {
         return ResponseEntity.ok().body(response);
     };
 
-    @AuhenticatedOnly
+    @AuthenticatedOnly
     @PostMapping("/me/next/cancel")
     public ResponseEntity<SubscriptionResponse> closedScheduledsBySubscriber(
         @AuthenticationPrincipal AuthenticatedUser user
@@ -99,7 +99,7 @@ public class SubscriptionsController {
         return ResponseEntity.ok().build();
     };
 
-    @AuhenticatedOnly
+    @AuthenticatedOnly
     @GetMapping("/me/payments")
     public ResponseEntity<List<PaymentResponse>> findAllPaymentsBySubscriber(
         @AuthenticationPrincipal AuthenticatedUser user
@@ -112,7 +112,7 @@ public class SubscriptionsController {
         return ResponseEntity.ok().body(response);
     };
 
-    @AuhenticatedOnly
+    @AuthenticatedOnly
     @PostMapping("/me/payments/pay")
     public ResponseEntity<List<PaymentResponse>> payLastPaymentBySubscriber(
         @AuthenticationPrincipal AuthenticatedUser user
@@ -124,7 +124,7 @@ public class SubscriptionsController {
         return ResponseEntity.ok().build();
     };
 
-    @AuhenticatedOnly
+    @AuthenticatedOnly
     @PostMapping("/subscribe/{id}")
     public ResponseEntity<Void> subscribe(
         @AuthenticationPrincipal AuthenticatedUser user,

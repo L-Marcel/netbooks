@@ -6,6 +6,7 @@ import { KeyboardEvent, useLayoutEffect, useRef, useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { Tag } from "@models/tag";
+import BookCover from "./BookCover";
 
 interface Props {
   tag: Tag;
@@ -84,7 +85,7 @@ export default function BookCarousel({ tag, books }: Props) {
           ref={carousel}
           tabIndex={0}
           onKeyDown={onKeyDown}
-          className="focus:outline-none focus:ring-2 ring-offset-2 ring-primary ring-offset-base-100 overflow-x-hidden flex flex-row scroll-smooth gap-4 lg:gap-8 h-[160px] lg:h-[320px] mx-4 lg:mx-8 rounded-box mt-2 lg:mt-4 mb-2 lg:mb-4"
+          className="focus:outline-none focus:ring-2 ring-offset-2 ring-primary ring-offset-base-100 overflow-x-hidden flex flex-row scroll-smooth gap-4 lg:gap-8 max-h-[150px] min-h-[150px] lg:max-h-[300px] lg:min-h-[300px] mx-4 lg:mx-8 rounded-box mt-2 lg:mt-4 mb-2 lg:mb-4"
           style={{
             width: `calc(100% - ${gap * 2}px)`,
           }}
@@ -94,13 +95,15 @@ export default function BookCarousel({ tag, books }: Props) {
               <Link
                 key={book.id}
                 to={"/books/" + book.id}
-                className="border-none outline-none focus-visible:inset-ring-2 rounded-xl group inset-ring-primary block hover:opacity-50 focus-visible:opacity-60 min-w-[100px] min-h-[160px] md:min-w-[200px] md:min-h-[320px]"
+                className="border-none relative outline-none rounded-xl group block hover:opacity-60 focus-visible:opacity-95 min-w-[100px] max-w-[100px] max-h-[150px] min-h-[150px] lg:min-w-[200px] lg:max-w-[200px] lg:max-h-[300px] lg:min-h-[300px]"
               >
-                <img
-                  src={book.cover}
-                  className="object-cover shadow-2xl rounded-lg group-focus-visible:rounded-2xl w-[100px] h-[160px] md:w-[200px] md:h-[320px]"
-                  height={320}
-                  width={200}
+                <div
+                  className={`z-10 rounded-lg overflow-hidden flex flex-row absolute inset-0 group-focus-visible:border-3 ${book.isPremium() ? "group-focus-visible:border-warning" : "group-focus-visible:border-primary"}`}
+                />
+                <BookCover
+                  id={book.id}
+                  premium={book.isPremium()}
+                  cover={book.getCoverUrl()}
                 />
               </Link>
             );

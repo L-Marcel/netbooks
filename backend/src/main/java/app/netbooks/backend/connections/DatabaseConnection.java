@@ -1,9 +1,11 @@
 package app.netbooks.backend.connections;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class DatabaseConnection implements AutoCloseable {
     private Connection connection;

@@ -112,7 +112,7 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorsRepo
                 statement.executeUpdate();
             }
         });
-    }
+    };
 
     @Override
     public void deleteById(Long id) {
@@ -129,7 +129,7 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorsRepo
                 statement.executeUpdate();            
             }
         });
-    }
+    };
 
     @Override
     public void createMany(List<Author> authors) {
@@ -138,7 +138,7 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorsRepo
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    INSERT INTO author (name) values (?);
+                    INSERT INTO author (name) VALUES (?);
                     """,
                     true
                 );
@@ -158,5 +158,31 @@ public class AuthorsRepositoryImpl extends BaseRepository implements AuthorsRepo
                 };
             };
         });
-    };  
+    }
+
+    @Override
+    public void deleteManyIfNotUsedById(List<Long> ids) {
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    DELETE FROM author WHERE id = ?
+                    AND 0 = (
+                        SELECT COUNT(*) FROM book_author
+                        WHERE author = ?
+                    );
+                    """
+                );
+            ) {
+                for(Long id : ids) {
+                    statement.setLong(1, id);
+                    statement.setLong(2, id);
+                    statement.addBatch();
+                };
+
+                statement.executeBatch();
+            };
+        });
+    };
 };

@@ -1,5 +1,6 @@
 package app.netbooks.backend.controllers;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,9 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,11 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import app.netbooks.backend.annotations.AdministratorOnly;
-import app.netbooks.backend.annotations.AuhenticatedOnly;
+import app.netbooks.backend.annotations.AuthenticatedOnly;
 import app.netbooks.backend.annotations.SubscriberOrAdministratorOnly;
 import app.netbooks.backend.authentication.AuthenticatedUser;
 import app.netbooks.backend.dtos.request.ClassificationRequestBody;
 import app.netbooks.backend.dtos.request.RegisterBookRequestBody;
+import app.netbooks.backend.dtos.request.UpdateBookRequestBody;
 import app.netbooks.backend.dtos.response.BookResponse;
 import app.netbooks.backend.dtos.response.ClassificationResponse;
 import app.netbooks.backend.models.Author;
@@ -39,11 +43,6 @@ import app.netbooks.backend.services.BooksService;
 import app.netbooks.backend.services.BooksTagsService;
 import app.netbooks.backend.services.ClassificationsService;
 import app.netbooks.backend.services.PlansBenefitsService;
-
-// [TODO] Editar livro
-// [TODO] Apagar livro
-// [TODO] Buscar livro por similaridade
-// [TODO] Buscar livros na estante
 
 @RestController
 @RequestMapping("/books")
@@ -69,9 +68,47 @@ public class BooksController {
     @GetMapping
     public ResponseEntity<List<BookResponse>> findAll() {
         List<Book> books = this.booksService.findAll();
-        Map<Long, List<Author>> mappedAuthors = this.booksAuthorsService.mapAllByBook();
-        Map<Long, List<Tag>> mappedTags = this.booksTagsService.mapAllByBook();
-        Map<Long, List<Benefit>> mappedRequirements = this.booksBenefitsService.mapAllByBook();
+        Map<Long, List<Author>> mappedAuthors = this.booksAuthorsService.mapAllByBooks();
+        Map<Long, List<Tag>> mappedTags = this.booksTagsService.mapAllByBooks();
+        Map<Long, List<Benefit>> mappedRequirements = this.booksBenefitsService.mapAllByBooks();
+
+        List<BookResponse> response = BookResponse.fromList(
+            books, 
+            mappedAuthors, 
+            mappedTags, 
+            mappedRequirements
+        );
+        return ResponseEntity.ok().body(response);
+    };
+
+    @GetMapping("/search")
+    public ResponseEntity<List<BookResponse>> search(
+        @RequestParam(required = false, defaultValue = "") String query
+    ) {
+        List<Book> books = this.booksService.search(query);
+        Map<Long, List<Author>> mappedAuthors = this.booksAuthorsService.mapAllByBooks(books);
+        Map<Long, List<Tag>> mappedTags = this.booksTagsService.mapAllByBooks(books);
+        Map<Long, List<Benefit>> mappedRequirements = this.booksBenefitsService.mapAllByBooks(books);
+
+        List<BookResponse> response = BookResponse.fromList(
+            books, 
+            mappedAuthors, 
+            mappedTags, 
+            mappedRequirements
+        );
+        return ResponseEntity.ok().body(response);
+    };
+
+    @AuthenticatedOnly
+    @GetMapping("/bookcase/search")
+    public ResponseEntity<List<BookResponse>> searchFromBookcase(
+        @AuthenticationPrincipal AuthenticatedUser user,
+        @RequestParam(required = false, defaultValue = "") String query
+    ) {
+        List<Book> books = this.booksService.searchFromBookcase(query, user.getUser());
+        Map<Long, List<Author>> mappedAuthors = this.booksAuthorsService.mapAllByBooks(books);
+        Map<Long, List<Tag>> mappedTags = this.booksTagsService.mapAllByBooks(books);
+        Map<Long, List<Benefit>> mappedRequirements = this.booksBenefitsService.mapAllByBooks(books);
 
         List<BookResponse> response = BookResponse.fromList(
             books, 
@@ -104,7 +141,7 @@ public class BooksController {
     };
 
     @GetMapping("/{book}/classification")
-    @AuhenticatedOnly
+    @AuthenticatedOnly
     public ResponseEntity<ClassificationResponse> findClassificationByBookAndUser(
         @PathVariable Long book,
         @AuthenticationPrincipal AuthenticatedUser user
@@ -119,7 +156,7 @@ public class BooksController {
     };
 
     @PostMapping("/{book}/classification")
-    @AuhenticatedOnly
+    @AuthenticatedOnly
     public ResponseEntity<ClassificationResponse> createOrUpdateClassificationByBookAndUser(
         @PathVariable Long book,
         @AuthenticationPrincipal AuthenticatedUser user,
@@ -192,6 +229,43 @@ public class BooksController {
             file
         );
 
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    };
+
+    @PutMapping("/{id}")
+    @AdministratorOnly
+    public ResponseEntity<Void> update(
+        @RequestPart("body") UpdateBookRequestBody body,
+        @RequestPart("cover") MultipartFile cover,
+        @RequestPart("banner") MultipartFile banner,
+        @RequestPart("file") MultipartFile file,
+        @PathVariable Long id
+    ) {
+        Book book = this.booksService.findById(id);
+        this.booksService.update(
+            book,
+            body.getTitle(),
+            body.getDescription(),
+            body.getIsbn(),
+            body.getPublishedIn(),
+            body.getPublisher(),
+            body.getTags(),
+            body.getAuthors(),
+            body.getRequirements(),
+            cover,
+            banner,
+            file
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    };
+
+    @DeleteMapping("/{id}")
+    @AdministratorOnly
+    public ResponseEntity<Void> delete(
+        @PathVariable Long id
+    ) {
+        this.booksService.deleteById(id);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     };
 };
