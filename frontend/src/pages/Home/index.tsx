@@ -49,6 +49,7 @@ export default function Home() {
             key={tag}
             tag={{
               name: tag,
+              score: 0
             }}
             books={books}
           />
