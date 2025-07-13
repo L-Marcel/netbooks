@@ -1,10 +1,11 @@
 import Button from "@components/Button";
 import useMediaQuery from "../../hooks/useMediaQuery";
 import { remToPx } from "../../Utils/pixels";
-import { Book, Tag } from "@models/book";
+import { Book } from "@models/book";
 import { KeyboardEvent, useLayoutEffect, useRef, useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { Tag } from "@models/tag";
 
 interface Props {
   tag: Tag;
