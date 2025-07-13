@@ -1,5 +1,5 @@
 import useRoom, { Room } from "@stores/useRoom";
-import { getRoom } from "./room";
+// import { getRoom } from "./room";
 import { UUID } from "crypto";
 import { Client } from "@stomp/stompjs";
 
@@ -19,6 +19,7 @@ export function connect(
   const { room, setRoom, setClient, client: oldClient } = useRoom.getState();
 
   if (oldClient && oldClient.connected) return;
+  console.log(participant);
 
   const client: Client = new Client({
     brokerURL: `${import.meta.env.VITE_WEBSOCKET_URL}/websocket`,
@@ -39,6 +40,7 @@ export function connect(
       client.subscribe(
         "/channel/events/rooms/" + code + "/participants/result",
         (message) => {
+          console.log(message);
           // recebimento do resultado
         }
       );

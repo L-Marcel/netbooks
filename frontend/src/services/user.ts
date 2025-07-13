@@ -85,7 +85,7 @@ async function fetchBenefits(token: string): Promise<Benefit[]> {
 export async function fetchUser(token: string): Promise<User> {
   return await Promise.all([
     await axios
-      .get<UserData>("http://localhost:8080/users/me", {
+      .get<UserData>(`${import.meta.env.VITE_BACKEND_URL}/users/me`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + token,

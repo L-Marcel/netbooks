@@ -46,7 +46,7 @@ export class Book {
     this.requirements = data.requirements.map(
       (requirement) => requirement.name as Benefit
     );
-    this.cover = `http://localhost:8080/books/covers/${this.id}.webp`;
-    this.banner = `http://localhost:8080/books/banners/${this.id}.webp`;
+    this.cover = `${import.meta.env.VITE_BACKEND_URL}/books/covers/${this.id}.webp`;
+    this.banner = `${import.meta.env.VITE_BACKEND_URL}/books/banners/${this.id}.webp`;
   }
 }

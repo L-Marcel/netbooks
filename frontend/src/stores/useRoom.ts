@@ -1,4 +1,3 @@
-import { User } from "@models/user";
 import { UUID } from "crypto";
 import { Client } from "@stomp/stompjs";
 import { create } from "zustand";

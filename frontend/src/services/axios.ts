@@ -39,7 +39,7 @@ export type HttpError = {
 export type ApiError = HttpError | ValidationError;
 
 const api = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: `${import.meta.env.VITE_BACKEND_URL}`,
   headers: {
     "Content-Type": "application/json",
   },

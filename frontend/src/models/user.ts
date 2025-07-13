@@ -51,7 +51,7 @@ export class User {
   }
 
   public getAvatarUrl(): string {
-    return `http://localhost:8080/users/${this.uuid}.webp`;
+    return `${import.meta.env.VITE_BACKEND_URL}/users/${this.uuid}.webp`;
   }
 
   public isSubscriber(): boolean {
