@@ -77,25 +77,33 @@ export default function ComboboxInput<T>({
     debouncedFetch(query);
   }, [debouncedFetch, query]);
 
-  const options = useMemo(() => multiple
-    ? selected
-      ? [...(selected as T[]), ...filtered]
-      : filtered
-    : selected
-      ? [selected as T, ...filtered]
-      : filtered, [selected, filtered, multiple]);
+  const options = useMemo(
+    () =>
+      multiple
+        ? selected
+          ? [...(selected as T[]), ...filtered]
+          : filtered
+        : selected
+          ? [selected as T, ...filtered]
+          : filtered,
+    [selected, filtered, multiple]
+  );
 
-  const filteredOptions = useMemo(() => filterData(
-    Array.from(
-      options
-        .reduce((map, currentOption) => {
-          const content = extractData(currentOption);
-          if (!map.has(content.id)) map.set(content.id, currentOption);
-          return map;
-        }, new Map<string, T>())
-        .values()
-    )
-  ), [options, filterData, extractData]);
+  const filteredOptions = useMemo(
+    () =>
+      filterData(
+        Array.from(
+          options
+            .reduce((map, currentOption) => {
+              const content = extractData(currentOption);
+              if (!map.has(content.id)) map.set(content.id, currentOption);
+              return map;
+            }, new Map<string, T>())
+            .values()
+        )
+      ),
+    [options, filterData, extractData]
+  );
 
   const selecteds = multiple ? ((selected as T[]) ?? []) : [];
 
@@ -123,8 +131,7 @@ export default function ComboboxInput<T>({
       event.stopPropagation();
       const newQuery = onEnter(query);
       setQuery(newQuery);
-      if(comboboxInputRef.current)
-        comboboxInputRef.current.value = newQuery;
+      if (comboboxInputRef.current) comboboxInputRef.current.value = newQuery;
     }
   };
 

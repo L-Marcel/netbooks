@@ -40,6 +40,11 @@ import app.netbooks.backend.services.BooksTagsService;
 import app.netbooks.backend.services.ClassificationsService;
 import app.netbooks.backend.services.PlansBenefitsService;
 
+// [TODO] Editar livro
+// [TODO] Apagar livro
+// [TODO] Buscar livro por similaridade
+// [TODO] Buscar livros na estante
+
 @RestController
 @RequestMapping("/books")
 public class BooksController {

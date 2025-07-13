@@ -150,7 +150,7 @@ export default function BookForm({ book }: Props) {
       tags: data.tags,
       requirements: data.requirements,
     } as BookRegisterData;
-    
+
     formData.append(
       "body",
       new Blob([JSON.stringify(body)], { type: "application/json" })
@@ -199,7 +199,10 @@ export default function BookForm({ book }: Props) {
           <p>Cadastrar novo livro na plataforma</p>
         </header>
         <div className="divider divider-vertical my-2"></div>
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full xl:flex xl:flex-col" onSubmit={onSubmit}>
+        <form
+          className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full xl:flex xl:flex-col"
+          onSubmit={onSubmit}
+        >
           <div className="flex flex-col w-full gap-4">
             <Field
               icon={FaPenAlt}

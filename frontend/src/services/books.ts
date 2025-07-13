@@ -36,7 +36,6 @@ export async function updateBook(data: FormData) {
   });
 }
 
-
 export async function fetchBooks(): Promise<Book[]> {
   return api
     .get<BookData[]>("books")
