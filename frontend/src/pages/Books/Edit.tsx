@@ -34,7 +34,7 @@ export function Page() {
 
   useEffect(update, [update]);
 
-  if(!loadingSet.has("book") && !book) return <NotFound/>;
+  if (!loadingSet.has("book") && !book) return <NotFound />;
 
   return (
     <main className="flex flex-col p-8 gap-4 bg-base-100 w-full h-full min-h-[calc(100vh-4rem)] items-center">

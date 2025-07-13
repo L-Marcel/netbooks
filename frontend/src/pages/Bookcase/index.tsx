@@ -55,7 +55,11 @@ function Page() {
           />
         </label>
       </section>
-      {!isFetching && books.length <= 0 && <p className="mt-4 justify-self-start w-full pl-2 text-start text-lg font-semibold">Você não iniciou nenhuma leitura!</p>}
+      {!isFetching && books.length <= 0 && (
+        <p className="mt-4 justify-self-start w-full pl-2 text-start text-lg font-semibold">
+          Você não iniciou nenhuma leitura!
+        </p>
+      )}
       <section className="mt-4 flex flex-wrap gap-4 max-w-full w-full">
         {isFetching &&
           [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((value, index) => {

@@ -61,7 +61,7 @@ function Page() {
 
   useEffect(update, [update]);
 
-  if(!loadingSet.has("book") && !book) return <NotFound/>;
+  if (!loadingSet.has("book") && !book) return <NotFound />;
 
   return (
     <main className="flex flex-col w-full h-full min-h-[calc(100vh-4rem)] items-center bg-base-100">
