@@ -22,7 +22,7 @@
     "decimal.js": "^10.6.0",
     "es-toolkit": "^1.39.7",
     "motion": "^12.23.3",
-    "pdfjs-dist": "^5.3.93",
+    "pdfjs-dist": "5.3.31",
     "postcss-import": "^16.1.1",
     "react": "^19.1.0",
     "react-day-picker": "^9.8.0",
