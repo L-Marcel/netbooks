@@ -1,5 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { FaBook, FaCompass, FaFireAlt, FaHome, FaSearch } from "react-icons/fa";
+import {
+  FaBook,
+  FaCompass,
+  FaFireAlt,
+  FaHome,
+  FaPencilRuler,
+  FaSearch,
+} from "react-icons/fa";
 import { User } from "@models/user";
 
 interface Props {
@@ -20,8 +27,19 @@ export default function NavbarLinks({ user }: Props) {
           <FaHome /> Início
         </NavLink>
       </li>
-      {user?.isSubscriber() ? (
+      {user?.isSubscriber() || user?.isAdmin() ? (
         <>
+          <li>
+            <NavLink
+              className={({ isActive }) =>
+                "text-base-content no-underline hover:underline font-bold transition" +
+                (isActive ? " text-primary" : "")
+              }
+              to="/admin"
+            >
+              <FaPencilRuler /> Administração
+            </NavLink>
+          </li>
           <li>
             <NavLink
               className={({ isActive }) =>

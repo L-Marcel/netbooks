@@ -16,4 +16,8 @@ public class TagsService {
     public List<Tag> findAll() {
         return this.repository.findAll();
     };
+
+    public List<Tag> searchByName(String name) {
+        return this.repository.searchByName(name);
+    };
 };

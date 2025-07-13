@@ -1,7 +1,8 @@
-import { Tag } from "@models/book";
+import { Tag } from "@models/tag";
 
 interface Props {
   tags?: Tag[];
+  isPremium?: boolean;
 }
 
 const DEFAULT_TAGS: Tag[] = [];
@@ -12,12 +13,22 @@ export default function BookTag({ tags = DEFAULT_TAGS }: Props) {
     tags.length > MAX_VISIBLE_TAGS ? tags.slice(0, MAX_VISIBLE_TAGS) : tags;
   const extraTagsCount = tags.length - MAX_VISIBLE_TAGS;
 
+  if (!tags || tags.length === 0)
+    return (
+      <div className="flex flex-wrap gap-2 mb-1">
+        <div className="badge border-none skeleton min-w-26" />
+        <div className="badge border-none skeleton min-w-26" />
+        <div className="badge border-none skeleton min-w-26" />
+        <div className="badge border-none skeleton min-w-10" />
+      </div>
+    );
+
   return (
-    <div className="flex flex-wrap sm:flex-nowrap gap-2 mb-1">
+    <div className="flex flex-wrap gap-2 mb-1">
       {visibleTags.map((tag) => (
         <div
           key={tag.name}
-          className="badge badge-outline badge-primary"
+          className="badge badge-soft badge-primary group-[.is-premium]:badge-warning"
           title={tag.name}
         >
           {tag.name}
@@ -25,7 +36,7 @@ export default function BookTag({ tags = DEFAULT_TAGS }: Props) {
       ))}
       {extraTagsCount > 0 && (
         <div
-          className="badge badge-outline badge-secondary tooltip tooltip-secondary tooltip-bottom lg:tooltip-right"
+          className="badge badge-soft badge-primary tooltip tooltip-bottom tooltip-primary group-[.is-premium]:tooltip-warning group-[.is-premium]:badge-warning"
           data-tip={tags
             .map((tag) => tag.name)
             .slice(MAX_VISIBLE_TAGS)

@@ -23,12 +23,12 @@ public class BooksBenefitsService {
         return this.repository.findAllByBook(id);
     };
 
-    public void validateBookAccess(Long id, List<Benefit> benefits) {
+    public void validateBookAccess(Long id, List<Benefit> benefits, Boolean isAdmin) {
         List<Benefit> requirements = this.findAllByBook(
             id
         );
 
-        if(!requirements.stream().allMatch(
+        if(!isAdmin && !requirements.stream().allMatch(
             (requirement) -> {
                 return benefits.stream().anyMatch(
                     (benefit) -> benefit.getName().equals(requirement.getName())
@@ -37,11 +37,11 @@ public class BooksBenefitsService {
         )) throw new Unauthorized();
     };
 
-    public void validateBookAccessToDownlaod(Long id, List<Benefit> benefits) {
-        this.validateBookAccess(id, benefits);
+    public void validateBookAccessToDownlaod(Long id, List<Benefit> benefits, Boolean isAdmin) {
+        this.validateBookAccess(id, benefits, isAdmin);
 
         if(
-            !benefits.stream().anyMatch(
+            !isAdmin && !benefits.stream().anyMatch(
                 (benefit) -> benefit.getName().equals("CAN_DOWNLOAD_BOOKS")
             )
         ) throw new Unauthorized();

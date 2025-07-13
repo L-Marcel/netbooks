@@ -88,6 +88,27 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
     };
 
     @Override
+    public void createMany(List<Tag> tags) {
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    INSERT IGNORE INTO tag (name) values (?);
+                    """
+                );
+            ) {
+                for(Tag tag : tags) {
+                    statement.setString(1, tag.getName());
+                    statement.addBatch();
+                };
+
+                statement.executeBatch();
+            };
+        });
+    };
+
+    @Override
     public void deleteByName(String name) {
         this.execute((connection) -> {
            try (
@@ -102,5 +123,55 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
                 statement.executeUpdate();
             }; 
         });
+    }
+
+    @Override
+    public List<Tag> searchByName(String name) {
+        return this.queryOrDefault((connection) -> {
+            List<Tag> tags = new ArrayList<>();
+
+            try (
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    SELECT *, 
+                    (
+                        MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)
+                        + (MATCH(name) AGAINST(? IN BOOLEAN MODE) * 1.5)
+                    )
+                    AS score
+                    FROM tag
+                    ORDER BY score DESC
+                    LIMIT 8;
+                    """
+                );
+            ) {
+                preparedStatement.setString(1, name);
+                if(name.trim().equals("")) preparedStatement.setString(2, "");
+                else {
+                    StringBuilder builder = new StringBuilder();
+                    String[] words = name.split(" ");
+                    for(int i = 0; i < words.length; i++) {
+                        String word = words[i];
+                        if(i > 0) builder.append(" ");
+                        builder.append("+");
+                        builder.append(word);
+                        builder.append("*");
+                    };
+
+                    preparedStatement.setString(2, builder.toString());
+                };
+
+                try (ResultSet result = preparedStatement.executeQuery()) {
+                    while(result.next()) {
+                        String completeName = result.getString("name");
+                        Tag tag = new Tag(completeName);
+                        tags.add(tag);
+                    };
+                };
+            };
+            
+            return tags;
+        }, new ArrayList<>());
     };
 };

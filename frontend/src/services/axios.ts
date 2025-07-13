@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import useUser from "../stores/useUser";
 import { logout } from "./user";
 
-type ExpectedApiValidationError = {
+export type ExpectedApiValidationError = {
   field: string;
   messages: {
     error: boolean;
@@ -10,9 +10,9 @@ type ExpectedApiValidationError = {
   }[];
 };
 
-type ExpectedApiError = {
+export type ExpectedApiError = {
   status: number;
-  error: string;
+  message?: string;
   errors?: ExpectedApiValidationError[];
 };
 
@@ -21,20 +21,22 @@ export type Validation = {
   content: string;
 };
 
-export type ValidationError = {
+export type ValidationErrors = {
   [key in string]: Validation[];
 };
 
-export type ApiError =
-  | {
-      type: "default";
-      status: number;
-      error: string;
-    }
-  | ({
-      type: "validation";
-      status: number;
-    } & ValidationError);
+export type ValidationError = {
+  type: "validation";
+  status: number;
+} & ValidationErrors;
+
+export type HttpError = {
+  type: "default";
+  status: number;
+  error: string;
+};
+
+export type ApiError = HttpError | ValidationError;
 
 const api = axios.create({
   baseURL: "http://localhost:8080",
@@ -68,20 +70,20 @@ api.interceptors.response.use(
               return {
                 ...previous,
                 [current.field]: current.messages as Validation[],
-              } as ApiError;
+              } as ValidationError;
             },
             {
               type: "validation",
               status: apiError.status,
-            } as ApiError
+            } as ValidationError
           )
         );
       } else
         return Promise.reject({
           type: "default",
-          error: apiError.error,
+          error: apiError.message,
           status: apiError.status,
-        } as ApiError);
+        } as HttpError);
     }
 
     return Promise.reject({
@@ -89,7 +91,7 @@ api.interceptors.response.use(
       data: error.response?.data,
       error: "Erro inesperado!",
       type: "default",
-    } as ApiError);
+    } as HttpError);
   }
 );
 

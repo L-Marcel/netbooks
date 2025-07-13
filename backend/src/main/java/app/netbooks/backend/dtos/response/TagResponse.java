@@ -15,9 +15,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TagResponse {
     private String name;
+    private Double score;
 
     public TagResponse(Tag tag) {
         this.name = tag.getName();
+        this.score = tag.getScore();
     };
 
     public static List<TagResponse> fromList(List<Tag> list) {

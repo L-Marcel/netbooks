@@ -1,3 +1,3 @@
-subscriber,book,value
+user,book,value
 
-Questao_3,subscriber,book -> value
+Questao_3,user,book -> value

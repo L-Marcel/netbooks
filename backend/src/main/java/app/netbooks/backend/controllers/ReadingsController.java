@@ -80,7 +80,8 @@ public class ReadingsController {
 
         this.booksBenefitsService.validateBookAccess(
             book.getId(), 
-            benefits
+            benefits,
+            user.isAdmin()
         );
 
         Resource content = this.booksService.findContentById(

@@ -20,52 +20,52 @@ export function RatingInput({
       {readonly ? (
         <>
           <div
-            className="mask mask-star-2 mask-half-1 bg-primary"
+            className="mask mask-star-2 mask-half-1 bg-primary group-[.is-premium]:bg-warning"
             aria-label="0.5 star"
             aria-current={value === 0.5 ? "true" : "false"}
           />
           <div
-            className="mask mask-star-2 mask-half-2 bg-primary"
+            className="mask mask-star-2 mask-half-2 bg-primary group-[.is-premium]:bg-warning"
             aria-label="1 star"
             aria-current={value === 1 ? "true" : "false"}
           />
           <div
-            className="mask mask-star-2 mask-half-1 bg-primary"
+            className="mask mask-star-2 mask-half-1 bg-primary group-[.is-premium]:bg-warning"
             aria-label="1.5 star"
             aria-current={value === 1.5 ? "true" : "false"}
           />
           <div
-            className="mask mask-star-2 mask-half-2 bg-primary"
+            className="mask mask-star-2 mask-half-2 bg-primary group-[.is-premium]:bg-warning"
             aria-label="2 star"
             aria-current={value === 2 ? "true" : "false"}
           />
           <div
-            className="mask mask-star-2 mask-half-1 bg-primary"
+            className="mask mask-star-2 mask-half-1 bg-primary group-[.is-premium]:bg-warning"
             aria-label="2.5 star"
             aria-current={value === 2.5 ? "true" : "false"}
           />
           <div
-            className="mask mask-star-2 mask-half-2 bg-primary"
+            className="mask mask-star-2 mask-half-2 bg-primary group-[.is-premium]:bg-warning"
             aria-label="3 star"
             aria-current={value === 3 ? "true" : "false"}
           />
           <div
-            className="mask mask-star-2 mask-half-1 bg-primary"
+            className="mask mask-star-2 mask-half-1 bg-primary group-[.is-premium]:bg-warning"
             aria-label="3.5 star"
             aria-current={value === 3.5 ? "true" : "false"}
           />
           <div
-            className="mask mask-star-2 mask-half-2 bg-primary"
+            className="mask mask-star-2 mask-half-2 bg-primary group-[.is-premium]:bg-warning"
             aria-label="4 star"
             aria-current={value === 4 ? "true" : "false"}
           />
           <div
-            className="mask mask-star-2 mask-half-1 bg-primary"
+            className="mask mask-star-2 mask-half-1 bg-primary group-[.is-premium]:bg-warning"
             aria-label="4.5 star"
             aria-current={value === 4.5 ? "true" : "false"}
           />
           <div
-            className="mask mask-star-2 mask-half-2 bg-primary"
+            className="mask mask-star-2 mask-half-2 bg-primary group-[.is-premium]:bg-warning"
             aria-label="5 star"
             aria-current={value === 5 ? "true" : "false"}
           />
@@ -75,7 +75,7 @@ export function RatingInput({
           <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-1 bg-primary disabled:hover:cursor-wait"
+            className="mask mask-star-2 mask-half-1 bg-primary group-[.is-premium]:bg-warning disabled:hover:cursor-wait"
             aria-label="0.5 star"
             checked={value === 0.5}
             onChange={() => onChange(1)}
@@ -83,7 +83,7 @@ export function RatingInput({
           <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-2 bg-primary disabled:hover:cursor-wait"
+            className="mask mask-star-2 mask-half-2 bg-primary group-[.is-premium]:bg-warning disabled:hover:cursor-wait"
             aria-label="1 star"
             checked={value === 1}
             onChange={() => onChange(2)}
@@ -91,7 +91,7 @@ export function RatingInput({
           <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-1 bg-primary disabled:hover:cursor-wait"
+            className="mask mask-star-2 mask-half-1 bg-primary group-[.is-premium]:bg-warning disabled:hover:cursor-wait"
             aria-label="1.5 star"
             checked={value === 1.5}
             onChange={() => onChange(3)}
@@ -99,7 +99,7 @@ export function RatingInput({
           <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-2 bg-primary disabled:hover:cursor-wait"
+            className="mask mask-star-2 mask-half-2 bg-primary group-[.is-premium]:bg-warning disabled:hover:cursor-wait"
             aria-label="2 star"
             checked={value === 2}
             onChange={() => onChange(4)}
@@ -107,7 +107,7 @@ export function RatingInput({
           <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-1 bg-primary disabled:hover:cursor-wait"
+            className="mask mask-star-2 mask-half-1 bg-primary group-[.is-premium]:bg-warning disabled:hover:cursor-wait"
             aria-label="2.5 star"
             checked={value === 2.5}
             onChange={() => onChange(5)}
@@ -115,7 +115,7 @@ export function RatingInput({
           <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-2 bg-primary disabled:hover:cursor-wait"
+            className="mask mask-star-2 mask-half-2 bg-primary group-[.is-premium]:bg-warning disabled:hover:cursor-wait"
             aria-label="3 star"
             checked={value === 3}
             onChange={() => onChange(6)}
@@ -123,7 +123,7 @@ export function RatingInput({
           <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-1 bg-primary disabled:hover:cursor-wait"
+            className="mask mask-star-2 mask-half-1 bg-primary group-[.is-premium]:bg-warning disabled:hover:cursor-wait"
             aria-label="3.5 star"
             checked={value === 3.5}
             onChange={() => onChange(7)}
@@ -131,7 +131,7 @@ export function RatingInput({
           <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-2 bg-primary disabled:hover:cursor-wait"
+            className="mask mask-star-2 mask-half-2 bg-primary group-[.is-premium]:bg-warning disabled:hover:cursor-wait"
             aria-label="4 star"
             checked={value === 4}
             onChange={() => onChange(8)}
@@ -139,7 +139,7 @@ export function RatingInput({
           <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-1 bg-primary disabled:hover:cursor-wait"
+            className="mask mask-star-2 mask-half-1 bg-primary group-[.is-premium]:bg-warning disabled:hover:cursor-wait"
             aria-label="4.5 star"
             checked={value === 4.5}
             onChange={() => onChange(9)}
@@ -147,7 +147,7 @@ export function RatingInput({
           <Input
             type="radio"
             name="rating-11"
-            className="mask mask-star-2 mask-half-2 bg-primary disabled:hover:cursor-wait"
+            className="mask mask-star-2 mask-half-2 bg-primary group-[.is-premium]:bg-warning disabled:hover:cursor-wait"
             aria-label="5 star"
             checked={value === 5}
             onChange={() => onChange(10)}

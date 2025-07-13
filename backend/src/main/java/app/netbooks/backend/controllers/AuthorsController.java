@@ -21,7 +21,7 @@ public class AuthorsController {
     @Autowired
     private AuthorsService service;
 
-    @GetMapping
+    @GetMapping("/search")
     public ResponseEntity<List<AuthorResponse>> searchByName(
         @RequestParam(required = false, defaultValue = "") String name
     ) {
@@ -33,7 +33,7 @@ public class AuthorsController {
 
     @GetMapping("/{id}")
     public ResponseEntity<AuthorResponse> findById(
-        @PathVariable Integer id
+        @PathVariable Long id
     ) {
         Author author = service.findById(id);
         AuthorResponse response = new AuthorResponse(author);

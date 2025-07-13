@@ -111,4 +111,131 @@ public class BooksRepositoryImpl extends BaseRepository implements BooksReposito
             return bookFound;
         }, Optional.empty());
     };
+
+    @Override
+    public Optional<Book> findByIsbn(Long isbn) {
+        return this.queryOrDefault((connection) -> {
+            Optional<Book> bookFound = Optional.empty();
+
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    SELECT * FROM book_with_stars 
+                    WHERE isbn = ? AND isbn IS NOT NULL;
+                    """
+                );
+            ) {
+                statement.setLong(1, isbn);
+
+                try(ResultSet result = statement.executeQuery()) {
+                    if(result.next()) {
+                        Long id = result.getLong("id");
+                        String title = result.getString("title");
+                        String description = result.getString("description");
+                        Double stars = result.getDouble("stars");
+                        Integer numPages = result.getInt("num_pages");
+                        Date publishedIn = result.getDate("published_in");
+                    
+                        String publisherName = result.getString("publisher");
+                        Publisher publisher = new Publisher(publisherName);
+
+                        Book book = new Book(
+                            id,
+                            isbn,
+                            title,
+                            description,
+                            stars,
+                            numPages,
+                            publishedIn,
+                            publisher
+                        );
+
+                        bookFound = Optional.of(book);
+                    };
+                };
+            };
+
+            return bookFound;
+        }, Optional.empty());
+    };
+
+    @Override
+    public void create(Book book) {
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    INSERT INTO book (isbn, title, description, num_pages, published_in, publisher)
+                    VALUES (?, ?, ?, ?, ?, ?);
+                    """,
+                    true
+                );
+            ) {
+                if(book.getIsbn() != null) statement.setLong(1, book.getIsbn());
+                else statement.setNull(1, java.sql.Types.BIGINT);
+                
+                statement.setString(2, book.getTitle());
+                statement.setString(3, book.getDescription());
+                statement.setInt(4, book.getNumPages());
+                statement.setDate(5, book.getPublishedIn());
+                statement.setString(6, book.getPublisher().getName());
+                statement.executeUpdate();
+
+                try (ResultSet result = statement.getGeneratedKeys()) {
+                    result.next();
+                    Long id = result.getLong(1);
+                    book.setId(id);
+                };
+            };
+        });
+    };
+
+    @Override
+    public void deleteById(Long id) {
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    DELETE FROM book WHERE id = ?;
+                    """
+                );
+            ) {
+                statement.setLong(1, id);
+                statement.executeUpdate();
+            };
+        });
+    };
+
+    @Override
+    public void update(Book book) {
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    UPDATE book
+                    SET isbn = ?, 
+                        title = ?, 
+                        description = ?, 
+                        num_pages = ?, 
+                        published_in = ?, 
+                        publisher = ?
+                    WHERE id = ?;
+                    """
+                );
+            ) {
+                statement.setLong(1, book.getIsbn());
+                statement.setString(2, book.getTitle());
+                statement.setString(3, book.getDescription());
+                statement.setInt(4, book.getNumPages());
+                statement.setDate(5, book.getPublishedIn());
+                statement.setString(6, book.getPublisher().getName());
+                statement.setLong(7, book.getId());
+                statement.executeUpdate();
+            };
+        });
+    };
 };

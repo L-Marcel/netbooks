@@ -24,7 +24,7 @@ public class PublishersRepositoryImpl extends BaseRepository implements Publishe
     public List<Publisher> findAll() {
         return this.queryOrDefault((connection) -> {
             List<Publisher> publishers = new ArrayList<>();
-
+            
             try (
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
@@ -108,5 +108,56 @@ public class PublishersRepositoryImpl extends BaseRepository implements Publishe
                 statement.executeUpdate();
             };
         });
+    }
+
+    @Override
+    public List<Publisher> searchByName(String name) {
+        return this.queryOrDefault((connection) -> {
+            List<Publisher> publishers = new ArrayList<>();
+
+            try (
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    SELECT *, 
+                    (
+                        MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)
+                        + (MATCH(name) AGAINST(? IN BOOLEAN MODE) * 1.5)
+                    )
+                    AS score
+                    FROM publisher
+                    ORDER BY score DESC
+                    LIMIT 8;
+                    """
+                );
+            ) {
+                preparedStatement.setString(1, name);
+                if(name.trim().equals("")) preparedStatement.setString(2, "");
+                else {
+                    StringBuilder builder = new StringBuilder();
+                    String[] words = name.split(" ");
+                    for(int i = 0; i < words.length; i++) {
+                        String word = words[i];
+                        if(i > 0) builder.append(" ");
+                        builder.append("+");
+                        builder.append(word);
+                        builder.append("*");
+                    };
+
+                    preparedStatement.setString(2, builder.toString());
+                };
+
+                try (ResultSet result = preparedStatement.executeQuery()) {
+                    while(result.next()) {
+                        String completeName = result.getString("name");
+                        Publisher publisher = new Publisher(completeName);
+
+                        publishers.add(publisher);
+                    };
+                };
+            };
+            
+            return publishers;
+        }, new ArrayList<>());
     };
 };

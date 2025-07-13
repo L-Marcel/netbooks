@@ -37,7 +37,7 @@ public class BooksAuthorsRepositoryImpl extends BaseRepository implements BooksA
             ) {
                 while(result.next()) {
                     Long book = result.getLong("book");
-                    Integer authorId = result.getInt("author");
+                    Long authorId = result.getLong("author");
                     String name = result.getString("name");
                     Author author = new Author(authorId, name);
 
@@ -61,7 +61,7 @@ public class BooksAuthorsRepositoryImpl extends BaseRepository implements BooksA
                 PreparedStatement preparedStatement = connection.prepareStatement(
                     // language=sql
                     """
-                    SELECT tag FROM book_authors WHERE book = ?;
+                    SELECT * FROM book_authors WHERE book = ?;
                     """
                 );
             ) {
@@ -69,7 +69,7 @@ public class BooksAuthorsRepositoryImpl extends BaseRepository implements BooksA
                 
                 try (ResultSet result = preparedStatement.executeQuery()) {
                     while(result.next()) {
-                        Integer authorId = result.getInt("author");
+                        Long authorId = result.getLong("author");
                         String name = result.getString("name");
                         
                         Author author = new Author(authorId, name);
@@ -81,5 +81,27 @@ public class BooksAuthorsRepositoryImpl extends BaseRepository implements BooksA
 
             return authors;
         }, new LinkedList<>());
+    }
+
+    @Override
+    public void createMany(List<Author> authors, Long book) {
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    INSERT INTO book_author (author, book) values (?, ?);
+                    """
+                );
+            ) {
+                for(Author author : authors) {
+                    statement.setLong(1, author.getId());
+                    statement.setLong(2, book);
+                    statement.addBatch();
+                };
+                
+                statement.executeBatch();
+            };
+        });
     };
 };

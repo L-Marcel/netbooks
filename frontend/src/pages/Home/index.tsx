@@ -1,7 +1,8 @@
 import BookCarousel from "@components/Book/BookCarousel";
 import BookHero from "@components/Book/BookHero";
 import { Book } from "@models/book";
-import { fetchBooks, fetchTags } from "@services/books";
+import { fetchBooks } from "@services/books";
+import { fetchTags } from "@services/tags";
 import { useQuery } from "react-query";
 
 export default function Home() {

@@ -1,17 +1,7 @@
+import { Author, AuthorData } from "./author";
 import { Benefit, BenefitData } from "./benefit";
-
-export type Author = {
-  id: number;
-  name: string;
-};
-
-export type Tag = {
-  name: string;
-};
-
-export type Publisher = {
-  name: string;
-};
+import { Publisher, PublisherData } from "./publisher";
+import { Tag, TagData } from "./tag";
 
 export interface BookData {
   id: number;
@@ -19,11 +9,11 @@ export interface BookData {
   title: string;
   numPages: number;
   publishedIn: Date;
-  publisher: Publisher;
+  publisher: PublisherData;
   description: string;
   stars: number;
-  tags: Tag[];
-  authors: Author[];
+  tags: TagData[];
+  authors: AuthorData[];
   requirements: BenefitData[];
 }
 
@@ -48,11 +38,11 @@ export class Book {
     this.title = data.title;
     this.numPages = data.numPages;
     this.publishedIn = data.publishedIn;
-    this.publisher = data.publisher;
+    this.publisher = new Publisher(data.publisher);
     this.description = data.description;
     this.stars = data.stars;
-    this.tags = data.tags;
-    this.authors = data.authors;
+    this.tags = data.tags.map((tag) => new Tag(tag));
+    this.authors = data.authors.map((author) => new Author(author));
     this.requirements = data.requirements.map(
       (requirement) => requirement.name as Benefit
     );

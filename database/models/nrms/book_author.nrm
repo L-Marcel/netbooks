@@ -1,4 +1,1 @@
 book,author
-
-Questao_3,book -> author
-author -> book

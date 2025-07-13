@@ -15,9 +15,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PublisherResponse {
     private String name;
+    private Double score;
 
     public PublisherResponse(Publisher publisher) {
         this.name = publisher.getName();
+        this.score = publisher.getScore();
     };
 
     public static List<PublisherResponse> fromList(List<Publisher> list) {

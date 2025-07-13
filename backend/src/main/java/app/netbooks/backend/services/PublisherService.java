@@ -15,21 +15,25 @@ public class PublisherService {
     private PublishersRepository repository;
 
     public List<Publisher> findAll() {
-        return repository.findAll();
-    }
+        return this.repository.findAll();
+    };
 
     public Publisher findByName(String name) {
-        return repository.findByName(name)
+        return this.repository.findByName(name)
             .orElseThrow(
                 () -> new PublisherNotFound()
             );
-    }
+    };
+
+    public List<Publisher> searchByName(String name) {
+        return this.repository.searchByName(name);
+    };
 
     public void create(Publisher publisher) {
-        repository.create(publisher);
-    }
+        this.repository.create(publisher);
+    };
 
     public void delete(String name) {
-        repository.deleteByName(name);
-    }
-}
+        this.repository.deleteByName(name);
+    };
+};

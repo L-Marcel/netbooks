@@ -244,6 +244,9 @@ public abstract class UsersControllerTests extends BaseTests {
             "Testando",
             null,
             "test@gmail.com",
+            "TeSt1234",
+            "TeSt1234",
+            true,
             "TeSt1234"
         );
 

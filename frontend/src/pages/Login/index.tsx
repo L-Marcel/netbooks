@@ -7,6 +7,7 @@ import AuthGuard from "@components/Guards/AuthGuard";
 import Loading from "@components/Loading";
 import { useLoading } from "@stores/useLoading";
 import Button from "@components/Button";
+import { HttpError } from "@services/axios";
 
 export default function Login() {
   return (
@@ -21,6 +22,7 @@ function Page() {
   const startLoading = useLoading((state) => state.start);
   const stopLoading = useLoading((state) => state.stop);
 
+  const [error, setError] = useState<string>("");
   const [data, setData] = useState<UserLoginData>({
     email: "",
     password: "",
@@ -36,8 +38,14 @@ function Page() {
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     startLoading("login");
+    setError("");
     login(data)
       .then(() => navigate("/"))
+      .catch((error: HttpError) => {
+        if (error.type === "default") {
+          setError(error.error);
+        }
+      })
       .finally(() => stopLoading("login"));
   };
 
@@ -67,6 +75,9 @@ function Page() {
             onChange={onChangeData}
             placeholder="••••••••"
           />
+          {error && (
+            <p className="text-error font-light text-xs sm:text-sm">{error}</p>
+          )}
           <Button className="btn btn-primary" type="submit">
             <Loading
               id="login"

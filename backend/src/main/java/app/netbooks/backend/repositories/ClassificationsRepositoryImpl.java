@@ -36,7 +36,7 @@ public class ClassificationsRepositoryImpl extends BaseRepository implements Cla
                 statement.executeUpdate();
             };
         });
-    }
+    };
 
     @Override
     public Optional<Classification> findByBookAndUser(Long book, UUID user) {

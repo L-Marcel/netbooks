@@ -5,6 +5,7 @@ import { User, UserData } from "../models/user";
 import useUser from "../stores/useUser";
 import { Subscription, SubscriptionData } from "@models/subscription";
 import { Benefit, BenefitData } from "@models/benefit";
+import { ImageData, imageUrlToData } from "./image";
 
 export type UserLoginData = {
   email: string;
@@ -13,15 +14,15 @@ export type UserLoginData = {
 
 export type UserRegisterData = {
   name: string;
-  avatar?: {
-    blob: Blob;
-    url: string;
-    base64: string;
-    filename?: string;
-  };
+  avatar?: ImageData;
   email: string;
   password: string;
   passwordConfirmation: string;
+};
+
+export type UserUpdateData = UserRegisterData & {
+  oldPassword: string;
+  updatePassword: boolean;
 };
 
 export async function login(data: UserLoginData) {
@@ -38,6 +39,14 @@ export async function logout() {
 
 export async function registerUser(data: FormData) {
   return api.post<void>("/users", data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+
+export async function updateUser(data: FormData) {
+  return api.put<void>("/users", data, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -85,8 +94,16 @@ export async function fetchUser(token: string): Promise<User> {
       .then((response) => response.data),
     await fetchBenefits(token).catch(() => [] as Benefit[]),
     await fetchSubscription(token).catch(() => undefined),
-  ]).then(([data, benefits, subscription]) => {
-    return new User(data, benefits, subscription);
+  ]).then(async ([data, benefits, subscription]) => {
+    const user = new User(data, benefits, subscription);
+
+    try {
+      const avatar = await imageUrlToData(user.getAvatarUrl());
+      user.setAvatar(avatar);
+      return user;
+    } catch {
+      return user;
+    }
   });
 }
 

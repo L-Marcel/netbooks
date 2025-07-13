@@ -2,10 +2,11 @@ import { FaCheck, FaX } from "react-icons/fa6";
 import { Validation } from "../../services/axios";
 import { IconType } from "react-icons";
 import Input from ".";
+import { DetailedHTMLProps, InputHTMLAttributes } from "react";
 
-interface FieldProps
-  extends React.DetailedHTMLProps<
-    React.InputHTMLAttributes<HTMLInputElement>,
+interface Props
+  extends DetailedHTMLProps<
+    InputHTMLAttributes<HTMLInputElement>,
     HTMLInputElement
   > {
   label?: string;
@@ -14,6 +15,7 @@ interface FieldProps
 }
 
 const DEFAULT_VALIDATIONS: Validation[] = [];
+
 export default function Field({
   id,
   validations = DEFAULT_VALIDATIONS,
@@ -21,7 +23,7 @@ export default function Field({
   className = "",
   icon: Icon,
   ...props
-}: FieldProps) {
+}: Props) {
   const hasError =
     validations.length > 0 &&
     validations.some((validation) => validation.error);
