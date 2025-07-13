@@ -5,4 +5,4 @@ nixPkgs = ["pkgs.jdk21"]
 cmds = ["./mvnw clean package -DskipTests"]
 
 [start]
-command = "java -jar target/backend-0.0.1-SNAPSHOT.jar"
+command = "./start.sh"
