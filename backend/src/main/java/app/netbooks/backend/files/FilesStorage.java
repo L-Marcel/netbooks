@@ -3,6 +3,7 @@ package app.netbooks.backend.files;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ import app.netbooks.backend.errors.InternalServerError;
 
 public abstract class FilesStorage {
     private static Logger logger = LoggerFactory.getLogger(FilesStorage.class);
-
+        
     protected String mime;
 
     public FilesStorage(String mime) {

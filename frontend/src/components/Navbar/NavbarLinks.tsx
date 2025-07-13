@@ -29,17 +29,19 @@ export default function NavbarLinks({ user }: Props) {
       </li>
       {user?.isSubscriber() || user?.isAdmin() ? (
         <>
-          <li>
-            <NavLink
-              className={({ isActive }) =>
-                "text-base-content no-underline hover:underline font-bold transition" +
-                (isActive ? " text-primary" : "")
-              }
-              to="/admin"
-            >
-              <FaPencilRuler /> Administração
-            </NavLink>
-          </li>
+          {user?.isAdmin() && (
+            <li>
+              <NavLink
+                className={({ isActive }) =>
+                  "text-base-content no-underline hover:underline font-bold transition" +
+                  (isActive ? " text-primary" : "")
+                }
+                to="/admin"
+              >
+                <FaPencilRuler /> Administração
+              </NavLink>
+            </li>
+          )}
           <li>
             <NavLink
               className={({ isActive }) =>

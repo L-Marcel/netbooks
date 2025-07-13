@@ -160,4 +160,26 @@ public class PublishersRepositoryImpl extends BaseRepository implements Publishe
             return publishers;
         }, new ArrayList<>());
     };
+
+    @Override
+    public void deleteIfNotUsedByName(String name) {
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    DELETE FROM publisher WHERE name = ?
+                    AND 0 = (
+                        SELECT COUNT(*) FROM book
+                        WHERE publisher = ?
+                    );
+                    """
+                );
+            ) {
+                statement.setString(1, name);
+                statement.setString(2, name);
+                statement.executeUpdate();
+            };
+        });
+    };
 };

@@ -1,7 +1,7 @@
 import { RatingInput } from "@components/Input/RatingInput";
 import BookTags from "./BookTags";
 import { Book } from "@models/book";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "@components/Button";
 import { Reading } from "@models/reading";
 import { fetchReadingByBook, startReadingsOfBook } from "@services/readings";
@@ -11,11 +11,12 @@ import { useEffect, useState } from "react";
 import { FaBookBookmark } from "react-icons/fa6";
 import useUser from "@stores/useUser";
 import BookClassificationDialog from "./BookClassificationDialog";
-import { FaDownload, FaFire } from "react-icons/fa";
+import { FaDownload } from "react-icons/fa";
 import { BookRegisterData, downloadBook } from "@services/books";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { format } from "date-fns";
 import { Benefit } from "@models/benefit";
+import BookCover from "./BookCover";
 
 interface Props {
   preview?: boolean;
@@ -36,7 +37,8 @@ export default function BookHero({
   notFinishedReadingsIsFull = false,
   onUpdateClassification = DEFAULT_ON_UPDATE_CLASSIFICATION,
 }: Props) {
-  const cover = previewData?.cover?.url ?? book?.cover;
+  const location = useLocation();
+  const cover = previewData?.cover?.url ?? book?.getCoverUrl();
   const title = previewData?.title ?? book?.title;
   const description = previewData?.description ?? book?.description;
   const authors = previewData?.authors ?? book?.authors ?? [];
@@ -48,7 +50,7 @@ export default function BookHero({
       .join(" e "),
   ].join(", ");
 
-  const banner = previewData?.banner?.url ?? book?.banner;
+  const banner = previewData?.banner?.url ?? book?.getBannerUrl();
   const publisher = previewData?.publisher ?? book?.publisher;
   const publishedIn = previewData?.publishedIn ?? book?.publishedIn;
   const isPremium = (
@@ -113,38 +115,13 @@ export default function BookHero({
       />
       <div className="flex w-full z-10 items-start py-7 md:py-8 px-4 lg:px-8 flex-col lg:flex-row lg:gap-10">
         <div className="relative max-w-sm min-w-[200px] max-h-[300px] not-lg:hidden">
-          <AnimatePresence>
-            {cover ? (
-              <motion.img
-                key={cover}
-                initial={{ opacity: 0, height: 300 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1, delay: 0.25 }}
-                src={cover}
-                className="max-w-sm min-w-[200px] max-h-[300px] min-h-[300px] rounded-lg border-2 group-[.is-premium]:border-warning-content shadow-2xl not-lg:hidden"
-                height={300}
-                width={200}
-              />
-            ) : (
-              <motion.div
-                key={cover}
-                className="max-w-sm min-w-[200px] min-h-[300px] rounded-lg border-2 group-[.is-premium]:border-warning-content shadow-2xl not-lg:hidden skeleton"
-              />
-            )}
-          </AnimatePresence>
+          <BookCover id={book?.id} premium={isPremium} cover={cover} />
           {publisher ? (
             <span className="badge absolute left-0 right-0 badge-ghost mx-auto font-extralight mt-2">
               {publisher?.name}
             </span>
           ) : (
             <div className="badge absolute left-0 right-0 mx-auto font-extralight mt-2 border-none skeleton min-w-26" />
-          )}
-          {isPremium && (
-            <div className="absolute bottom-2 right-1.5">
-              <span className="absolute rounded-br-lg rounded-tl-box min-w-9 min-h-5 bg-warning-content opacity-80 -bottom-2 -right-1.5" />
-              <FaFire className="absolute -bottom-1 -right-1 size-8 text-warning-content" />
-              <FaFire className="absolute bottom-0 right-0 size-6 text-warning" />
-            </div>
           )}
         </div>
         <motion.article
@@ -230,14 +207,16 @@ export default function BookHero({
                   }}
                   className="flex flex-row items-center gap-2.5"
                 >
-                  {!reading && user && (
-                    <Link
-                      to={"/books/" + book?.id}
-                      className="btn btn-sm btn-square btn-secondary"
-                    >
-                      <FaBookBookmark />
-                    </Link>
-                  )}
+                  {!reading &&
+                    location.pathname !== "/books/" + book?.id &&
+                    user && (
+                      <Link
+                        to={"/books/" + book?.id}
+                        className="btn btn-sm btn-square btn-secondary"
+                      >
+                        <FaBookBookmark />
+                      </Link>
+                    )}
                   {lastReading && !lastReading.finished && user && (
                     <Link
                       to={"/readings/" + lastReading?.id}

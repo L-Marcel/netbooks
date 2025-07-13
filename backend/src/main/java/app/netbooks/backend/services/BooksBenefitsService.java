@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import app.netbooks.backend.errors.Unauthorized;
 import app.netbooks.backend.models.Benefit;
+import app.netbooks.backend.models.Book;
 import app.netbooks.backend.repositories.interfaces.BooksBenefitsRepository;
 
 @Service
@@ -15,8 +16,12 @@ public class BooksBenefitsService {
     @Autowired
     private BooksBenefitsRepository repository;
 
-    public Map<Long, List<Benefit>> mapAllByBook() {
-        return this.repository.mapAllByBook();
+    public Map<Long, List<Benefit>> mapAllByBooks() {
+        return this.repository.mapAllByBooks();
+    };
+
+    public Map<Long, List<Benefit>> mapAllByBooks(List<Book> books) {
+        return this.repository.mapAllByBooks(books);
     };
 
     public List<Benefit> findAllByBook(Long id) {

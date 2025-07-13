@@ -77,7 +77,7 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    INSERT INTO tag (name) values (?);
+                    INSERT INTO tag (name) VALUES (?);
                     """
                 );
             ) {
@@ -94,7 +94,7 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    INSERT IGNORE INTO tag (name) values (?);
+                    INSERT IGNORE INTO tag (name) VALUES (?);
                     """
                 );
             ) {
@@ -173,5 +173,31 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
             
             return tags;
         }, new ArrayList<>());
+    }
+
+    @Override
+    public void deleteManyIfNotUsedByName(List<String> names) {
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    DELETE FROM tag WHERE name = ? 
+                    AND 0 = (
+                        SELECT COUNT(*) FROM book_tag
+                        WHERE tag = ?
+                    );
+                    """
+                );
+            ) {
+                for(String name : names) {
+                    statement.setString(1, name);
+                    statement.setString(2, name);
+                    statement.addBatch();
+                };
+
+                statement.executeBatch();
+            };
+        });
     };
 };

@@ -1,24 +1,16 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: dark --default;
+}
 
 @plugin "daisyui/theme" {
   name: "dark";
-  prefersdark: true;
+  default: true;
   --color-primary: var(--color-violet-500);
   --color-base-100: var(--color-zinc-950);
   --color-base-200: var(--color-zinc-900);
   --color-base-300: var(--color-zinc-800);
   --color-base-content: var(--color-zinc-100);
-}
-
-@plugin "daisyui/theme" {
-  name: "light";
-  default: true;
-  --color-primary: var(--color-violet-500);
-  --color-base-100: var(--color-zinc-200);
-  --color-base-200: var(--color-zinc-100);
-  --color-base-300: var(--color-zinc-50);
-  --color-base-content: var(--color-zinc-900);
 }
 
 :root {

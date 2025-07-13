@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import app.netbooks.backend.annotations.AdministratorOnly;
-import app.netbooks.backend.annotations.AuhenticatedOnly;
+import app.netbooks.backend.annotations.AuthenticatedOnly;
 import app.netbooks.backend.annotations.SubscriberOnly;
 import app.netbooks.backend.authentication.AuthenticatedUser;
 import app.netbooks.backend.dtos.request.LoginRequestBody;
@@ -58,7 +58,7 @@ public class UsersController {
         return ResponseEntity.ok().body(response);
     };
 
-    @AuhenticatedOnly
+    @AuthenticatedOnly
     @GetMapping("/me")
     public ResponseEntity<UserResponse> get(
         @AuthenticationPrincipal AuthenticatedUser user
@@ -103,7 +103,7 @@ public class UsersController {
             .build();
     };
 
-    @AuhenticatedOnly
+    @AuthenticatedOnly
     @PutMapping
     public ResponseEntity<UserResponse> update(
         @AuthenticationPrincipal AuthenticatedUser user,

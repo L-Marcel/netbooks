@@ -1,5 +1,6 @@
 import BookHero from "@components/Book/BookHero";
 import AuthGuard from "@components/Guards/AuthGuard";
+import NotFound from "@components/NotFound";
 import ReadingCard from "@components/Reading/ReadingCard";
 import { Book } from "@models/book";
 import { Reading } from "@models/reading";
@@ -24,6 +25,7 @@ function Page() {
   const bookId = Number.parseFloat(id ?? "-1");
   const startLoading = useLoading((state) => state.start);
   const stopLoading = useLoading((state) => state.stop);
+  const loadingSet = useLoading((state) => state.loadingSet);
   const user = useUser((state) => state.user);
 
   const [book, setBook] = useState<Book>();
@@ -59,8 +61,10 @@ function Page() {
 
   useEffect(update, [update]);
 
+  if (!loadingSet.has("book") && !book) return <NotFound />;
+
   return (
-    <main className="flex flex-col w-full h-ful items-center bg-base-100">
+    <main className="flex flex-col w-full h-full min-h-[calc(100vh-4rem)] items-center bg-base-100">
       <BookHero
         onUpdateClassification={update}
         book={book}

@@ -1,3 +1,4 @@
+import { ImageData } from "@services/image";
 import { Author, AuthorData } from "./author";
 import { Benefit, BenefitData } from "./benefit";
 import { Publisher, PublisherData } from "./publisher";
@@ -29,15 +30,16 @@ export class Book {
   readonly tags: Tag[];
   readonly authors: Author[];
   readonly requirements: Benefit[];
-  readonly cover: string;
-  readonly banner: string;
+  private cover?: ImageData;
+  private banner?: ImageData;
+  private file?: File;
 
   constructor(data: BookData) {
     this.id = data.id;
     this.isbn = data.isbn;
     this.title = data.title;
     this.numPages = data.numPages;
-    this.publishedIn = data.publishedIn;
+    this.publishedIn = new Date(data.publishedIn);
     this.publisher = new Publisher(data.publisher);
     this.description = data.description;
     this.stars = data.stars;
@@ -46,7 +48,41 @@ export class Book {
     this.requirements = data.requirements.map(
       (requirement) => requirement.name as Benefit
     );
-    this.cover = `${import.meta.env.VITE_BACKEND_URL}/books/covers/${this.id}.webp`;
-    this.banner = `${import.meta.env.VITE_BACKEND_URL}/books/banners/${this.id}.webp`;
+  }
+
+  public setFile(file: File) {
+    this.file = file;
+  }
+
+  public getFile() {
+    return this.file;
+  }
+
+  public setCover(cover: ImageData) {
+    this.cover = cover;
+  }
+
+  public getCover(): ImageData | undefined {
+    return this.cover;
+  }
+
+  public getCoverUrl(): string {
+    return `${import.meta.env.VITE_BACKEND_URL}/books/covers/${this.id}.webp`;
+  }
+
+  public setBanner(banner: ImageData) {
+    this.banner = banner;
+  }
+
+  public getBanner(): ImageData | undefined {
+    return this.banner;
+  }
+
+  public getBannerUrl(): string {
+    return `${import.meta.env.VITE_BACKEND_URL}/books/banners/${this.id}.webp`;
+  }
+
+  public isPremium(): boolean {
+    return this.requirements.includes(Benefit.CAN_READ_ALL_BOOKS);
   }
 }

@@ -2,7 +2,7 @@ import AuthGuard from "@components/Guards/AuthGuard";
 import { fetchReading, fetchReadingContent } from "@services/readings";
 import { useLoading } from "@stores/useLoading";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Reading } from "@models/reading";
 import { Document, Page as DocumentPage, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -31,6 +31,7 @@ function Loading() {
 
 function Page() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const abortControllerRef = useRef<AbortController | null>(null);
   const readingId = Number.parseFloat(id ?? "-1");
   const hasAnyLoading = useLoading((state) => state.hasAny);
@@ -115,16 +116,21 @@ function Page() {
     });
   };
 
+  const onBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/books/" + reading?.book, { replace: true });
+    }
+  };
+
   return (
-    <main className="flex flex-col w-full h-ful items-center bg-base-100">
-      <section className="grid grid-cols-2 md:grid-cols-3 overflow-hidden flex-row gap-4 px-4 h-18 items-center bg-base-300 w-full">
+    <main className="flex flex-col w-full h-full min-h-[calc(100vh-4rem)] items-center bg-base-100">
+      <section className="grid grid-cols-2 md:grid-cols-3 overflow-hidden flex-row gap-4 px-4 min-h-18 max-h-18 items-center bg-base-300 w-full">
         <div className="flex flex-row gap-4 h-full items-center overflow-hidden w-full">
-          <Link
-            to={"/books/" + reading?.book}
-            className="btn btn-md btn-primary"
-          >
+          <Button onClick={onBack} className="btn btn-md btn-primary">
             Voltar
-          </Link>
+          </Button>
           <p className="overflow-hidden not-sm:hidden max-w-11/12 text-nowrap overflow-ellipsis">
             {file?.name.replace(".pdf", "")}
           </p>

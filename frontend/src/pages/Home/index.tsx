@@ -3,17 +3,19 @@ import BookHero from "@components/Book/BookHero";
 import { Book } from "@models/book";
 import { fetchBooks } from "@services/books";
 import { fetchTags } from "@services/tags";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Home() {
   const { data: books = [], refetch } = useQuery({
     queryKey: ["books"],
-    queryFn: () => fetchBooks(),
+    queryFn: fetchBooks,
+    retry: 3,
   });
 
   const { data: tags = [] } = useQuery({
     queryKey: ["tags"],
-    queryFn: () => fetchTags(),
+    queryFn: fetchTags,
+    retry: 3,
   });
 
   const initialTagsRecord = tags.reduce(
@@ -26,8 +28,11 @@ export default function Home() {
 
   const mapOfBooks = books.reduce(
     (prev, curr) => {
-      for (const tag of curr.tags) {
-        prev[tag.name].push(curr);
+      if (!curr) return prev;
+
+      for (const tag of curr.tags ?? []) {
+        if (prev[tag.name]) prev[tag.name].push(curr);
+        else prev[tag.name] = [];
       }
 
       return prev;
@@ -36,20 +41,20 @@ export default function Home() {
   );
 
   return (
-    <main className="flex flex-col w-full h-ful items-center bg-base-100">
+    <main className="flex flex-col w-full h-full min-h-[calc(100vh-4rem)] items-center bg-base-100">
       <BookHero
         onUpdateClassification={refetch}
         book={books.length > 0 ? books[0] : undefined}
       />
       {Object.entries(mapOfBooks)
-        .filter(([, books]) => books.length > 0)
+        .filter(([, books]) => books.length >= 4)
         .sort(([, a], [, b]) => b.length - a.length)
         .map(([tag, books]) => (
           <BookCarousel
             key={tag}
             tag={{
               name: tag,
-              score: 0
+              score: 0,
             }}
             books={books}
           />
