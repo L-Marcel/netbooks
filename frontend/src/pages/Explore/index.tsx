@@ -39,7 +39,7 @@ function Page() {
   });
 
   return (
-    <main className="flex p-8 flex-col w-full h-full min-h-[calc(100vh-4rem)] items-center bg-base-100">
+    <main className="flex p-8 flex-col w-full h-full min-h-[calc(100dvh-4rem)] items-center bg-base-100">
       <section className="flex flex-col w-full gap-2 bg-base-200 p-6 rounded-box">
         <div className="flex flex-col">
           <h3 className="text-xl font-semibold">Buscar livro</h3>

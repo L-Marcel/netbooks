@@ -93,9 +93,7 @@ export default function BookHero({
       fetchReadingByBook(book?.id ?? -1)
         .then((reading) => setLastReading(reading))
         .catch(() => setLastReading(reading))
-        .finally(() => {
-          setTimeout(() => stopLoading("book-hero"), 1000);
-        });
+        .finally(() => stopLoading("book-hero"));
     }
   }, [preview, reading, setLastReading, book?.id, startLoading, stopLoading]);
 
@@ -115,7 +113,12 @@ export default function BookHero({
       />
       <div className="flex w-full z-10 items-start py-7 md:py-8 px-4 lg:px-8 flex-col lg:flex-row lg:gap-10">
         <div className="relative max-w-sm min-w-[200px] max-h-[300px] not-lg:hidden">
-          <BookCover id={book?.id} premium={isPremium} cover={cover} />
+          <BookCover
+            withoutAdminButtons={preview}
+            id={book?.id}
+            premium={isPremium}
+            cover={cover}
+          />
           {publisher ? (
             <span className="badge absolute left-0 right-0 badge-ghost mx-auto font-extralight mt-2">
               {publisher?.name}
@@ -154,7 +157,7 @@ export default function BookHero({
             )}
             <BookTags tags={previewData?.tags ?? book?.tags ?? []} />
             <div className="flex flex-row items-center gap-2">
-              <RatingInput rate={book?.stars ?? 8} />
+              <RatingInput readonly rate={book?.stars ?? 8} />
               {user && !preview && book && (
                 <BookClassificationDialog
                   onUpdate={onUpdateClassification}

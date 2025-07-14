@@ -178,7 +178,7 @@ export default function ImageInput({
               ref={inputRef}
               type="file"
               className="hidden"
-              accept="image/jpeg, image/jpg, image/png"
+              accept="image/jpeg, image/jpg, image/png, image/webp"
               onChange={onChange}
             />
             <p className="overflow-ellipsis overflow-hidden w-full text-nowrap font-light">
@@ -221,12 +221,12 @@ export default function ImageInput({
             zoom={zoom}
             maxZoom={10}
             minZoom={0.1}
-            zoomSpeed={0.25}
+            zoomSpeed={0.02}
             aspect={imageSize.aspect}
             onCropChange={setCrop}
             onCropComplete={(_, area) => setArea(area)}
             onZoomChange={setZoom}
-            keyboardStep={2}
+            keyboardStep={1}
             objectFit="cover"
             restrictPosition={false}
           />

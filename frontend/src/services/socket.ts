@@ -17,9 +17,8 @@ export function connect(
   isOwner?: boolean
 ): void {
   const { room, setRoom, setClient, client: oldClient } = useRoom.getState();
-
-  if (oldClient && oldClient.connected) return;
   console.log(participant);
+  if (oldClient && oldClient.connected) return;
 
   const client: Client = new Client({
     brokerURL: `${import.meta.env.VITE_WEBSOCKET_URL}/websocket`,

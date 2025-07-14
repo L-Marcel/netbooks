@@ -174,7 +174,7 @@ public class Validator {
                         throw new ValidationStepError(error);
                     condition.apply(this.value);
                 } catch (Exception e) {
-                    throw new ValidationFieldError(e.getMessage());
+                    throw new ValidationStepError(e.getMessage());
                 };
             }, message));
 
@@ -187,7 +187,7 @@ public class Validator {
                     if(this.value == null || !condition.apply(this.value))
                         throw new ValidationStepError(error);
                 } catch (Exception e) {
-                    throw new ValidationFieldError(e.getMessage());
+                    throw new ValidationStepError(e.getMessage());
                 };
             }, message));
 

@@ -1,6 +1,5 @@
 package app.netbooks.backend.controllers;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -211,9 +210,9 @@ public class BooksController {
     @AdministratorOnly
     public ResponseEntity<Void> create(
         @RequestPart("body") RegisterBookRequestBody body,
-        @RequestPart("cover") MultipartFile cover,
-        @RequestPart("banner") MultipartFile banner,
-        @RequestPart("file") MultipartFile file
+        @RequestPart(name="cover", required=false) MultipartFile cover,
+        @RequestPart(name="banner", required=false) MultipartFile banner,
+        @RequestPart(name="file", required=false) MultipartFile file
     ) {
         this.booksService.create(
             body.getTitle(),
@@ -236,9 +235,9 @@ public class BooksController {
     @AdministratorOnly
     public ResponseEntity<Void> update(
         @RequestPart("body") UpdateBookRequestBody body,
-        @RequestPart("cover") MultipartFile cover,
-        @RequestPart("banner") MultipartFile banner,
-        @RequestPart("file") MultipartFile file,
+        @RequestPart(name="cover", required=false) MultipartFile cover,
+        @RequestPart(name="banner", required=false) MultipartFile banner,
+        @RequestPart(name="file", required=false) MultipartFile file,
         @PathVariable Long id
     ) {
         Book book = this.booksService.findById(id);

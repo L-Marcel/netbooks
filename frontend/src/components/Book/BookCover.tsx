@@ -13,6 +13,7 @@ interface Props {
   id?: number;
   index?: number;
   alwaysVisible?: boolean;
+  withoutAdminButtons?: boolean;
   cover?: string;
   premium?: boolean;
 }
@@ -22,6 +23,7 @@ export default function BookCover({
   cover,
   index,
   alwaysVisible = true,
+  withoutAdminButtons = false,
   premium = false,
 }: Props) {
   const user = useUser((state) => state.user);
@@ -61,7 +63,7 @@ export default function BookCover({
       className={`group overflow-hidden relative rounded-lg min-w-[100px] max-w-[100px] max-h-[150px] min-h-[150px] lg:min-w-[200px] lg:max-w-[200px] lg:max-h-[300px] lg:min-h-[300px] shadow-2xl ${alwaysVisible ? "" : "not-lg:hidden"} ${premium ? "is-premium" : ""}`}
     >
       <div className="rounded-lg overflow-hidden flex flex-row absolute inset-0 border-2 group-[.is-premium]:border-warning">
-        {user?.isAdmin() && (
+        {user?.isAdmin() && !withoutAdminButtons && (
           <div className="absolute border-2 group-[.is-premium]:border-warning rounded-tr-xl rounded-bl-xl join flex flex-row join-horizontal bottom-[-2px] left-[-2px]">
             <Button
               onClick={onDelete}
