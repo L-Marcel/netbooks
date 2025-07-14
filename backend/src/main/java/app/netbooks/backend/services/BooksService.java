@@ -112,6 +112,11 @@ public class BooksService {
         }
     };
 
+    public List<Book> findBooksByTags(List<String> tagNames) {
+        return this.booksRepository.findBooksWithAllTags(tagNames, tagNames.size());
+    }
+
+
     private PDDocument convertToPDF(InputStreamSource file) throws IOException {
         InputStream inputStream = file.getInputStream();
         RandomAccessReadBuffer buffer = new RandomAccessReadBuffer(inputStream);

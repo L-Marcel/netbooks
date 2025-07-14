@@ -1,12 +1,12 @@
-//import { useNavigate } from "react-router-dom";
-
 import Button from ".";
+import useRoom from "@stores/useRoom";
+import { sendOptionsToParticipants } from "@services/room";
 
 export default function StartRoomButton() {
-  //const navigate = useNavigate();
+  const { room } = useRoom.getState();
 
   const onStart = () => {
-    // iniciar jogo aqui
+    if(room) sendOptionsToParticipants(room?.code);
   };
 
   return (

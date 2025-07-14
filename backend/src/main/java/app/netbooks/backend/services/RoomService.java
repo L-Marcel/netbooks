@@ -1,6 +1,7 @@
 package app.netbooks.backend.services;
 
 import java.security.SecureRandom;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,8 @@ import app.netbooks.backend.errors.UserRoomAlreadyExists;
 import app.netbooks.backend.events.RoomEventPublisher;
 import app.netbooks.backend.errors.ParticipantAlreadyInRoom;
 import app.netbooks.backend.errors.RoomNotFound;
+import app.netbooks.backend.models.Book;
+import app.netbooks.backend.models.Tag;
 import app.netbooks.backend.models.User;
 import app.netbooks.backend.repositories.RoomRepository;
 import app.netbooks.backend.transients.Room;
@@ -70,4 +73,18 @@ public class RoomService {
         repository.remove(room);
         roomEventPublisher.emitRoomClosed(room);
     };
+
+    public void sendOptions(
+        Room room,
+        List<Tag> tags
+    ) {
+        roomEventPublisher.emitOptionsToParticipants(room, tags);
+    }
+
+    public void sendResultToRoom(
+        Room room,
+        List<Book> books
+    ) {
+        roomEventPublisher.emitResultToParticipants(room, books);
+    }
 };

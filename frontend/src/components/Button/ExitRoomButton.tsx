@@ -7,7 +7,7 @@ export default function ExitRoomButton() {
 
   const onExit = () => {
     exit();
-    navigate("/home");
+    navigate("/match");
   };
 
   return (

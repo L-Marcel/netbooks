@@ -20,4 +20,8 @@ public class TagsService {
     public List<Tag> searchByName(String name) {
         return this.repository.searchByName(name);
     };
+
+    public List<Tag> searchRandomTags(int limit) {
+        return this.repository.searchRandomTags(limit);
+    }
 };
