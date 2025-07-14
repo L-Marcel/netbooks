@@ -132,20 +132,31 @@ public class RoomController {
             .build();
     };
 
-    
-
     @SubscriberOrAdministratorOnly
     @PostMapping("/{code}/result")
     public ResponseEntity<Void> sendResult(
         @AuthenticationPrincipal AuthenticatedUser user,
         @PathVariable String code,
-        @RequestBody List<String> genresList
+        @RequestBody List<String> genres
     ) {
-        System.out.println("Back recebeu");
         Room room = roomService.findRoomByCode(code);
-        List<Book> books = booksService.findBooksByTags(genresList);
+        List<Book> books = booksService.findBooksWithAllTags(genres);
 
         roomService.sendResultToRoom(room, books);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .build();
+    };
+
+    @SubscriberOrAdministratorOnly
+    @PostMapping("/{code}/selected")
+    public ResponseEntity<Void> sendSelected(
+        @AuthenticationPrincipal AuthenticatedUser user,
+        @PathVariable String code,
+        @RequestBody List<String> genres
+    ) {
+        Room room = roomService.findRoomByCode(code);
+        roomService.sendSelectedToRoom(room, genres);
         return ResponseEntity
             .status(HttpStatus.OK)
             .build();

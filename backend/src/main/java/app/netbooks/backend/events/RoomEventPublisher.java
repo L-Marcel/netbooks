@@ -40,11 +40,16 @@ public class RoomEventPublisher {
     };
 
     public void emitResultToParticipants(Room room, List<Book> books) {
-        System.out.println("Envio de resultados disparado!");
         simp.convertAndSend(
             "/channel/events/rooms/" + room.getCode() + "/participants/result",
             BookResultResponse.toBookResultResponseList(books)
         );
     };
-    
+
+    public void emitSelectedToParticipants(Room room, List<String> genres) {
+        simp.convertAndSend(
+            "/channel/events/rooms/" + room.getCode() + "/participants/selected",
+            genres
+        );
+    };
 }

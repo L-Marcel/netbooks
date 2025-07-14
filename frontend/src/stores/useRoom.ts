@@ -54,12 +54,9 @@ const useRoom = create<RoomStore>((set, get) => ({
   setVoted: () => {
     const current = get().voted + 1;
     set({ voted: current });
-
-    console.log("Votos:", current);
-
+    
     const room = get().room;
     if (room && current >= room.participants.length) {
-      console.log(useMatch.getState().selectedOptions, room.code);
       searchMatchResult(useMatch.getState().getTopGenres(), room.code);
     }
   },

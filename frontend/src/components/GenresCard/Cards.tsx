@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Genre, GenreCard } from "./GenreCard";
 import useMatch from "@stores/useMatch";
-import useRoom from "@stores/useRoom";
 import Loader from "@components/SimpleLoading";
 import BookTags from "@components/Book/BookTags";
 import Button from "@components/Button";
+import { sendSelectedGenres } from "@services/room";
+import useRoom from "@stores/useRoom";
 
 function randomColor(): string {
   const lettersHex = "0123456789ABCDEF";
@@ -22,6 +23,7 @@ type CardsProps = {
 };
 
 export default function Cards({ genresOptions }: CardsProps) {
+  const room = useRoom((state) => state.room);
   const genres: Genre[] = genresOptions.map((genre, index) => ({
     id: String(index),
     name: genre,
@@ -65,7 +67,7 @@ export default function Cards({ genresOptions }: CardsProps) {
         setIsAnimating(true);
       } else {
         setCurrentGenreIndex(genres.length);
-        useRoom.getState().setVoted();
+        sendSelectedGenres(genres.map((genre) => genre.name), room?.code ?? "");
       }
     }, 300);
   };

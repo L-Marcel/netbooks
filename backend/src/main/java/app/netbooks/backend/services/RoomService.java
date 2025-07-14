@@ -79,12 +79,19 @@ public class RoomService {
         List<Tag> tags
     ) {
         roomEventPublisher.emitOptionsToParticipants(room, tags);
-    }
+    };
 
     public void sendResultToRoom(
         Room room,
         List<Book> books
     ) {
         roomEventPublisher.emitResultToParticipants(room, books);
-    }
+    };
+
+    public void sendSelectedToRoom(
+        Room room,
+        List<String> genres
+    ) {
+        roomEventPublisher.emitSelectedToParticipants(room, genres);
+    };
 };

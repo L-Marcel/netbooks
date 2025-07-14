@@ -54,3 +54,7 @@ export async function sendOptionsToParticipants(code: string): Promise<Genres> {
 export async function searchMatchResult(genres: string[], code: string) {
   return await api.post(`rooms/${code}/result`, genres);
 }
+
+export async function sendSelectedGenres(genres: string[], code: string) {
+  return await api.post(`rooms/${code}/selected`, genres);
+};

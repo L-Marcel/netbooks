@@ -49,9 +49,9 @@ function Page() {
                 <Cards genresOptions={genres} />
               ) : (
                 <>
-                  <h1 className="text-xl font-semibold">
+                  {isOwner && <h1 className="text-xl font-semibold">
                     Montando uma sala...
-                  </h1>
+                  </h1>}
                   {roomCode && <CopyLinkButton code={roomCode} />}
                   {isOwner ? (
                     <Button

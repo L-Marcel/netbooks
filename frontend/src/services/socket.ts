@@ -48,8 +48,6 @@ export function connect(code?: string, isOwner?: boolean): void {
           const tags: { name: string }[] = JSON.parse(message.body);
           const genres: Genres = tags.map((tag) => tag.name);
 
-          console.log("GENRES:", genres);
-
           useMatch.getState().setGenres(genres);
         }
       );
@@ -66,8 +64,6 @@ export function connect(code?: string, isOwner?: boolean): void {
 
           const bookIds = bookResultResponses.map((b) => b.id);
 
-          console.log("IDs carregados:", bookIds);
-
           fetchBooksByIds(bookIds).then((books) => {
             console.log("Livros carregados:", books);
 
@@ -77,6 +73,22 @@ export function connect(code?: string, isOwner?: boolean): void {
               setCurrentResult(books[0]);
             }
           });
+        }
+      );
+
+      client.subscribe(
+        "/channel/events/rooms/" + code + "/participants/selected",
+        (message) => {
+          const tags: string[] = JSON.parse(message.body);
+          const myOptions = new Map(useMatch.getState().selectedOptions);
+          for (const tag of tags) {
+            const current = (myOptions.get(tag) ?? 0) + 1;
+            myOptions.set(tag, current);
+          };
+
+          console.log(myOptions);
+          useMatch.getState().setSelectedOptions(myOptions);
+          useRoom.getState().setVoted();
         }
       );
 

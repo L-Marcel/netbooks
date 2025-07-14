@@ -10,7 +10,7 @@ export default function ParticipantsMasonryGrid({ participants }: Props) {
       {participants.map((participant) => (
         <div
           key={participant.name}
-          className="break-inside-avoid bg-base-300 rounded-xl p-4 shadow text-center font-medium text-base-content"
+          className="break-inside-avoid h-min-content bg-base-300 rounded-xl p-4 shadow text-center font-medium text-base-content"
         >
           {participant.name}
         </div>

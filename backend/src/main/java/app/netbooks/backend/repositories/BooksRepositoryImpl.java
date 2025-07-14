@@ -166,7 +166,7 @@ public class BooksRepositoryImpl extends BaseRepository implements BooksReposito
     public List<Book> findBooksWithAllTags(List<String> tagNames, int size) {
         return this.queryOrDefault((connection) -> {
             List<Book> books = new ArrayList<>();
-
+            
             if (tagNames == null || tagNames.isEmpty())
                 return books;
 
@@ -178,15 +178,11 @@ public class BooksRepositoryImpl extends BaseRepository implements BooksReposito
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    SELECT b.*
+                    SELECT DISTINCT b.*
                     FROM book_with_stars b
                     JOIN book_tag bt ON b.id = bt.book
                     JOIN tag t ON bt.tag = t.name
-                    WHERE t.name IN (""" + placeholders + ") " + 
-                    """
-                    GROUP BY b.id, b.isbn, b.title, b.description, b.stars, b.num_pages, b.published_in, b.publisher
-                    HAVING COUNT(DISTINCT t.name) = ?
-                    """
+                    WHERE t.name IN (""" + placeholders + ") "
                 );
             ) {
                 int index = 1;
