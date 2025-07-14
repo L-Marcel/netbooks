@@ -27,6 +27,7 @@ type RoomStore = {
   setRoom: (room?: Room) => void;
   setParticipant: (participant?: Participant) => void;
   setVoted: () => void;
+  resetVoted: () => void;
 };
 
 const useRoom = create<RoomStore>((set, get) => ({
@@ -55,9 +56,12 @@ const useRoom = create<RoomStore>((set, get) => ({
     const room = get().room;
     if (room && current >= room.participants.length) {
       console.log(useMatch.getState().selectedOptions, room.code);
-      searchMatchResult(useMatch.getState().getTop3Genres(), room.code);
+      searchMatchResult(useMatch.getState().getTopGenres(), room.code);
     }
-  }
+  },
+
+  resetVoted: () => set({ voted: 0 }),
+
 }));
 
 export default useRoom;

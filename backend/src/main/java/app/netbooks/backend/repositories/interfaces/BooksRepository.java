@@ -12,4 +12,5 @@ public interface BooksRepository {
     public void create(Book book);
     public void deleteById(Long id);
     public void update(Book book);
+    public List<Book> findBooksWithAllTags(List<String> tagNames, int size);
 };

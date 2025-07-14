@@ -10,6 +10,7 @@ import app.netbooks.backend.errors.UserRoomAlreadyExists;
 import app.netbooks.backend.events.RoomEventPublisher;
 import app.netbooks.backend.errors.ParticipantAlreadyInRoom;
 import app.netbooks.backend.errors.RoomNotFound;
+import app.netbooks.backend.models.Book;
 import app.netbooks.backend.models.Tag;
 import app.netbooks.backend.models.User;
 import app.netbooks.backend.repositories.RoomRepository;
@@ -78,5 +79,12 @@ public class RoomService {
         List<Tag> tags
     ) {
         roomEventPublisher.emitOptionsToParticipants(room, tags);
+    }
+
+    public void sendResultToRoom(
+        Room room,
+        List<Book> books
+    ) {
+        roomEventPublisher.emitResultToParticipants(room, books);
     }
 };

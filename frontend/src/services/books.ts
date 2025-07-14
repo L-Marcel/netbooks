@@ -52,6 +52,11 @@ export async function fetchBook(id: number): Promise<Book> {
     .then((response) => new Book(response.data));
 }
 
+export async function fetchBooksByIds(ids: number[]): Promise<Book[]> {
+  const books = await Promise.all(ids.map((id) => fetchBook(id)));
+  return books;
+}
+
 export async function downloadBook(id: number): Promise<File> {
   return api
     .get<File>("books/" + id + "/download", {

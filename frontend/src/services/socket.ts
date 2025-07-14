@@ -3,14 +3,28 @@ import useRoom, { Room } from "@stores/useRoom";
 import { UUID } from "crypto";
 import { Client } from "@stomp/stompjs";
 import useMatch, { Genres } from "@stores/useMatch";
+import { fetchBooksByIds } from "./books";
 
 export function disconnect(): void {
-  const { setRoom, setParticipant, setClient } = useRoom.getState();
+  const { setRoom, setParticipant, setClient, resetVoted } = useRoom.getState();
+  const {
+    setGenres,
+    setSelectedOptions,
+    setResults,
+    setCurrentResult,
+  } = useMatch.getState();
 
   setClient(undefined);
   setRoom(undefined);
   setParticipant(undefined);
+  resetVoted();
+
+  setGenres([]);
+  setSelectedOptions(new Map());
+  setResults([]);
+  setCurrentResult(undefined);
 }
+
 
 export function connect(
   code?: string,
@@ -53,10 +67,26 @@ export function connect(
       client.subscribe(
         "/channel/events/rooms/" + code + "/participants/result",
         (message) => {
-          console.log(message);
-          // recebimento do resultado
-        }
-      );
+          const uint8Array = new Uint8Array(message.binaryBody);
+          const decodedString = new TextDecoder("utf-8").decode(uint8Array);
+          
+          const bookResultResponses = JSON.parse(decodedString) as { id: number }[];
+
+          const bookIds = bookResultResponses.map(b => b.id);
+          
+          console.log("IDs carregados:", bookIds);
+          
+          fetchBooksByIds(bookIds).then((books) => {
+            console.log("Livros carregados:", books);
+
+            const { setResults, setCurrentResult } = useMatch.getState();
+            setResults(books);
+            if (books.length > 0) {
+              setCurrentResult(books[0]);
+            }
+          });
+      });
+
 
       if (isOwner) {
         client.subscribe(

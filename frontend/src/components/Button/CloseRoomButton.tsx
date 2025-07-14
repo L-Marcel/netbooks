@@ -5,7 +5,7 @@ import Button from ".";
 export default function CloseRoomButton() {
   const navigate = useNavigate();
 
-  const onClose = () => close().then(() => navigate("/home"));
+  const onClose = () => close().then(() => navigate("/match"));
 
   return (
     <Button className="btn btn-error absolute left-5 top-5" onClick={onClose}>

@@ -3,6 +3,8 @@ import { Genre, GenreCard } from "./GenreCard";
 import useMatch from "@stores/useMatch";
 import useRoom from "@stores/useRoom";
 import Loader from "@components/SimpleLoading";
+import BookHero from "@components/Book/BookHero";
+import BookTags from "@components/Book/BookTags";
 
 function randomColor(): string {
   const lettersHex = '0123456789ABCDEF';
@@ -23,6 +25,9 @@ export default function Cards({ genresOptions }: CardsProps) {
     name: genre,
     color: randomColor(),
   }));
+
+  const currentResult = useMatch((state) => state.currentResult);
+  const results = useMatch((state) => state.results);
 
   const [currentGenreIndex, setCurrentGenreIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(true);
@@ -65,28 +70,63 @@ export default function Cards({ genresOptions }: CardsProps) {
 
   return (
     <div className="relative">
-      {currentGenreIndex < genres.length && currentGenre && (
-        <div
-          className="flex justify-center items-center transition-colors duration-300"
-          style={{
-            backgroundColor: bgColor ? `${bgColor}20` : 'transparent'
-          }}
-        >
-          <GenreCard
-            genre={currentGenre}
-            onLike={handleLike}
-            onDislike={handleDislike}
-            isAnimating={isAnimating}
-            bgColor={bgColor || currentGenre.color}
+    {currentResult ? (
+      <div className="flex-col justify-center items-center mt-8 text-center">
+        <div className="flex justify-center">
+          <img
+            src={currentResult.cover}
+            className="object-cover shadow-2xl rounded-lg group-focus-visible:rounded-2xl w-[100px] h-[160px] md:w-[200px] md:h-[320px]"
+            height={320}
+            width={200}
           />
         </div>
-      )}
-      {currentGenreIndex >= genres.length && (
-        <div className="block text-center text-lg mt-4">
-          <Loader text="Aguardando demais Participantes..." />
+        <div className="flex justify-center pt-3">
+          <BookTags tags={currentResult.tags ?? []} />
         </div>
-      )}
-    </div>
+        <h1 className="text-2xl md:text-4xl font-semibold text-gray-800 dark:text-white pt-3 pb-3">
+          {currentResult.title}
+        </h1>
+        <p className="text-sm md:text-base max-w-md">
+          {currentResult.description}
+        </p>
+
+        {results && results.length > 1 && (
+          <div className="mt-4 flex justify-center gap-2 flex-wrap">
+            <button
+              onClick={() => {
+                const currentIndex = results.findIndex(r => r === currentResult);
+                const nextIndex = (currentIndex + 1) % results.length;
+                useMatch.getState().setCurrentResult(results[nextIndex]);
+              }}
+              className="btn btn-sm btn-outline"
+            >
+                Ver outra sugestão
+              </button>
+          </div>
+        )}
+
+      </div>
+    ) : currentGenreIndex < genres.length && currentGenre ? (
+      <div
+        className="flex justify-center items-center transition-colors duration-300"
+        style={{
+          backgroundColor: bgColor ? `${bgColor}20` : "transparent",
+        }}
+      >
+        <GenreCard
+          genre={currentGenre}
+          onLike={handleLike}
+          onDislike={handleDislike}
+          isAnimating={isAnimating}
+          bgColor={bgColor || currentGenre.color}
+        />
+      </div>
+    ) : (
+      <div className="block text-center text-lg mt-4">
+        <Loader text="Aguardando demais Participantes..." />
+      </div>
+    )}
+  </div>
   );
 }
 
