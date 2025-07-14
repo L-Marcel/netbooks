@@ -13,4 +13,5 @@ public interface TagsRepository {
     public void create(Tag tag);
     public void createMany(List<Tag> tags);
     public void deleteByName(String name);
+    public void deleteManyIfNotUsedByName(List<String> names);
 };

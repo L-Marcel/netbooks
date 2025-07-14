@@ -14,7 +14,7 @@ import app.netbooks.backend.errors.InternalServerError;
 
 public abstract class FilesStorage {
     private static Logger logger = LoggerFactory.getLogger(FilesStorage.class);
-
+        
     protected String mime;
 
     public FilesStorage(String mime) {

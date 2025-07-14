@@ -41,7 +41,10 @@ export async function fetchReadingContent(
       signal,
     })
     .then(
-      (response) => new File([response.data], response.headers["filename"])
+      (response) =>
+        new File([response.data], response.headers["filename"], {
+          type: "application/pdf",
+        })
     );
 }
 

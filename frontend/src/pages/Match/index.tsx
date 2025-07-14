@@ -48,8 +48,8 @@ function Page() {
 
   return (
     <main
-      className="flex flex-col w-full h-full items-center bg-base-100"
-      style={{ height: "calc(100vh - 70px)" }}
+      className="flex flex-col w-full h-full min-h-[calc(100dvh-4rem)] items-center bg-base-100"
+      style={{ height: "calc(100dvh - 70px)" }}
     >
       <div className="flex flex-col items-center justify-center w-md h-screen bg-base-100 gap-10">
         <Button className="btn btn-primary w-md" onClick={createRoom}>

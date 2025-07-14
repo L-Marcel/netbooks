@@ -59,7 +59,7 @@ export default function FieldFile({
   };
 
   return (
-    <fieldset className="flex flex-col w-full overflow-hidden">
+    <fieldset className="flex flex-col w-full">
       <p className="mb-2 font-medium text-sm">{label}</p>
       <Button
         className={`input hover:cursor-pointer focus-within:input-primary ${hasError ? "!input-error" : ""} w-full text-base-content ${className}`}

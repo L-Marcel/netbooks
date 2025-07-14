@@ -8,10 +8,12 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
 import app.netbooks.backend.connections.interfaces.Database;
+import app.netbooks.backend.models.Book;
 import app.netbooks.backend.models.Tag;
 import app.netbooks.backend.repositories.interfaces.BooksTagsRepository;
 
@@ -22,7 +24,7 @@ public class BooksTagsRepositoryImpl extends BaseRepository implements BooksTags
     };
 
     @Override
-    public Map<Long, List<Tag>> mapAllByBook() {
+    public Map<Long, List<Tag>> mapAllByBooks() {
         return this.queryOrDefault((connection) -> {
             Map<Long, List<Tag>> tagsMap = new LinkedHashMap<>();
 
@@ -86,7 +88,7 @@ public class BooksTagsRepositoryImpl extends BaseRepository implements BooksTags
                 PreparedStatement statement = connection.prepareStatement(
                     // language=sql
                     """
-                    INSERT INTO book_tag (tag, book) values (?, ?);
+                    INSERT INTO book_tag (tag, book) VALUES (?, ?);
                     """
                 );
             ) {
@@ -99,5 +101,56 @@ public class BooksTagsRepositoryImpl extends BaseRepository implements BooksTags
                 statement.executeBatch();
             };
         });
+    };
+
+    @Override
+    public void deleteByBook(Long id) {
+        this.execute((connection) -> {
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    DELETE FROM book_tag WHERE book = ?;
+                    """
+                );
+            ) {
+                statement.setLong(1, id);
+                statement.executeUpdate();
+            };
+        });
+    };
+
+    @Override
+    public Map<Long, List<Tag>> mapAllByBooks(List<Book> books) {
+        return this.queryOrDefault((connection) -> {
+            Map<Long, List<Tag>> tagsMap = new LinkedHashMap<>();
+
+            String ids = books.stream().map((book) -> book.getId().toString()).collect(Collectors.joining(", "));
+
+            try (
+                Statement statement = connection.createStatement();
+                ResultSet result = statement.executeQuery(
+                    // language=sql
+                    """
+                    SELECT * FROM book_tag
+                    WHERE book IN
+                    """
+                    + " (" + ids + ");"
+                );
+            ) {
+                while(result.next()) {
+                    Long book = result.getLong("book");
+                    String name = result.getString("tag");
+                    Tag tag = new Tag(name);
+
+                    tagsMap.computeIfAbsent(
+                        book,
+                        v -> new ArrayList<Tag>()
+                    ).add(tag);
+                };
+            };
+
+            return tagsMap;
+        }, new LinkedHashMap<>());
     };
 };

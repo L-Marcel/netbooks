@@ -11,4 +11,5 @@ public interface AuthorsRepository {
     public void create(Author author);
     public void createMany(List<Author> authors);
     public void deleteById(Long id);
+    public void deleteManyIfNotUsedById(List<Long> ids);
 } ;

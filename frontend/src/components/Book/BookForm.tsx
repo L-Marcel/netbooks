@@ -2,6 +2,7 @@ import { ChangeEvent, useState } from "react";
 import Field from "@components/Input/Field";
 import { useNavigate } from "react-router-dom";
 import {
+  FaArrowLeft,
   FaAsterisk,
   FaBookReader,
   FaCalendarAlt,
@@ -32,12 +33,14 @@ import { Tag } from "@models/tag";
 import { searchTags } from "@services/tags";
 import { searchPublishers } from "@services/publishers";
 import { Publisher } from "@models/publisher";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   book?: Book;
 }
 
 export default function BookForm({ book }: Props) {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const startLoading = useLoading((state) => state.start);
   const stopLoading = useLoading((state) => state.stop);
@@ -54,6 +57,9 @@ export default function BookForm({ book }: Props) {
     authors: book?.authors ?? [],
     tags: book?.tags ?? [],
     requirements: book?.requirements ?? [],
+    banner: book?.getBanner(),
+    cover: book?.getCover(),
+    file: book?.getFile(),
   });
 
   const onChangePremium = (e: ChangeEvent<HTMLInputElement>) =>
@@ -143,7 +149,7 @@ export default function BookForm({ book }: Props) {
     const body = {
       title: data.title,
       description: data.description,
-      isbn: data.isbn,
+      isbn: withIsbn ? data.isbn : undefined,
       publisher: data.publisher,
       publishedIn: data.publishedIn,
       authors: data.authors,
@@ -169,8 +175,9 @@ export default function BookForm({ book }: Props) {
     }
 
     if (book) {
-      updateBook(formData)
+      updateBook(formData, book.id)
         .then(async () => {
+          queryClient.invalidateQueries();
           navigate("/home");
         })
         .catch(onCatchErrors)
@@ -180,6 +187,7 @@ export default function BookForm({ book }: Props) {
     } else {
       registerBook(formData)
         .then(() => {
+          queryClient.invalidateQueries();
           navigate("/home");
         })
         .catch(onCatchErrors)
@@ -189,14 +197,35 @@ export default function BookForm({ book }: Props) {
     }
   };
 
+  const onBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/home", { replace: true });
+    }
+  };
+
   return (
-    <main className="relative flex flex-row not-xl:flex-wrap-reverse gap-4">
+    <main className="relative w-full flex flex-row not-xl:flex-wrap-reverse gap-4">
       <section className="flex rounded-box p-6 bg-base-200 flex-col gap-0 w-full xl:max-w-xl">
-        <header className="text-start text-base-content max-w-11/12 sm:max-w-sm lg:max-w-lg">
+        <header className="relative text-start text-base-content max-w-11/12 sm:max-w-sm lg:max-w-lg">
+          {book && (
+            <Button
+              onClick={onBack}
+              className="absolute -top-10 btn btn-sm btn-primary"
+            >
+              <FaArrowLeft />
+              Voltar
+            </Button>
+          )}{" "}
           <h1 className="text-3xl font-bold text-base-content">
-            Cadastrar livro
+            {book ? "Editar livro" : "Cadastrar livro"}
           </h1>
-          <p>Cadastrar novo livro na plataforma</p>
+          <p>
+            {book
+              ? "Editar livro já cadastrado na plataforma"
+              : "Cadastrar novo livro na plataforma"}
+          </p>
         </header>
         <div className="divider divider-vertical my-2"></div>
         <form
@@ -229,6 +258,7 @@ export default function BookForm({ book }: Props) {
               icon={FaAsterisk}
               disabled={!withIsbn}
               validations={validations["isbn"]}
+              inputMode="numeric"
               label="Número Padrão Internacional (ISBN)"
               id="isbn"
               type="text"
@@ -265,7 +295,7 @@ export default function BookForm({ book }: Props) {
           />
           <FieldImage
             imageSize={{
-              aspect: 2 / 3,
+              aspect: 0.7,
               height: 300,
               width: 200,
             }}

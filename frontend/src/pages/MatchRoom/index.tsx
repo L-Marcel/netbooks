@@ -34,7 +34,7 @@ function Page() {
   const isOwner = room?.owner === participant?.user;
 
   return (
-    <main className="flex flex-col w-full h-full items-center bg-base-100">
+    <main className="flex flex-col w-full h-full min-h-[calc(100dvh-4rem)] items-center bg-base-100">
       <div className="flex flex-col items-center justify-center w-full h-screen bg-base-100">
         <div className="flex flex-col items-center justify-center gap-10">
           {room && (
