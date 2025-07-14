@@ -19,9 +19,9 @@ export function disconnect(): void {
   setParticipant(undefined);
   resetVoted();
 
-  setGenres([]);
+  setGenres(undefined);
   setSelectedOptions(new Map());
-  setResults([]);
+  setResults(undefined);
   setCurrentResult(undefined);
 }
 

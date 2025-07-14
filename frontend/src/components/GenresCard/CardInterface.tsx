@@ -123,7 +123,7 @@ export default function Cards({ genresOptions }: CardsProps) {
       </div>
     ) : (
       <div className="block text-center text-lg mt-4">
-        <Loader text="Aguardando demais Participantes..." />
+        <Loader text="Aguardando..." />
       </div>
     )}
   </div>

@@ -36,6 +36,8 @@ const useRoom = create<RoomStore>((set, get) => ({
   setRoom: (room?: Room) => {
     set({ room });
 
+    if(!room) return;
+
     const { participant } = get();
     if (participant) {
       const updated = room?.participants.find(
@@ -52,6 +54,8 @@ const useRoom = create<RoomStore>((set, get) => ({
   setVoted: () => {
     const current = get().voted + 1;
     set({ voted: current });
+    
+    console.log("Votos:", current);
 
     const room = get().room;
     if (room && current >= room.participants.length) {

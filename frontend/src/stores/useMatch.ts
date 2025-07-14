@@ -10,9 +10,9 @@
         results?: Book[];
         currentResult?: Book;
         setRoom: (room: string) => void;
-        setGenres: (genres: Genres) => void;
+        setGenres: (genres: Genres | undefined) => void;
         setSelectedOptions: (options: Map<string, number>) => void;
-        setResults: (results: Book[]) => void;
+        setResults: (results: Book[] | undefined) => void;
         setCurrentResult: (result: Book | undefined) => void;
         likeGenre: (genre: string) => void;
         dislikeGenre: (genre: string) => void;
@@ -28,12 +28,12 @@
 
         setRoom: (room: string) => set({ room }),
 
-        setGenres: (genres: Genres) => set({ genres }),
+        setGenres: (genres: Genres | undefined) => set({ genres }),
 
         setSelectedOptions: (options: Map<string, number>) =>
             set({ selectedOptions: options }),
 
-        setResults: (results: Book[]) => set({ results }),
+        setResults: (results: Book[] | undefined) => set({ results }),
 
         setCurrentResult: (result: Book | undefined) => set({ currentResult: result }),
 
