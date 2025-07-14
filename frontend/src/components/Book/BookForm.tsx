@@ -149,7 +149,7 @@ export default function BookForm({ book }: Props) {
     const body = {
       title: data.title,
       description: data.description,
-      isbn: data.isbn,
+      isbn: withIsbn ? data.isbn : undefined,
       publisher: data.publisher,
       publishedIn: data.publishedIn,
       authors: data.authors,
@@ -171,7 +171,6 @@ export default function BookForm({ book }: Props) {
     }
 
     if (data.file) {
-      console.log(data.file);
       formData.append("file", data.file);
     }
 
@@ -207,7 +206,7 @@ export default function BookForm({ book }: Props) {
   };
 
   return (
-    <main className="relative flex flex-row not-xl:flex-wrap-reverse gap-4">
+    <main className="relative w-full flex flex-row not-xl:flex-wrap-reverse gap-4">
       <section className="flex rounded-box p-6 bg-base-200 flex-col gap-0 w-full xl:max-w-xl">
         <header className="relative text-start text-base-content max-w-11/12 sm:max-w-sm lg:max-w-lg">
           {book && (
@@ -259,6 +258,7 @@ export default function BookForm({ book }: Props) {
               icon={FaAsterisk}
               disabled={!withIsbn}
               validations={validations["isbn"]}
+              inputMode="numeric"
               label="Número Padrão Internacional (ISBN)"
               id="isbn"
               type="text"
@@ -295,7 +295,7 @@ export default function BookForm({ book }: Props) {
           />
           <FieldImage
             imageSize={{
-              aspect: 2 / 3,
+              aspect: 0.7,
               height: 300,
               width: 200,
             }}

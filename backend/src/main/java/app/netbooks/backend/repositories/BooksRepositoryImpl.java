@@ -228,7 +228,8 @@ public class BooksRepositoryImpl extends BaseRepository implements BooksReposito
                     """
                 );
             ) {
-                statement.setLong(1, book.getIsbn());
+                if(book.getIsbn() != null) statement.setLong(1, book.getIsbn());
+                else statement.setNull(1, java.sql.Types.BIGINT);
                 statement.setString(2, book.getTitle());
                 statement.setString(3, book.getDescription());
                 statement.setInt(4, book.getNumPages());

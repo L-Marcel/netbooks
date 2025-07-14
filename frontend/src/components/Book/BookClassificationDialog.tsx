@@ -35,14 +35,16 @@ export default function BookClassificationDialog({
   ...props
 }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
-  const [stars, setStars] = useState<number>(-1);
+  const [stars, setStars] = useState<number>(0);
   const startLoading = useLoading((state) => state.start);
   const stopLoading = useLoading((state) => state.stop);
 
   const update = useCallback(() => {
     startLoading("classification");
     fetchClassification(book?.id)
-      .then((classification) => setStars(classification.value))
+      .then((classification) => {
+        setStars(classification.value);
+      })
       .catch(() => setStars(-1))
       .finally(() => stopLoading("classification"));
   }, [book, startLoading, stopLoading, setStars]);

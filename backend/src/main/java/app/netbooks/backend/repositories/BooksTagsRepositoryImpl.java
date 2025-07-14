@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
 import app.netbooks.backend.connections.interfaces.Database;
-import app.netbooks.backend.models.Author;
 import app.netbooks.backend.models.Book;
 import app.netbooks.backend.models.Tag;
 import app.netbooks.backend.repositories.interfaces.BooksTagsRepository;

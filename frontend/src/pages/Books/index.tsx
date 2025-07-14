@@ -64,7 +64,7 @@ function Page() {
   if (!loadingSet.has("book") && !book) return <NotFound />;
 
   return (
-    <main className="flex flex-col w-full h-full min-h-[calc(100vh-4rem)] items-center bg-base-100">
+    <main className="flex flex-col w-full h-full min-h-[calc(100dvh-4rem)] items-center bg-base-100">
       <BookHero
         onUpdateClassification={update}
         book={book}

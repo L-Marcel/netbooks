@@ -41,7 +41,7 @@ export default function Home() {
   );
 
   return (
-    <main className="flex flex-col w-full h-full min-h-[calc(100vh-4rem)] items-center bg-base-100">
+    <main className="flex flex-col w-full h-full min-h-[calc(100dvh-4rem)] items-center bg-base-100">
       <BookHero
         onUpdateClassification={refetch}
         book={books.length > 0 ? books[0] : undefined}

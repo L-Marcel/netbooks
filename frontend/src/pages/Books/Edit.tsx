@@ -37,7 +37,7 @@ export function Page() {
   if (!loadingSet.has("book") && !book) return <NotFound />;
 
   return (
-    <main className="flex flex-col p-8 gap-4 bg-base-100 w-full h-full min-h-[calc(100vh-4rem)] items-center">
+    <main className="flex flex-col p-8 gap-4 bg-base-100 w-full h-full min-h-[calc(100dvh-4rem)] items-center">
       <section className="flex flex-col gap-8 w-full"></section>
       {book && <BookForm book={book} />}
     </main>
