@@ -51,25 +51,27 @@ function Page() {
       className="flex flex-col w-full h-full min-h-[calc(100dvh-4rem)] items-center bg-base-100"
       style={{ height: "calc(100dvh - 70px)" }}
     >
-      <div className="flex flex-col items-center justify-center w-md h-screen bg-base-100 gap-10">
-        <Button className="btn btn-primary w-md" onClick={createRoom}>
+      <div className="flex flex-col items-center justify-center max-w-full mx-4 h-screen bg-base-100 gap-6">
+        <h1 className="text-xl font-semibold">
+          Que procurar livros em conjunto, hein?
+        </h1>
+        <Button className="btn btn-primary w-full" onClick={createRoom}>
           Criar Sala
         </Button>
-
-        <hr className="w-md border-gray-700" />
-
-        <div className="flex">
+        <hr className="w-full border-gray-700" />
+        <div className="join join-horizontal w-full">
           <Input
             type="text"
             name="code"
             id="code"
+            inputMode="numeric"
             placeholder="Código da Sala"
             autoComplete="false"
             value={roomCode}
             onChange={(e) => setRoomCode(e.target.value)}
-            className="input text-lg w-[400px]"
+            className="input join-item text-lg"
           />
-          <Button className="btn w-[50px]" onClick={enterRoom}>
+          <Button className="btn join-item btn-primary" onClick={enterRoom}>
             <FaArrowRight />
           </Button>
         </div>

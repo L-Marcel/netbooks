@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
@@ -160,6 +161,74 @@ public class BooksRepositoryImpl extends BaseRepository implements BooksReposito
             return bookFound;
         }, Optional.empty());
     };
+
+    @Override
+    public List<Book> findBooksWithAllTags(List<String> tagNames, int size) {
+        return this.queryOrDefault((connection) -> {
+            List<Book> books = new ArrayList<>();
+
+            if (tagNames == null || tagNames.isEmpty())
+                return books;
+
+            String placeholders = tagNames.stream()
+                .map(t -> "?")
+                .collect(Collectors.joining(", "));
+
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    SELECT b.*
+                    FROM book_with_stars b
+                    JOIN book_tag bt ON b.id = bt.book
+                    JOIN tag t ON bt.tag = t.name
+                    WHERE t.name IN (""" + placeholders + ") " + 
+                    """
+                    GROUP BY b.id, b.isbn, b.title, b.description, b.stars, b.num_pages, b.published_in, b.publisher
+                    HAVING COUNT(DISTINCT t.name) = ?
+                    """
+                );
+            ) {
+                int index = 1;
+                for (String tag : tagNames) {
+                    statement.setString(index++, tag);
+                }
+
+                statement.setInt(index, size);
+
+                try (ResultSet result = statement.executeQuery()) {
+                    while (result.next()) {
+                        Long id = result.getLong("id");
+                        Long isbn = result.getLong("isbn");
+                        String title = result.getString("title");
+                        String description = result.getString("description");
+                        Double stars = result.getDouble("stars");
+                        Integer numPages = result.getInt("num_pages");
+                        Date publishedIn = result.getDate("published_in");
+
+                        String publisherName = result.getString("publisher");
+                        Publisher publisher = new Publisher(publisherName);
+
+                        Book book = new Book(
+                            id,
+                            isbn,
+                            title,
+                            description,
+                            stars,
+                            numPages,
+                            publishedIn,
+                            publisher
+                        );
+
+                        books.add(book);
+                    }
+                }
+            }
+
+            return books;
+        }, new ArrayList<>());
+    }
+
 
     @Override
     public void create(Book book) {

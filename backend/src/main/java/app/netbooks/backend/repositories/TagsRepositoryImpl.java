@@ -200,4 +200,33 @@ public class TagsRepositoryImpl extends BaseRepository implements TagsRepository
             };
         });
     };
+
+    @Override
+    public List<Tag> searchRandomTags(int limit) {
+        return this.queryOrDefault((connection) -> {
+            List<Tag> tags = new ArrayList<>();
+
+            try (
+                PreparedStatement statement = connection.prepareStatement(
+                    // language=sql
+                    """
+                    SELECT * FROM tag ORDER BY RAND() LIMIT ?;
+                    """
+                );
+            ) {
+                statement.setInt(1, limit);
+
+                try (ResultSet result = statement.executeQuery()) {
+                    while(result.next()) {
+                        String name = result.getString("name");
+                        Tag tag = new Tag(name);
+                        tags.add(tag);
+                    }
+                }
+            }
+
+            return tags;
+        }, new ArrayList<>());
+    };
+
 };
