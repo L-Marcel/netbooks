@@ -22,7 +22,7 @@ export function disconnect(): void {
 
 export function connect(code?: string, isOwner?: boolean): void {
   const { room, setRoom, setClient, client: oldClient } = useRoom.getState();
-
+  
   if (oldClient && oldClient.connected) return;
   console.log("Participante conectado ao websocket!");
 
