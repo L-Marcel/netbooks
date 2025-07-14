@@ -11,9 +11,9 @@ export async function getParticipant(isOwner?: boolean): Promise<void> {
 
   return await api.get<Participant>("participants/me").then((response) => {
     if (isOwner) {
-      connect(response.data.room, response.data.user, true);
+      connect(response.data.room, true);
     } else {
-      connect(response.data.room, response.data.user);
+      connect(response.data.room);
     }
     setParticipant(response.data);
   });

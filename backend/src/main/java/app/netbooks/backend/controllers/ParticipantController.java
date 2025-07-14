@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.netbooks.backend.annotations.SubscriberOnly;
+import app.netbooks.backend.annotations.SubscriberOrAdministratorOnly;
 import app.netbooks.backend.authentication.AuthenticatedUser;
 import app.netbooks.backend.dtos.response.ParticipantResponse;
 import app.netbooks.backend.services.ParticipantService;
@@ -21,7 +22,7 @@ public class ParticipantController {
     @Autowired
     private ParticipantService participantService;
 
-    @SubscriberOnly
+    @SubscriberOrAdministratorOnly
     @GetMapping("/me")
     public ResponseEntity<ParticipantResponse> findParticipantByUser(
         @AuthenticationPrincipal AuthenticatedUser user
@@ -32,7 +33,7 @@ public class ParticipantController {
         return ResponseEntity.ok(response);
     };
 
-    @SubscriberOnly
+    @SubscriberOrAdministratorOnly
     @DeleteMapping
     public ResponseEntity<Void> kickFromRoom(
         @AuthenticationPrincipal AuthenticatedUser user

@@ -36,7 +36,7 @@ const useRoom = create<RoomStore>((set, get) => ({
   setRoom: (room?: Room) => {
     set({ room });
 
-    if(!room) return;
+    if (!room) return;
 
     const { participant } = get();
     if (participant) {
@@ -54,7 +54,7 @@ const useRoom = create<RoomStore>((set, get) => ({
   setVoted: () => {
     const current = get().voted + 1;
     set({ voted: current });
-    
+
     console.log("Votos:", current);
 
     const room = get().room;
@@ -65,7 +65,6 @@ const useRoom = create<RoomStore>((set, get) => ({
   },
 
   resetVoted: () => set({ voted: 0 }),
-
 }));
 
 export default useRoom;

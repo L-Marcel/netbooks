@@ -1,18 +1,13 @@
 import useRoom, { Room } from "@stores/useRoom";
-// import { getRoom } from "./room";
-import { UUID } from "crypto";
 import { Client } from "@stomp/stompjs";
 import useMatch, { Genres } from "@stores/useMatch";
 import { fetchBooksByIds } from "./books";
 
 export function disconnect(): void {
   const { setRoom, setParticipant, setClient, resetVoted } = useRoom.getState();
-  const {
-    setGenres,
-    setSelectedOptions,
-    setResults,
-    setCurrentResult,
-  } = useMatch.getState();
+
+  const { setGenres, setSelectedOptions, setResults, setCurrentResult } =
+    useMatch.getState();
 
   setClient(undefined);
   setRoom(undefined);
@@ -25,12 +20,7 @@ export function disconnect(): void {
   setCurrentResult(undefined);
 }
 
-
-export function connect(
-  code?: string,
-  participant?: UUID,
-  isOwner?: boolean
-): void {
+export function connect(code?: string, isOwner?: boolean): void {
   const { room, setRoom, setClient, client: oldClient } = useRoom.getState();
 
   if (oldClient && oldClient.connected) return;
@@ -56,7 +46,7 @@ export function connect(
         "/channel/events/rooms/" + code + "/participants",
         (message) => {
           const tags: { name: string }[] = JSON.parse(message.body);
-          const genres: Genres = tags.map(tag => tag.name);
+          const genres: Genres = tags.map((tag) => tag.name);
 
           console.log("GENRES:", genres);
 
@@ -69,13 +59,15 @@ export function connect(
         (message) => {
           const uint8Array = new Uint8Array(message.binaryBody);
           const decodedString = new TextDecoder("utf-8").decode(uint8Array);
-          
-          const bookResultResponses = JSON.parse(decodedString) as { id: number }[];
 
-          const bookIds = bookResultResponses.map(b => b.id);
-          
+          const bookResultResponses = JSON.parse(decodedString) as {
+            id: number;
+          }[];
+
+          const bookIds = bookResultResponses.map((b) => b.id);
+
           console.log("IDs carregados:", bookIds);
-          
+
           fetchBooksByIds(bookIds).then((books) => {
             console.log("Livros carregados:", books);
 
@@ -85,15 +77,13 @@ export function connect(
               setCurrentResult(books[0]);
             }
           });
-      });
-
+        }
+      );
 
       if (isOwner) {
         client.subscribe(
           "channel/events/rooms/" + code + "/" + room?.owner + "/start",
-          () => {
-            // função de inicio de sala
-          }
+          () => {}
         );
       }
     },

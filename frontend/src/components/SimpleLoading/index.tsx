@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "@components/SimpleLoading/index.module.scss"
+import styles from "@components/SimpleLoading/index.module.scss";
 
 interface LoaderProps {
   text?: string;

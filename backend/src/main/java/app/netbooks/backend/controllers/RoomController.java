@@ -1,7 +1,6 @@
 package app.netbooks.backend.controllers;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.netbooks.backend.annotations.SubscriberOnly;
+import app.netbooks.backend.annotations.SubscriberOrAdministratorOnly;
 import app.netbooks.backend.authentication.AuthenticatedUser;
 import app.netbooks.backend.dtos.response.ParticipantResponse;
 import app.netbooks.backend.dtos.response.RoomResponse;
@@ -43,7 +43,7 @@ public class RoomController {
     @Autowired
     private BooksService booksService;
 
-    @SubscriberOnly
+    @SubscriberOrAdministratorOnly
     @PostMapping
     public ResponseEntity<RoomResponse> createRoom(
         @AuthenticationPrincipal AuthenticatedUser user
@@ -61,7 +61,7 @@ public class RoomController {
             .body(response);
     };
 
-    @SubscriberOnly
+    @SubscriberOrAdministratorOnly
     @DeleteMapping
     public ResponseEntity<Void> closeRoom(
         @AuthenticationPrincipal AuthenticatedUser user
@@ -75,7 +75,7 @@ public class RoomController {
             .build();
     };
 
-    @SubscriberOnly
+    @SubscriberOrAdministratorOnly
     @GetMapping
     public ResponseEntity<RoomResponse> findRoomByUser(
         @AuthenticationPrincipal AuthenticatedUser user
@@ -96,7 +96,7 @@ public class RoomController {
         return ResponseEntity.ok(response);
     };
     
-    @SubscriberOnly
+    @SubscriberOrAdministratorOnly
     @PostMapping("/{code}/join")
     public ResponseEntity<ParticipantResponse> joinRoom(
         @PathVariable String code,
@@ -115,7 +115,7 @@ public class RoomController {
             .body(response);
     };
 
-    @SubscriberOnly
+    @SubscriberOrAdministratorOnly
     @PostMapping("/{code}/sendOptions")
     public ResponseEntity<Void> sendOptions(
         @AuthenticationPrincipal AuthenticatedUser user,
@@ -134,7 +134,7 @@ public class RoomController {
 
     
 
-    @SubscriberOnly
+    @SubscriberOrAdministratorOnly
     @PostMapping("/{code}/result")
     public ResponseEntity<Void> sendResult(
         @AuthenticationPrincipal AuthenticatedUser user,

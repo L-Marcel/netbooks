@@ -17,29 +17,14 @@ function CopyLinkButton({ code }: Props) {
 
   return (
     <div className="absolute right-5 top-5">
-      <Button onClick={copyLink} className="btn btn-block">
-        <FaLink />
-      </Button>
-
-      {copied && (
-        <div
-          style={{
-            position: "absolute",
-            top: "-35px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            backgroundColor: "#333",
-            color: "#fff",
-            padding: "6px 10px",
-            borderRadius: "4px",
-            fontSize: "12px",
-            whiteSpace: "nowrap",
-            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.2)",
-          }}
-        >
-          Copiado!
-        </div>
-      )}
+      <div
+        data-tip={copied ? "Copiado!" : ""}
+        className={`tooltip tooltip-left tooltip-primary ${copied ? "tooltip-open" : ""}`}
+      >
+        <Button onClick={copyLink} className="btn btn-block">
+          <FaLink />
+        </Button>
+      </div>
     </div>
   );
 }
