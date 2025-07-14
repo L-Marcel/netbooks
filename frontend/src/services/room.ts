@@ -2,6 +2,7 @@ import useRoom, { Participant, Room } from "@stores/useRoom";
 import api from "./axios";
 import { connect, disconnect } from "./socket";
 import useUser from "@stores/useUser";
+import { Genres } from "@stores/useMatch";
 
 export async function join(
   userName: string,
@@ -46,4 +47,12 @@ export async function getOpenRoom(): Promise<Room> {
   return await api.get<Room>("rooms").then((response) => {
     return response.data;
   });
+}
+
+export async function sendOptionsToParticipants(code: string): Promise<Genres>  {
+  return await api.post(`rooms/${code}/sendOptions`);
+}
+
+export async function searchMatchResult(genres: string[], code: string) {
+  return await api.post(`rooms/${code}/result`)
 }
